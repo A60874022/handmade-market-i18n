@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Удаление товара | HandmadeMarket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4" style="font-size: 4rem;">🗑️</div>
+                    <h2 class="fw-bold mb-3">Удалить товар?</h2>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.title }}</h5>
+                            <p class="text-muted">{{ product.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-brown">{{ product.price }} ₽</span>
+                                {% if product.category %}
+                                <span class="badge bg-light text-brown border">{{ product.category.name|title }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        Это действие нельзя отменить. Товар будет полностью удален из системы.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-4">
+                                ✅ Да, удалить
+                            </button>
+                            <a href="{% url 'products:my_products' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                ❌ Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .bg-brown {
+        background-color: #8B4513 !important;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+</style>
+{% endblock %}

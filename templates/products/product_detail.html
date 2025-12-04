@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.title }} | HandmadeMarket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Изображения товара с галереей - УВЕЛИЧЕННЫЙ РАЗМЕР -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    {% if product.images.all %}
+                    <div id="productCarousel" class="carousel slide" data-bs-ride="false">
+                        <div class="carousel-inner">
+                            {% for image in product.images.all %}
+                            <div class="carousel-item {% if image.is_main %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100 cursor-zoom"
+                                    alt="{{ product.title }}" style="height: 500px; object-fit: cover; cursor: pointer;"
+                                    onclick="openImageModal('{{ forloop.counter0 }}')">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if product.images.count > 1 %}
+                        <!-- Индикаторы -->
+                        <div class="carousel-indicators">
+                            {% for image in product.images.all %}
+                            <button type="button" data-bs-target="#productCarousel"
+                                data-bs-slide-to="{{ forloop.counter0 }}"
+                                class="{% if image.is_main %}active{% endif %}"
+                                aria-current="{% if image.is_main %}true{% endif %}"
+                                aria-label="Slide {{ forloop.counter }}"
+                                onclick="openImageModal('{{ forloop.counter0 }}')"
+                                style="cursor: pointer; width: 12px; height: 12px; border-radius: 50%; margin: 0 5px;">
+                            </button>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Стрелки навигации -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                        style="height: 500px; cursor: pointer;" onclick="openImageModal('0')">
+                        <span class="text-muted" style="font-size: 5rem;">🎨</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Миниатюры изображений (если есть несколько) - УВЕЛИЧЕННЫЕ -->
+            {% if product.images.count > 1 %}
+            <div class="row mt-4">
+                {% for image in product.images.all %}
+                <div class="col-3 mb-3">
+                    <img src="{{ image.image.url }}"
+                        class="img-thumbnail cursor-zoom {% if image.is_main %}active-thumbnail{% endif %}"
+                        alt="{{ product.title }}"
+                        style="height: 100px; width: 100%; object-fit: cover; cursor: pointer;"
+                        onclick="openImageModal('{{ forloop.counter0 }}')">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Информация о товаре -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <!-- Заголовок и цена -->
+                    <div class="mb-4">
+                        <h1 class="h2 fw-bold mb-3">{{ product.title }}</h1>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="h2 text-brown fw-bold">{{ product.price }} ₽</span>
+                            <span class="badge bg-warning ms-3 fs-6">Handmade</span>
+                        </div>
+                    </div>
+
+                    <!-- Категория -->
+                    <div class="mb-4">
+                        <span class="badge bg-brown fs-6 p-2">{{ product.category.name }}</span>
+                    </div>
+
+                    <!-- Описание -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3">📖 Описание товара</h5>
+                        <p class="text-muted" style="line-height: 1.6; font-size: 1.1rem;">{{ product.description }}</p>
+                    </div>
+
+                    <!-- ИНФОРМАЦИЯ О МАСТЕРЕ И ГОРОДЕ -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3">👨‍🎨 Информация о мастере</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <small class="text-muted">📍 Город</small>
+                                <p class="mb-2 fw-bold">{{ product.get_city_display }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Детали товара -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3">📋 Детали товара</h5>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">📅 Дата создания</small>
+                                <p class="mb-2 fw-bold">{{ product.created_at|date:"d.m.Y" }}</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">📊 Статус</small>
+                                <p class="mb-2 fw-bold">
+                                    {% if product.is_active %}
+                                    <span class="text-success">● Активный</span>
+                                    {% else %}
+                                    <span class="text-danger">● Неактивный</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="d-grid gap-3 mb-4">
+                        <!-- Кнопка добавления в корзину -->
+                        {% if user.is_authenticated %}
+                        {% if not is_own_product %}
+                        <form method="post" action="{% url 'orders:add_to_cart' product.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+                                🛒 Добавить в корзину
+                            </button>
+                        </form>
+
+                        <!-- Кнопка обсудить товар - ПЕРЕНЕСЕНА СЮДА -->
+                        <a href="{% url 'chat:start_dialogue_from_product' product.pk %}"
+                            class="btn btn-outline-brown btn-lg py-3" title="Начать обсуждение этого товара с мастером">
+                            💬 Обсудить товар с мастером
+                        </a>
+                        {% else %}
+                        <button class="btn btn-outline-secondary btn-lg w-100 py-3" disabled title="Это ваш товар">
+                            🛒 Ваш товар
+                        </button>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'users:login' %}?next={{ request.path }}"
+                            class="btn btn-primary btn-lg w-100 py-3">
+                            🛒 Войдите, чтобы добавить в корзину
+                        </a>
+                        {% endif %}
+
+                        <!-- Кнопка избранного -->
+                        <div class="favorite-section">
+                            {% if user.is_authenticated %}
+                            {% if is_own_product %}
+                            <button class="btn btn-outline-secondary btn-lg w-100 py-3" disabled title="Это ваш товар">
+                                ⭐ Ваш товар
+                            </button>
+                            {% elif is_in_favorites %}
+                            <form method="post"
+                                action="{% url 'products:remove_from_favorites_by_product' product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-lg w-100 py-3"
+                                    title="Удалить из избранного">
+                                    ❤️ В избранном
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="post" action="{% url 'products:add_to_favorites' product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary btn-lg w-100 py-3"
+                                    title="Добавить в избранное">
+                                    🤍 Добавить в избранное
+                                </button>
+                            </form>
+                            {% endif %}
+                            {% else %}
+                            <a href="{% url 'users:login' %}?next={{ request.path }}"
+                                class="btn btn-outline-primary btn-lg w-100 py-3"
+                                title="Войдите, чтобы добавить в избранное">
+                                🤍 Добавить в избранное
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Дополнительные кнопки -->
+                    <div class="d-grid gap-2">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'orders:cart_view' %}" class="btn btn-outline-secondary btn-lg py-2">
+                            📦 Перейти в корзину
+                        </a>
+                        {% endif %}
+
+                        <a href="{% url 'products:catalog' %}" class="btn btn-outline-secondary btn-lg py-2">
+                            ← Вернуться в каталог
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопки управления для владельца товара -->
+    {% if is_own_product %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">⚙️ Управление товаром</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'products:product_edit' product.pk %}" class="btn btn-primary btn-lg">
+                            ✏️ Редактировать товар
+                        </a>
+                        <a href="{% url 'products:my_products' %}" class="btn btn-outline-primary btn-lg">
+                            📋 Мои товары
+                        </a>
+                        <a href="{% url 'chat:dialogue_list' %}" class="btn btn-outline-brown btn-lg">
+                            💬 Мои диалоги по товарам
+                        </a>
+                        <button type="button" class="btn btn-outline-danger btn-lg" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal">
+                            🗑️ Удалить товар
+                        </button>
+                    </div>
+
+                    <!-- Информация для мастера -->
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-2">💡 Информация для мастера</h6>
+                        <p class="text-muted small mb-0">
+                            Покупатели могут начать отдельный чат для обсуждения этого товара.
+                            Все диалоги по вашим товарам доступны в разделе "Мои диалоги".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления товара -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="deleteModalLabel">
+                        🗑️ Удаление товара
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-4" style="font-size: 3rem;">⚠️</div>
+                    <h6 class="fw-bold mb-3">Вы уверены, что хотите удалить товар?</h6>
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body py-3">
+                            <h6 class="fw-bold mb-1">{{ product.title }}</h6>
+                            <p class="text-muted small mb-2">{{ product.description|truncatewords:10 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-brown">{{ product.price }} ₽</span>
+                                {% if product.category %}
+                                <span class="badge bg-brown">{{ product.category.name|title }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>Внимание!</strong><br>
+                        При удалении товара также будут удалены все диалоги, связанные с этим товара.
+                    </div>
+
+                    <p class="text-danger small mb-0">
+                        ❗ Это действие нельзя отменить. Все данные о товаре и связанные диалоги будут удалены.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                        ❌ Отмена
+                    </button>
+                    <form method="post" action="{% url 'products:product_delete' product.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4">
+                            ✅ Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Модальное окно для просмотра изображений в полном размере - УПРОЩЕННОЕ -->
+<div class="modal" id="imageModal" tabindex="-1" aria-hidden="true" style="background-color: rgba(0,0,0,0.95);">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 position-absolute top-0 end-0 z-3">
+                <button type="button" class="btn-close btn-close-white" onclick="closeImageModal()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 d-flex align-items-center justify-content-center">
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="{{ product.title }}"
+                        style="max-height: 90vh; max-width: 90vw; object-fit: contain;">
+                </div>
+
+                <!-- Кнопки навигации -->
+                {% if product.images.count > 1 %}
+                <button class="btn btn-outline-light position-absolute start-0 top-50 translate-middle-y ms-3 z-3"
+                    onclick="prevImage()" style="opacity: 0.8;">
+                    ‹
+                </button>
+                <button class="btn btn-outline-light position-absolute end-0 top-50 translate-middle-y me-3 z-3"
+                    onclick="nextImage()" style="opacity: 0.8;">
+                    ›
+                </button>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-0 position-absolute bottom-0 start-50 translate-middle-x z-3">
+                <small class="text-white bg-dark bg-opacity-50 px-3 py-1 rounded">
+                    Изображение <span id="currentImage">1</span> из {{ product.images.count }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+
+    .btn-outline-brown {
+        color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .btn-outline-brown:hover {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        color: white;
+    }
+
+    .bg-brown {
+        background-color: #8B4513 !important;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 8%;
+    }
+
+    /* Убраны все анимации */
+    .btn {
+        transition: none;
+    }
+
+    .btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .cursor-zoom {
+        cursor: zoom-in;
+    }
+
+    .cursor-zoom:hover {
+        transform: none;
+    }
+
+    .carousel-indicators {
+        bottom: -50px;
+    }
+
+    .carousel-indicators button {
+        background-color: #8B4513;
+        opacity: 0.5;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .carousel-indicators button.active {
+        opacity: 1;
+        transform: none;
+    }
+
+    .img-thumbnail {
+        border: 3px solid transparent;
+        border-radius: 8px;
+    }
+
+    .img-thumbnail:hover {
+        border-color: #8B4513;
+        transform: none;
+    }
+
+    /* Стили для активной миниатюры */
+    .active-thumbnail {
+        border: 3px solid #8B4513 !important;
+    }
+
+    /* Стили для модального окна */
+    #imageModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+    }
+
+    #imageModal.show {
+        display: block;
+    }
+
+    /* Красивые тени и границы */
+    .card {
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .carousel-item img {
+        border-radius: 12px;
+    }
+
+    /* Улучшенные отступы */
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Адаптивность для мобильных */
+    @media (max-width: 768px) {
+        .img-thumbnail {
+            height: 80px !important;
+        }
+
+        .btn-lg {
+            font-size: 1rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .col-md-7,
+        .col-md-5 {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<script>
+    let currentImageIndex = 0;
+    const totalImages = {{ product.images.count }};
+    const imageUrls = [
+        {% for image in product.images.all %}"{{ image.image.url }}"{% if not forloop.last %}, {% endif %} {% endfor %}
+    ];
+
+    // Функция для открытия модального окна с определенным изображением - ПРОСТАЯ
+    function openImageModal(slideIndex) {
+        currentImageIndex = parseInt(slideIndex);
+
+        // Сразу показываем изображение
+        document.getElementById('modalImage').src = imageUrls[currentImageIndex];
+        updateImageCounter(currentImageIndex + 1);
+
+        // Показываем модальное окно
+        document.getElementById('imageModal').style.display = 'block';
+        document.getElementById('imageModal').classList.add('show');
+
+        // Блокируем прокрутку body
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Функция для закрытия модального окна
+    function closeImageModal() {
+        document.getElementById('imageModal').style.display = 'none';
+        document.getElementById('imageModal').classList.remove('show');
+
+        // Разблокируем прокрутку body
+        document.body.style.overflow = 'auto';
+    }
+
+    // Функция для перехода к следующему изображению
+    function nextImage() {
+        if (totalImages > 1) {
+            currentImageIndex = (currentImageIndex + 1) % totalImages;
+            document.getElementById('modalImage').src = imageUrls[currentImageIndex];
+            updateImageCounter(currentImageIndex + 1);
+        }
+    }
+
+    // Функция для перехода к предыдущему изображению
+    function prevImage() {
+        if (totalImages > 1) {
+            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+            document.getElementById('modalImage').src = imageUrls[currentImageIndex];
+            updateImageCounter(currentImageIndex + 1);
+        }
+    }
+
+    // Функция обновления счетчика изображений
+    function updateImageCounter(current) {
+        const counterElement = document.getElementById('currentImage');
+        if (counterElement) {
+            counterElement.textContent = current;
+        }
+    }
+
+    // Обработчик клавиатуры
+    document.addEventListener('keydown', function (event) {
+        const modal = document.getElementById('imageModal');
+        if (modal && modal.style.display === 'block') {
+            if (event.key === 'ArrowLeft') {
+                prevImage();
+            } else if (event.key === 'ArrowRight') {
+                nextImage();
+            } else if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        }
+    });
+
+    // Закрытие по клику на фон
+    document.getElementById('imageModal').addEventListener('click', function (event) {
+        if (event.target === this) {
+            closeImageModal();
+        }
+    });
+
+    // Обработчик для кнопок на главной карусели
+    document.addEventListener('DOMContentLoaded', function () {
+        // Убираем стандартное поведение Bootstrap карусели
+        const carousel = document.getElementById('productCarousel');
+        if (carousel) {
+            carousel.addEventListener('slide.bs.carousel', function (event) {
+                // Отменяем стандартное переключение, так как у нас своя логика
+                // event.preventDefault();
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  web:
+    image: anton60874022/ad_service:latest
+    container_name: handmade_web
+    command: >
+      sh -c "
+      python manage.py collectstatic --noinput --clear &&
+      daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./logs:/app/logs  
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - backend
+
+  db:
+    image: postgres:14
+    container_name: db
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - backend
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:1.21-alpine
+    container_name: handmade_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - certbot_webroot:/var/www/certbot
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certbot_webroot:
+
+networks:
+  backend:
+    driver: bridge

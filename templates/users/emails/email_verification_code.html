@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Код подтверждения email</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .code-container {
+            background: #f8f9fa;
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .verification-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #007bff;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Подтверждение email адреса</h1>
+        </div>
+
+        <p>Здравствуйте{% if user_name %}, <strong>{{ user_name }}</strong>{% endif %}!</p>
+
+        <p>Для завершения регистрации и подтверждения вашего email адреса, пожалуйста, используйте следующий код
+            подтверждения:</p>
+
+        <div class="code-container">
+            <div class="verification-code">{{ verification_code }}</div>
+        </div>
+
+        <div class="warning">
+            <strong>Внимание:</strong> Код действителен в течение <strong>15 минут</strong>.
+            Никому не сообщайте этот код.
+        </div>
+
+        <p>Введите этот код на странице подтверждения для активации вашего аккаунта.</p>
+
+        <p>Если вы не регистрировались на нашем сайте, проигнорируйте это письмо.</p>
+
+        <div class="footer">
+            <p>С уважением,<br>
+                <strong>Команда {{ site_name }}</strong>
+            </p>
+
+            <p>Если у вас возникли проблемы с подтверждением email, пожалуйста,
+                свяжитесь с поддержкой: {{ support_email|default:'support@example.com' }}</p>
+        </div>
+    </div>
+</body>
+
+</html>

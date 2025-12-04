@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Возвраты и обмен | HandmadeMarket{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-4">↩️ Возвраты и обмен</h1>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="accordion" id="returnsAccordion">
+
+                        <!-- Условия возврата -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingConditions">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseConditions" aria-expanded="false"
+                                    aria-controls="collapseConditions">
+                                    📋 Условия возврата
+                                </button>
+                            </h2>
+                            <div id="collapseConditions" class="accordion-collapse collapse"
+                                aria-labelledby="headingConditions" data-bs-parent="#returnsAccordion">
+                                <div class="accordion-body">
+                                    <div class="alert alert-info">
+                                        <strong>⚠️ Внимание!</strong> Товары ручной работы имеют особые условия
+                                        возврата.
+                                    </div>
+
+                                    <h5>✅ Возврат принимается в случаях:</h5>
+                                    <ul>
+                                        <li>Товар не соответствует описанию</li>
+                                        <li>Обнаружен производственный брак</li>
+                                        <li>Товар поврежден при доставке</li>
+                                        <li>Не передан необходимый комплект</li>
+                                    </ul>
+
+                                    <h5>❌ Возврат не принимается:</h5>
+                                    <ul>
+                                        <li>Товар изготовлен по индивидуальному заказу</li>
+                                        <li>Покупателю не подошел цвет/размер (если это не ошибка продавца)</li>
+                                        <li>Товар был в использовании</li>
+                                        <li>Нарушена оригинальная упаковка</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Процесс возврата -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingProcess">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseProcess" aria-expanded="false"
+                                    aria-controls="collapseProcess">
+                                    🔄 Процесс возврата
+                                </button>
+                            </h2>
+                            <div id="collapseProcess" class="accordion-collapse collapse"
+                                aria-labelledby="headingProcess" data-bs-parent="#returnsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row text-center">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
+                                                style="width: 70px; height: 70px;">
+                                                <span style="font-size: 1.5rem;">📞</span>
+                                            </div>
+                                            <h6>1. Контакты</h6>
+                                            <p class="small text-muted">Свяжитесь с продавцом через платформу</p>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
+                                                style="width: 70px; height: 70px;">
+                                                <span style="font-size: 1.5rem;">📝</span>
+                                            </div>
+                                            <h6>2. Заявление</h6>
+                                            <p class="small text-muted">Заполните заявление на возврат в личном кабинете
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
+                                                style="width: 70px; height: 70px;">
+                                                <span style="font-size: 1.5rem;">🚚</span>
+                                            </div>
+                                            <h6>3. Отправка</h6>
+                                            <p class="small text-muted">Отправьте товар обратно продавцу</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Сроки и стоимость -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTerms">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTerms" aria-expanded="false" aria-controls="collapseTerms">
+                                    ⏰ Сроки и стоимость
+                                </button>
+                            </h2>
+                            <div id="collapseTerms" class="accordion-collapse collapse" aria-labelledby="headingTerms"
+                                data-bs-parent="#returnsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <h6>⏱️ Сроки рассмотрения</h6>
+                                            <p class="small">3-5 рабочих дней с момента получения товара продавцом</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <h6>💰 Стоимость возврата</h6>
+                                            <p class="small">При возврате по вине продавца - расходы несет продавец</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <h6>💸 Возврат денег</h6>
+                                            <p class="small">Деньги возвращаются в течение 10 рабочих дней</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <h6>🔄 Обмен товара</h6>
+                                            <p class="small">Возможен в течение 14 дней с момента получения</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Для продавцов -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingSellers">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseSellers" aria-expanded="false"
+                                    aria-controls="collapseSellers">
+                                    👨‍🎨 Информация для продавцов
+                                </button>
+                            </h2>
+                            <div id="collapseSellers" class="accordion-collapse collapse"
+                                aria-labelledby="headingSellers" data-bs-parent="#returnsAccordion">
+                                <div class="accordion-body">
+                                    <h6>Как управлять возвратами:</h6>
+                                    <ul>
+                                        <li>Все заявки на возврат отображаются в разделе "Мои продажи"</li>
+                                        <li>Вы можете принять или отклонить возврат с указанием причины</li>
+                                        <li>При принятии возврата укажите адрес для отправки товара</li>
+                                        <li>После получения товара подтвердите его состояние</li>
+                                    </ul>
+                                    <div class="alert alert-warning mt-3">
+                                        <small>💡 Совет: четко описывайте товары и делайте качественные фотографии,
+                                            чтобы избежать недопонимания с покупателями.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Важная информация -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6>💡 Важная информация:</h6>
+                        <p class="mb-2 small">
+                            Перед оформлением возврата обязательно свяжитесь с продавцом для уточнения деталей.
+                            Сохраняйте оригинальную упаковку и документы до завершения процедуры возврата.
+                        </p>
+                        <a href="{% url 'pages:contacts' %}" class="btn btn-primary btn-sm">📞 Связаться с
+                            поддержкой</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: #8B4513;
+        color: white;
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25);
+        border-color: #8B4513;
+    }
+</style>
+{% endblock %}

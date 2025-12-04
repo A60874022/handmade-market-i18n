@@ -1,0 +1,1120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редактировать товар | HandmadeMarket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Заголовок -->
+            <div class="text-center mb-5">
+                <h1 class="fw-bold mb-3">✏️ Редактировать товар</h1>
+                <p class="text-muted">Обновите информацию о вашем handmade-товаре</p>
+                <p class="text-danger small mt-2">* — обязательные поля</p>
+            </div>
+
+            <!-- Форма -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="product-form">
+                        {% csrf_token %}
+
+                        <!-- Вывод общих ошибок формы -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Основная информация -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3 text-brown">📋 Основная информация</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                                        Категория <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="position-relative">
+                                        {{ form.category }}
+                                        <button type="button" class="btn-clear-field" style="display: none;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {% if form.category.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.category.errors %}
+                                        <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.price.id_for_label }}" class="form-label">
+                                        Цена (руб.) <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="price-input-container position-relative">
+                                        {{ form.price }}
+                                        <span class="price-suffix">₽</span>
+                                        <button type="button" class="btn-clear-field" style="display: none;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {% if form.price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.price.errors %}
+                                        <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Целое число от 1 до 5 000 000 рублей</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        Название товара <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="position-relative">
+                                        {{ form.title }}
+                                        <button type="button" class="btn-clear-field" style="display: none;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {% if form.title.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.title.errors %}
+                                        <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Максимум 60 символов, только кириллица, цифры и пробелы</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        Описание <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="position-relative">
+                                        {{ form.description }}
+                                        <button type="button" class="btn-clear-field" style="display: none;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.description.errors %}
+                                        <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Максимум 300 символов, только кириллица, цифры и знаки
+                                        препинания</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Изображения товара -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3 text-brown">
+                                🖼️ Изображения товара <span class="text-danger">*</span>
+                            </h5>
+
+                            <!-- Важное информационное сообщение -->
+                            <div class="alert alert-info mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3" style="font-size: 1.5rem;">💡</div>
+                                    <div>
+                                        <strong>Важно!</strong> Вы можете выбрать любое загруженное изображение как
+                                        основное.
+                                        Для новых изображений - первое загруженное автоматически станет основным.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-muted mb-3">Можно загрузить до 4 фотографий включительно.
+                                <span class="text-danger">Необходимо загрузить хотя бы одно изображение.</span>
+                            </p>
+
+                            {{ formset.management_form }}
+                            <div id="image-forms">
+                                <!-- Существующие изображения -->
+                                {% for image_form in formset %}
+                                {% if image_form.instance.image %}
+                                <div class="image-form mb-3 p-3 border rounded bg-light position-relative existing-image-form"
+                                    data-form-id="{{ image_form.prefix }}">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <div class="existing-image">
+                                                <label class="form-label">Текущее изображение</label>
+                                                <div class="d-flex align-items-center gap-3 mb-2">
+                                                    <img src="{{ image_form.instance.image.url }}" alt="Current image"
+                                                        style="width: 80px; height: 80px; object-fit: cover;"
+                                                        class="img-thumbnail">
+                                                    <div class="d-flex flex-column gap-1">
+                                                        <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm replace-image-btn">
+                                                            📁 Заменить
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger btn-sm delete-image-btn">
+                                                            🗑️ Удалить
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="image-upload-field" style="display: none;">
+                                                    <div class="position-relative">
+                                                        {{ image_form.image }}
+                                                    </div>
+                                                    <div class="image-preview-container mt-2" style="display: none;">
+                                                        <img class="image-preview"
+                                                            style="max-width: 100px; max-height: 100px; display: none;">
+                                                    </div>
+                                                    <div class="form-text mt-1">Выберите новое изображение для замены
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm cancel-replace-btn">
+                                                            ❌ Отменить замену
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% if image_form.image.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in image_form.image.errors %}
+                                                <div>{{ error }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch mt-3">
+                                                {{ image_form.is_main }}
+                                                <label class="form-check-label"
+                                                    for="{{ image_form.is_main.id_for_label }}">
+                                                    Основное
+                                                </label>
+                                                <!-- Сообщение о невозможности установки основным -->
+                                                <div class="no-file-message text-danger small mt-1"
+                                                    style="display: none;">
+                                                    ❌ Сначала загрузите изображение
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Скрытые поля -->
+                                    {{ image_form.DELETE }}
+                                    {% for hidden in image_form.hidden_fields %}
+                                    {{ hidden }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+
+                                <!-- Новые изображения -->
+                                {% for image_form in formset %}
+                                {% if not image_form.instance.image %}
+                                <div class="image-form mb-3 p-3 border rounded bg-light position-relative new-image-form"
+                                    data-form-id="{{ image_form.prefix }}">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Новое изображение</label>
+                                            <div class="position-relative">
+                                                {{ image_form.image }}
+                                            </div>
+                                            <div class="image-preview-container mt-2" style="display: none;">
+                                                <img class="image-preview"
+                                                    style="max-width: 100px; max-height: 100px; display: none;">
+                                            </div>
+                                            <div class="form-text">Выберите файл изображения</div>
+
+                                            {% if image_form.image.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in image_form.image.errors %}
+                                                <div>{{ error }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch mt-3">
+                                                {{ image_form.is_main }}
+                                                <label class="form-check-label"
+                                                    for="{{ image_form.is_main.id_for_label }}">
+                                                    Основное
+                                                </label>
+                                                <!-- Сообщение о невозможности установки основным -->
+                                                <div class="no-file-message text-danger small mt-1"
+                                                    style="display: none;">
+                                                    ❌ Сначала загрузите изображение
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-new-image-btn">
+                                                🗑️ Удалить
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% for hidden in image_form.hidden_fields %}
+                                    {{ hidden }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <!-- Кнопка для добавления нового изображения -->
+                            <div class="text-center mt-3">
+                                <button type="button" id="add-more-images" class="btn btn-outline-primary btn-sm">
+                                    ➕ Добавить еще одно изображение
+                                </button>
+                                <div class="form-text">Максимум 4 изображения</div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-3 flex-wrap justify-content-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                💾 Сохранить изменения
+                            </button>
+                            <a href="{% url 'products:product_detail' object.pk %}"
+                                class="btn btn-outline-secondary btn-lg px-4">
+                                ❌ Отменить
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #8B4513;
+        box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25);
+    }
+
+    .image-form {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .image-form:hover {
+        background-color: #f8f9fa !important;
+        border-color: #8B4513 !important;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .text-danger.small {
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+
+    .price-input-container {
+        position: relative;
+    }
+
+    .price-suffix {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-weight: 500;
+        pointer-events: none;
+    }
+
+    .char-counter {
+        font-size: 0.875em;
+    }
+
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .price-limit-info {
+        font-size: 0.8em;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+
+    .existing-image .img-thumbnail {
+        border: 2px solid #8B4513;
+    }
+
+    .replace-image-btn,
+    .delete-image-btn,
+    .cancel-replace-btn,
+    .remove-new-image-btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+    }
+
+    /* Стили для файловых инпутов */
+    input[type="file"] {
+        padding-right: 2.5rem !important;
+    }
+
+    /* Стили для превью изображений */
+    .image-preview-container {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        background: #f8f9fa;
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Дополнительные стили */
+    .existing-image-form {
+        border-left: 4px solid #28a745 !important;
+    }
+
+    .new-image-form {
+        border-left: 4px solid #17a2b8 !important;
+    }
+
+    .image-deleted {
+        opacity: 0.5;
+        background-color: #f8d7da !important;
+        border-color: #dc3545 !important;
+    }
+
+    .image-form.deleted {
+        display: none !important;
+    }
+
+    .image-marked-for-delete .existing-image .d-flex {
+        opacity: 0.5;
+    }
+
+    /* Стили для заблокированных чекбоксов */
+    .form-check-input:disabled+.form-check-label {
+        color: #6c757d;
+        opacity: 0.6;
+    }
+
+    .no-file-message {
+        font-size: 0.75rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Константы
+        const MIN_PRICE = 1;
+        const MAX_PRICE = 5000000;
+        const MAX_DIGITS = 7;
+        const MAX_IMAGES = 4;
+
+        // Элементы формы
+        const titleField = document.getElementById('{{ form.title.id_for_label }}');
+        const descriptionField = document.getElementById('{{ form.description.id_for_label }}');
+        const priceField = document.getElementById('{{ form.price.id_for_label }}');
+        const categoryField = document.getElementById('{{ form.category.id_for_label }}');
+        const productForm = document.getElementById('product-form');
+        const managementForm = document.getElementById('id_product_images-TOTAL_FORMS');
+        const addMoreBtn = document.getElementById('add-more-images');
+
+        // Переменная для отслеживания основного изображения
+        let hasMainImage = false;
+
+        // Функция для проверки, есть ли у изображения файл
+        function hasImageFile(imageForm) {
+            const fileInput = imageForm.querySelector('input[type="file"]');
+            const existingImage = imageForm.querySelector('.existing-image');
+            const deleteCheckbox = imageForm.querySelector('input[type="checkbox"][name*="DELETE"]');
+
+            // Если есть существующее изображение и оно не помечено на удаление
+            if (existingImage && (!deleteCheckbox || !deleteCheckbox.checked)) {
+                return true;
+            }
+
+            // Если есть загруженный файл
+            if (fileInput && fileInput.files.length > 0) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Функция для обновления состояния чекбоксов "основное"
+        function updateMainCheckboxes() {
+            const imageForms = document.querySelectorAll('.image-form');
+            let firstAvailableNewImage = null;
+
+            imageForms.forEach(form => {
+                if (form.style.display === 'none') return;
+                if (form.classList.contains('image-deleted')) return;
+
+                const checkbox = form.querySelector('input[name$="-is_main"]');
+                const hasFile = hasImageFile(form);
+                const noFileMessage = form.querySelector('.no-file-message');
+
+                // Блокируем чекбокс если нет файла
+                if (!hasFile) {
+                    checkbox.disabled = true;
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                    }
+                    if (noFileMessage) noFileMessage.style.display = 'block';
+                } else {
+                    checkbox.disabled = false;
+                    if (noFileMessage) noFileMessage.style.display = 'none';
+
+                    // Запоминаем первое доступное новое изображение
+                    if (!firstAvailableNewImage && form.classList.contains('new-image-form') && !hasMainImage) {
+                        firstAvailableNewImage = checkbox;
+                    }
+                }
+            });
+
+            // Автоматически устанавливаем первое доступное новое изображение как основное
+            if (firstAvailableNewImage && !hasMainImage) {
+                firstAvailableNewImage.checked = true;
+                hasMainImage = true;
+            }
+        }
+
+        // Функция для обработки изменения чекбокса "основное"
+        function handleMainCheckboxChange(checkbox) {
+            const imageForm = checkbox.closest('.image-form');
+
+            // Проверяем, есть ли у изображения файл
+            if (checkbox.checked && !hasImageFile(imageForm)) {
+                // Если нет файла, не позволяем установить чекбокс
+                checkbox.checked = false;
+                alert('❌ Нельзя сделать изображение основным без загруженного файла!');
+                return;
+            }
+
+            if (checkbox.checked) {
+                // Снимаем выделение с других чекбоксов
+                document.querySelectorAll('input[name$="-is_main"]').forEach(otherCheckbox => {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+                hasMainImage = true;
+            } else {
+                // Если сняли последний основной чекбокс
+                const anyChecked = Array.from(document.querySelectorAll('input[name$="-is_main"]')).some(cb => cb.checked);
+                if (!anyChecked) {
+                    hasMainImage = false;
+                }
+            }
+        }
+
+        // Установка плейсхолдеров
+        function setPlaceholders() {
+            if (titleField) titleField.placeholder = 'Например: Вязаный шарф ручной работы';
+            if (descriptionField) descriptionField.placeholder = 'Опишите ваш товар: материалы, размеры, особенности изготовления...';
+            if (priceField) priceField.placeholder = '1000';
+            if (categoryField) {
+                const firstOption = categoryField.querySelector('option');
+                if (firstOption && firstOption.value === '') {
+                    firstOption.textContent = 'Выберите категорию';
+                    firstOption.disabled = true;
+                }
+            }
+        }
+
+        setPlaceholders();
+
+        // Функция для настройки превью изображений
+        function setupImagePreviews() {
+            document.querySelectorAll('input[type="file"]').forEach(fileInput => {
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    let previewContainer;
+
+                    // Находим контейнер превью
+                    if (this.closest('.image-upload-field')) {
+                        previewContainer = this.closest('.image-upload-field').querySelector('.image-preview-container');
+                    } else {
+                        previewContainer = this.closest('.position-relative').nextElementSibling;
+                    }
+
+                    if (!previewContainer || !previewContainer.classList.contains('image-preview-container')) return;
+
+                    const previewImg = previewContainer.querySelector('.image-preview');
+
+                    if (file && previewImg) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.src = e.target.result;
+                            previewImg.style.display = 'block';
+                            previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+
+                        // Обновляем состояние чекбоксов после загрузки файла
+                        setTimeout(() => {
+                            updateMainCheckboxes();
+                        }, 100);
+                    } else if (previewImg) {
+                        previewImg.style.display = 'none';
+                        previewContainer.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Функция для настройки кнопок работы с изображениями
+        function setupImageButtons() {
+            // Кнопка "Заменить" для существующих изображений
+            document.querySelectorAll('.replace-image-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const imageForm = this.closest('.existing-image');
+                    const uploadField = imageForm.querySelector('.image-upload-field');
+                    const currentImage = imageForm.querySelector('.d-flex');
+
+                    uploadField.style.display = 'block';
+                    currentImage.style.display = 'none';
+                });
+            });
+
+            // Кнопка "Отменить замену"
+            document.querySelectorAll('.cancel-replace-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const imageForm = this.closest('.existing-image');
+                    const uploadField = imageForm.querySelector('.image-upload-field');
+                    const currentImage = imageForm.querySelector('.d-flex');
+                    const fileInput = uploadField.querySelector('input[type="file"]');
+
+                    uploadField.style.display = 'none';
+                    currentImage.style.display = 'flex';
+
+                    // Очищаем файловое поле
+                    if (fileInput) {
+                        fileInput.value = '';
+                        if (fileInput.files) {
+                            const dt = new DataTransfer();
+                            fileInput.files = dt.files;
+                        }
+
+                        // Скрываем превью
+                        const previewContainer = uploadField.querySelector('.image-preview-container');
+                        if (previewContainer) {
+                            const previewImg = previewContainer.querySelector('.image-preview');
+                            if (previewImg) {
+                                previewImg.style.display = 'none';
+                                previewContainer.style.display = 'none';
+                            }
+                        }
+                    }
+
+                    // Обновляем состояние чекбоксов
+                    updateMainCheckboxes();
+                });
+            });
+
+            // Кнопка "Удалить" для существующих изображений
+            document.querySelectorAll('.delete-image-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const imageForm = this.closest('.existing-image-form');
+                    const deleteCheckbox = imageForm.querySelector('input[type="checkbox"][name*="DELETE"]');
+                    const uploadField = imageForm.querySelector('.image-upload-field');
+                    const currentImage = imageForm.querySelector('.existing-image .d-flex');
+
+                    if (deleteCheckbox) {
+                        deleteCheckbox.checked = true;
+                        imageForm.classList.add('image-deleted', 'image-marked-for-delete');
+
+                        // Скрываем поле замены если оно было открыто
+                        if (uploadField) {
+                            uploadField.style.display = 'none';
+                        }
+
+                        // Помечаем изображение как удаленное
+                        if (currentImage) {
+                            currentImage.style.opacity = '0.5';
+                        }
+
+                        // Делаем кнопки неактивными
+                        btn.disabled = true;
+                        const replaceBtn = imageForm.querySelector('.replace-image-btn');
+                        if (replaceBtn) {
+                            replaceBtn.disabled = true;
+                        }
+
+                        // Обновляем состояние чекбоксов
+                        updateMainCheckboxes();
+                    }
+                });
+            });
+
+            // Кнопка "Удалить" для новых изображений
+            document.querySelectorAll('.remove-new-image-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const imageForm = this.closest('.new-image-form');
+                    imageForm.remove();
+
+                    // Обновляем видимость кнопки добавления
+                    updateAddMoreButtonVisibility();
+
+                    // Обновляем состояние чекбоксов
+                    updateMainCheckboxes();
+                });
+            });
+        }
+
+        // Функция для добавления нового поля изображения
+        function setupAddMoreButton() {
+            if (!addMoreBtn) return;
+
+            addMoreBtn.addEventListener('click', function () {
+                const totalForms = parseInt(managementForm.value);
+                const imageForms = document.querySelectorAll('.image-form');
+
+                if (imageForms.length >= MAX_IMAGES) {
+                    alert(`Максимальное количество изображений: ${MAX_IMAGES}`);
+                    return;
+                }
+
+                // Создаем новую форму
+                const newFormIndex = totalForms;
+                const newFormHtml = `
+                    <div class="image-form mb-3 p-3 border rounded bg-light position-relative new-image-form" data-form-id="product_images-${newFormIndex}">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label">Новое изображение</label>
+                                <div class="position-relative">
+                                    <input type="file" name="product_images-${newFormIndex}-image" accept="image/*" class="form-control">
+                                </div>
+                                <div class="image-preview-container mt-2" style="display: none;">
+                                    <img class="image-preview" style="max-width: 100px; max-height: 100px; display: none;">
+                                </div>
+                                <div class="form-text">Выберите файл изображения</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mt-3">
+                                    <input type="checkbox" name="product_images-${newFormIndex}-is_main" class="form-check-input" id="id_product_images-${newFormIndex}-is_main">
+                                    <label class="form-check-label" for="id_product_images-${newFormIndex}-is_main">Основное</label>
+                                    <div class="no-file-message text-danger small mt-1" style="display: none;">
+                                        ❌ Сначала загрузите изображение
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-new-image-btn">
+                                    🗑️ Удалить
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="product_images-${newFormIndex}-id" id="id_product_images-${newFormIndex}-id">
+                    </div>
+                `;
+
+                document.getElementById('image-forms').insertAdjacentHTML('beforeend', newFormHtml);
+                managementForm.value = newFormIndex + 1;
+
+                // Переинициализируем обработчики для новой формы
+                setupImageButtons();
+                setupImagePreviews();
+                setupMainImageToggle();
+
+                // Обновляем видимость кнопки добавления
+                updateAddMoreButtonVisibility();
+
+                // Обновляем состояние чекбоксов
+                updateMainCheckboxes();
+            });
+        }
+
+        // Обновление видимости кнопки "Добавить еще"
+        function updateAddMoreButtonVisibility() {
+            if (!addMoreBtn) return;
+            const imageForms = document.querySelectorAll('.image-form');
+            addMoreBtn.style.display = imageForms.length >= MAX_IMAGES ? 'none' : 'block';
+        }
+
+        // Настройка обработчиков для чекбоксов "основное"
+        function setupMainImageToggle() {
+            document.querySelectorAll('input[name$="-is_main"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    handleMainCheckboxChange(this);
+                });
+            });
+        }
+
+        // Функция для обновления счетчиков символов
+        function updateCounter(field, maxLength) {
+            let counter = field.parentNode.querySelector('.char-counter');
+            if (!counter) {
+                counter = document.createElement('div');
+                counter.className = 'form-text char-counter';
+                field.parentNode.appendChild(counter);
+            }
+
+            const currentLength = field.value.length;
+            const remaining = maxLength - currentLength;
+            counter.textContent = `${currentLength}/${maxLength} символов (осталось: ${remaining})`;
+            counter.style.color = remaining < 0 ? 'red' : (remaining < 10 ? 'orange' : '#6c757d');
+
+            if (remaining < 0) {
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        }
+
+        // Функция для валидации кириллицы
+        function validateCyrillic(field, fieldType) {
+            const value = field.value;
+            let regex;
+
+            if (fieldType === 'title') {
+                regex = /^[а-яА-ЯёЁ0-9\s\-\!\.\(\)]*$/;
+            } else {
+                regex = /^[а-яА-ЯёЁ0-9\s\-\!\.\(\)\,\:\;]*$/;
+            }
+
+            if (!regex.test(value)) {
+                field.classList.add('is-invalid');
+                return false;
+            } else {
+                field.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        // Функция для проверки наличия хотя бы одного изображения
+        function validateImages() {
+            const imageForms = document.querySelectorAll('.image-form');
+            let hasImage = false;
+
+            imageForms.forEach(form => {
+                if (form.classList.contains('image-deleted')) {
+                    return;
+                }
+
+                if (hasImageFile(form)) {
+                    hasImage = true;
+                }
+            });
+
+            return hasImage;
+        }
+
+        // Функция для проверки наличия основного изображения
+        function validateMainImage() {
+            const mainCheckboxes = document.querySelectorAll('input[name$="-is_main"]');
+            let hasMain = false;
+
+            mainCheckboxes.forEach(checkbox => {
+                if (checkbox.checked && hasImageFile(checkbox.closest('.image-form'))) {
+                    hasMain = true;
+                }
+            });
+
+            return hasMain;
+        }
+
+        // Инициализация всех обработчиков
+        function initializeAllHandlers() {
+            setupImagePreviews();
+            setupImageButtons();
+            setupMainImageToggle();
+            setupAddMoreButton();
+            updateAddMoreButtonVisibility();
+
+            // Инициализация счетчиков символов
+            if (titleField) {
+                titleField.addEventListener('input', function () {
+                    updateCounter(this, 60);
+                    validateCyrillic(this, 'title');
+                });
+                updateCounter(titleField, 60);
+            }
+
+            if (descriptionField) {
+                descriptionField.addEventListener('input', function () {
+                    updateCounter(this, 300);
+                    validateCyrillic(this, 'description');
+                });
+                updateCounter(descriptionField, 300);
+            }
+        }
+
+        // ВАЛИДАЦИЯ ЦЕНЫ
+        if (priceField) {
+            priceField.removeAttribute('maxlength');
+            priceField.removeAttribute('max');
+            priceField.removeAttribute('min');
+            priceField.setAttribute('type', 'text');
+            priceField.setAttribute('inputmode', 'numeric');
+
+            const limitInfo = document.createElement('div');
+            limitInfo.className = 'price-limit-info';
+            limitInfo.textContent = `Можно ввести до ${MAX_DIGITS} цифр`;
+            priceField.parentNode.parentNode.appendChild(limitInfo);
+
+            priceField.addEventListener('input', function () {
+                let value = this.value.replace(/\s/g, '');
+                value = value.replace(/\D/g, '');
+
+                if (value.length > MAX_DIGITS) {
+                    value = value.substring(0, MAX_DIGITS);
+                }
+
+                let numericValue = parseInt(value);
+                if (isNaN(numericValue)) {
+                    this.value = '';
+                    return;
+                }
+
+                if (numericValue < MIN_PRICE) numericValue = MIN_PRICE;
+                if (numericValue > MAX_PRICE) numericValue = MAX_PRICE;
+
+                this.value = formatNumber(numericValue);
+            });
+
+            priceField.addEventListener('blur', function () {
+                const numericValue = parseFormattedNumber(this.value);
+                if (!isNaN(numericValue) && numericValue > 0) {
+                    this.value = numericValue;
+                }
+            });
+
+            priceField.addEventListener('focus', function () {
+                const numericValue = parseFormattedNumber(this.value);
+                if (!isNaN(numericValue) && numericValue > 0) {
+                    this.value = formatNumber(numericValue);
+                }
+            });
+
+            priceField.addEventListener('keydown', function (e) {
+                if (
+                    (e.key >= '0' && e.key <= '9') ||
+                    e.key === 'Backspace' ||
+                    e.key === 'Delete' ||
+                    e.key === 'Tab' ||
+                    e.key === 'ArrowLeft' ||
+                    e.key === 'ArrowRight' ||
+                    e.key === 'Home' ||
+                    e.key === 'End' ||
+                    e.key === ' '
+                ) {
+                    return;
+                }
+                e.preventDefault();
+            });
+
+            if (priceField.value) {
+                const numericValue = parseFormattedNumber(priceField.value);
+                if (!isNaN(numericValue) && numericValue > 0) {
+                    priceField.value = formatNumber(numericValue);
+                }
+            }
+        }
+
+        // Валидация при отправке формы
+        productForm.addEventListener('submit', function (e) {
+            let hasErrors = false;
+
+            // Валидация категории
+            if (categoryField && (!categoryField.value || categoryField.value === '')) {
+                showFieldError(categoryField, 'Выберите категорию товара');
+                if (!hasErrors) {
+                    categoryField.focus();
+                    hasErrors = true;
+                }
+            }
+
+            // Валидация цены
+            if (priceField) {
+                const numericValue = parseFormattedNumber(priceField.value);
+                if (isNaN(numericValue) || numericValue === 0) {
+                    showPriceError('Введите корректную цену');
+                    if (!hasErrors) {
+                        priceField.focus();
+                        hasErrors = true;
+                    }
+                } else if (numericValue < MIN_PRICE) {
+                    showPriceError('Цена должна быть не менее 1 рубля');
+                    if (!hasErrors) {
+                        priceField.focus();
+                        hasErrors = true;
+                    }
+                } else if (numericValue > MAX_PRICE) {
+                    showPriceError(`Цена не может превышать ${formatNumber(MAX_PRICE)} рублей`);
+                    if (!hasErrors) {
+                        priceField.focus();
+                        hasErrors = true;
+                    }
+                }
+            }
+
+            // Валидация названия
+            if (titleField && (!titleField.value || titleField.value.trim() === '')) {
+                showFieldError(titleField, 'Введите название товара');
+                if (!hasErrors) {
+                    titleField.focus();
+                    hasErrors = true;
+                }
+            } else if (titleField && !validateCyrillic(titleField, 'title')) {
+                showFieldError(titleField, 'Название должно содержать только кириллические символы, цифры и пробелы');
+                if (!hasErrors) {
+                    titleField.focus();
+                    hasErrors = true;
+                }
+            }
+
+            // Валидация описания
+            if (descriptionField && (!descriptionField.value || descriptionField.value.trim() === '')) {
+                showFieldError(descriptionField, 'Введите описание товара');
+                if (!hasErrors) {
+                    descriptionField.focus();
+                    hasErrors = true;
+                }
+            } else if (descriptionField && !validateCyrillic(descriptionField, 'description')) {
+                showFieldError(descriptionField, 'Описание должно содержать только кириллические символы, цифры и знаки препинания');
+                if (!hasErrors) {
+                    descriptionField.focus();
+                    hasErrors = true;
+                }
+            }
+
+            // Валидация изображений
+            if (!validateImages()) {
+                showImagesError('Необходимо загрузить хотя бы одно изображение товара');
+                hasErrors = true;
+            }
+
+            // Валидация основного изображения
+            if (!validateMainImage()) {
+                showImagesError('Необходимо выбрать основное изображение');
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                e.preventDefault();
+                return;
+            }
+
+            if (priceField) {
+                const numericValue = parseFormattedNumber(priceField.value);
+                priceField.value = numericValue;
+            }
+        });
+
+        // Вспомогательные функции
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        function parseFormattedNumber(formattedNumber) {
+            return parseInt(formattedNumber.replace(/\s/g, '')) || 0;
+        }
+
+        function showPriceError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-danger small price-error mt-1';
+            errorDiv.textContent = message;
+            priceField.parentNode.parentNode.appendChild(errorDiv);
+            priceField.classList.add('is-invalid');
+            setTimeout(() => {
+                errorDiv.remove();
+                priceField.classList.remove('is-invalid');
+            }, 5000);
+        }
+
+        function showFieldError(field, message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-danger small field-error mt-1';
+            errorDiv.textContent = message;
+            field.parentNode.appendChild(errorDiv);
+            field.classList.add('is-invalid');
+            setTimeout(() => {
+                errorDiv.remove();
+                field.classList.remove('is-invalid');
+            }, 5000);
+        }
+
+        function showImagesError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'alert alert-danger images-error mt-3';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${message}`;
+            document.querySelector('#image-forms').parentNode.insertBefore(errorDiv, document.querySelector('#image-forms'));
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Запуск инициализации
+        initializeAllHandlers();
+
+        // Инициализация состояния чекбоксов при загрузке страницы
+        updateMainCheckboxes();
+
+        // Проверяем, есть ли уже основное изображение при загрузке
+        document.querySelectorAll('input[name$="-is_main"]').forEach(checkbox => {
+            if (checkbox.checked && hasImageFile(checkbox.closest('.image-form'))) {
+                hasMainImage = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

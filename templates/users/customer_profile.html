@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Личный кабинет | HandmadeMarket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Заголовок -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold mb-2">👤 Личный кабинет</h1>
+                    <p class="text-muted">Управление вашими заказами и предпочтениями</p>
+                </div>
+                <div class="text-end">
+                    <p class="mb-1"><strong>{{ user.email }}</strong></p>
+                    {% if user.profile.city %}
+                    <p class="text-muted small">📍 {{ user.profile.city }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладки -->
+    <div class="row">
+        <div class="col-12">
+            <ul class="nav nav-tabs nav-justified mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'orders' %}active{% endif %}" id="orders-tab"
+                        data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab"
+                        onclick="changeTab('orders')">
+                        📦 Мои заказы
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'favorites' %}active{% endif %}" id="favorites-tab"
+                        data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab"
+                        onclick="changeTab('favorites')">
+                        ❤️ Избранное
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'dialogs' %}active{% endif %}" id="dialogs-tab"
+                        data-bs-toggle="tab" data-bs-target="#dialogs" type="button" role="tab"
+                        onclick="changeTab('dialogs')">
+                        💬 Диалоги
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content" id="profileTabsContent">
+
+                <!-- Вкладка Заказы -->
+                <div class="tab-pane fade {% if active_tab == 'orders' %}show active{% endif %}" id="orders"
+                    role="tabpanel">
+                    <div class="text-center py-5">
+                        <div class="mb-4" style="font-size: 4rem;">🛒</div>
+                        <h3 class="fw-bold mb-3">Ваша корзина покупок</h3>
+                        <p class="text-muted mb-4">Здесь вы можете просмотреть и оформить ваши заказы</p>
+
+                        <!-- Кнопка перехода в корзину -->
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="{% url 'orders:cart_view' %}" class="btn btn-primary btn-lg px-4">
+                                🛒 Перейти к корзине
+                            </a>
+                            <a href="{% url 'products:catalog' %}" class="btn btn-outline-primary btn-lg px-4">
+                                🛍️ Продолжить покупки
+                            </a>
+                        </div>
+
+                        <!-- Дополнительная информация -->
+                        <div class="row mt-5">
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3" style="font-size: 2rem;">📦</div>
+                                        <h6>История заказов</h6>
+                                        <p class="text-muted small">Просмотрите ваши предыдущие заказы и их статусы</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3" style="font-size: 2rem;">🚚</div>
+                                        <h6>Отслеживание</h6>
+                                        <p class="text-muted small">Следите за статусом доставки ваших заказов</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3" style="font-size: 2rem;">💳</div>
+                                        <h6>Способы оплаты</h6>
+                                        <p class="text-muted small">Управление методами оплаты и историей транзакций</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка Избранное -->
+                <div class="tab-pane fade {% if active_tab == 'favorites' %}show active{% endif %}" id="favorites"
+                    role="tabpanel">
+                    {% if favorites %}
+                    <div class="row g-4">
+                        {% for favorite in favorites %}
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="card h-100 shadow-sm border-0 product-card">
+                                <!-- Изображение товара -->
+                                <div class="position-relative">
+                                    {% if favorite.product.get_main_image %}
+                                    <img src="{{ favorite.product.get_main_image.image.url }}"
+                                        class="card-img-top product-image" alt="{{ favorite.product.title }}"
+                                        style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 200px;">
+                                        <div class="text-center text-muted">
+                                            <span style="font-size: 3rem;">🎨</span>
+                                            <p class="mt-2 small">Нет изображения</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Кнопка удаления из избранного -->
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <form method="post"
+                                            action="{% url 'products:remove_from_favorites' favorite.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip"
+                                                title="Удалить из избранного">
+                                                ❌
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Информация о товаре -->
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title fw-bold mb-2">{{ favorite.product.title }}</h6>
+                                    <p class="card-text text-muted small flex-grow-1">
+                                        {{ favorite.product.description|truncatewords:10 }}
+                                    </p>
+
+                                    <!-- Информация о мастере - ИСПРАВЛЕНО -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if favorite.product.master.profile.avatar %}
+                                        <img src="{{ favorite.product.master.profile.avatar.url }}"
+                                            class="rounded-circle me-2" width="30" height="30" alt="Аватар мастера"
+                                            style="object-fit: cover;">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
+                                            style="width: 30px; height: 30px;">
+                                            <small class="text-white">👤</small>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <!-- Используем имя мастера вместо email -->
+                                            <small class="fw-bold d-block">
+                                                {% if favorite.product.master.get_full_name %}
+                                                {{ favorite.product.master.get_full_name }}
+                                                {% else %}
+                                                {{ favorite.product.master.username }}
+                                                {% endif %}
+                                            </small>
+                                            {% if favorite.product.master.profile.city %}
+                                            <small class="text-muted">{{ favorite.product.master.profile.city }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Цена и кнопки -->
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="h5 mb-0 text-brown fw-bold">{{ favorite.product.price }}
+                                                ₽</span>
+                                            <small class="text-muted">
+                                                Добавлено: {{ favorite.created_at|date:"d.m.Y" }}
+                                            </small>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'products:product_detail' favorite.product.pk %}"
+                                                class="btn btn-outline-primary btn-sm">
+                                                👀 Подробнее
+                                            </a>
+                                            <form method="post"
+                                                action="{% url 'orders:add_to_cart' favorite.product.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    🛒 В заказ
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-4" style="font-size: 4rem;">❤️</div>
+                        <h3 class="fw-bold mb-3">В избранном пусто</h3>
+                        <p class="text-muted mb-4">Добавляйте понравившиеся товары в избранное, чтобы не потерять</p>
+                        <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
+                            🛍️ Перейти в каталог
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Вкладка Диалоги -->
+                <div class="tab-pane fade {% if active_tab == 'dialogs' %}show active{% endif %}" id="dialogs"
+                    role="tabpanel">
+                    <div class="text-center py-5">
+                        <div class="mb-4" style="font-size: 4rem;">💬</div>
+                        <h3 class="fw-bold mb-3">Ваши диалоги с мастерами</h3>
+                        <p class="text-muted mb-4">Общайтесь с мастерами по поводу товаров и заказов</p>
+                        <a href="{% url 'chat:dialogue_list' %}" class="btn btn-primary btn-lg px-4">
+                            📨 Перейти к сообщениям
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .product-card {
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(139, 69, 19, 0.15) !important;
+    }
+
+    .product-image {
+        border-radius: 15px 15px 0 0;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #8B4513;
+        border-bottom: 3px solid #8B4513;
+        background: transparent;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: #8B4513;
+        border-bottom: 3px solid #8B4513;
+    }
+
+    .card.bg-light {
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .card.bg-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script>
+    function changeTab(tabName) {
+        // Обновляем URL без перезагрузки страницы
+        const newUrl = `${window.location.pathname}?tab=${tabName}`;
+        window.history.pushState({}, '', newUrl);
+
+        // Если выбрана вкладка "Заказы", автоматически переходим в корзину
+        if (tabName === 'orders') {
+            window.location.href = "{% url 'orders:cart_view' %}";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Инициализация tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Обработка кнопок удаления из избранного
+        document.querySelectorAll('.remove-favorite').forEach(button => {
+            button.addEventListener('click', function (e) {
+                if (!confirm('Удалить товар из избранного?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Автоматический переход в корзину если активна вкладка заказов
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab');
+        if (activeTab === 'orders') {
+            window.location.href = "{% url 'orders:cart_view' %}";
+        }
+    });
+</script>
+{% endblock %}

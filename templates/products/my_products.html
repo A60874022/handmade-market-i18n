@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мои товары | HandmadeMarket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Заголовок и кнопка -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-2">🛍️ Мои товары</h1>
+            <p class="text-muted">Управляйте вашими handmade-товарами</p>
+        </div>
+        <div>
+            <a href="{% url 'products:profile' %}?tab=my_products" class="btn btn-outline-primary me-2">
+                📊 Мой профиль
+            </a>
+            <a href="{% url 'products:product_add' %}" class="btn btn-primary btn-lg px-4">
+                ➕ Добавить товар
+            </a>
+        </div>
+    </div>
+
+    {% if products %}
+    <!-- Сетка товаров -->
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 product-card">
+                <!-- Изображение товара -->
+                <div class="position-relative">
+                    {% with main_image=product.get_main_image %}
+                    {% if main_image %}
+                    <img src="{{ main_image.image.url }}" class="card-img-top product-image" alt="{{ product.title }}"
+                        style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                        style="height: 200px;">
+                        <div class="text-center text-muted">
+                            <span style="font-size: 3rem;">🎨</span>
+                            <p class="mt-2">Нет изображения</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Бейдж статуса -->
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge {% if product.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if product.is_active %}Активный{% else %}Неактивный{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Информация о товаре -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">{{ product.title }}</h5>
+                    <p class="card-text text-muted flex-grow-1">
+                        {{ product.description|truncatewords:15 }}
+                    </p>
+
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h5 mb-0 text-brown fw-bold">{{ product.price }} ₽</span>
+                            {% if product.category %}
+                            <span class="badge bg-light text-brown border">{{ product.category.name|title }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Обновленный блок кнопок -->
+                        <div class="d-flex gap-2 flex-wrap">
+                            <!-- Кнопка редактирования -->
+                            <a href="{% url 'products:product_edit' product.pk %}"
+                                class="btn btn-outline-primary btn-sm flex-fill">
+                                ✏️ Редактировать
+                            </a>
+
+                            <!-- Кнопка удаления с модальным окном -->
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ product.pk }}" title="Удалить товар">
+                                🗑️
+                            </button>
+
+                            <!-- Кнопка информации об изображениях -->
+                            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip"
+                                title="Кол-во изображений: {{ product.images.count }}">
+                                🖼️ {{ product.images.count }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Футер карточки -->
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <small class="text-muted">
+                        Добавлен {{ product.created_at|date:"d.m.Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения удаления -->
+        <div class="modal fade" id="deleteModal{{ product.pk }}" tabindex="-1"
+            aria-labelledby="deleteModalLabel{{ product.pk }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold" id="deleteModalLabel{{ product.pk }}">
+                            🗑️ Удаление товара
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div class="mb-4" style="font-size: 3rem;">⚠️</div>
+                        <h6 class="fw-bold mb-3">Вы уверены, что хотите удалить товар?</h6>
+
+                        <!-- Информация о товаре -->
+                        <div class="card border-0 bg-light mb-3">
+                            <div class="card-body py-3">
+                                <h6 class="fw-bold mb-1">{{ product.title }}</h6>
+                                <p class="text-muted small mb-2">{{ product.description|truncatewords:10 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-brown">{{ product.price }} ₽</span>
+                                    {% if product.category %}
+                                    <span class="badge bg-brown">{{ product.category.name|title }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-danger small mb-0">
+                            ❗ Это действие нельзя отменить. Все данные о товаре будут удалены.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-0 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                            ❌ Отмена
+                        </button>
+                        <form method="post" action="{% url 'products:product_delete' product.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger px-4">
+                                ✅ Удалить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Состояние пустого списка -->
+    <div class="text-center py-5">
+        <div class="mb-4" style="font-size: 4rem;">🎁</div>
+        <h3 class="fw-bold mb-3">У вас пока нет товаров</h3>
+        <p class="text-muted mb-4">Добавьте свой первый handmade-товар и начните продавать</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'products:product_add' %}" class="btn btn-primary btn-lg px-4">
+                🎨 Добавить первый товар
+            </a>
+            <a href="{% url 'products:catalog' %}" class="btn btn-outline-primary btn-lg px-4">
+                🛍️ Посмотреть каталог
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .bg-brown {
+        background-color: #8B4513 !important;
+    }
+
+    .product-card {
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(139, 69, 19, 0.1) !important;
+    }
+
+    .product-image {
+        border-radius: 15px 15px 0 0;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+
+    .btn-outline-primary {
+        color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 8px;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #8B4513;
+        color: white;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+        border-radius: 8px;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .badge.bg-light {
+        border: 1px solid #8B4513 !important;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .modal-header {
+        background-color: #f8f9fa;
+        border-radius: 15px 15px 0 0;
+    }
+</style>
+
+<script>
+    // Инициализация tooltips
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+
+    // Автоматическое закрытие модальных окон после удаления
+    document.addEventListener('DOMContentLoaded', function () {
+        // Закрываем все модальные окна при отправке формы удаления
+        document.querySelectorAll('form[action*="product_delete"]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var modalId = this.closest('.modal').id;
+                var modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                if (modal) {
+                    modal.hide();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
