@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Каталог товаров | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Product Catalog" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,14 +9,14 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="fw-bold mb-2">🛍️ Каталог товаров</h1>
-                    <p class="text-muted">Уникальные handmade-товары от талантливых мастеров</p>
+                    <h1 class="fw-bold mb-2">🛍️ {% trans "Product Catalog" %}</h1>
+                    <p class="text-muted">{% trans "Unique handmade products from talented craftsmen" %}</p>
                 </div>
                 {% if user.is_authenticated %}
                 <div>
                     <a href="{% url 'products:profile' %}?tab=favorites"
                         class="btn btn-outline-danger position-relative me-2">
-                        ❤️ Избранное
+                        ❤️ {% trans "Favorites" %}
                         {% if user.favorites.count > 0 %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ user.favorites.count }}
@@ -24,7 +24,7 @@
                         {% endif %}
                     </a>
                     <a href="{% url 'orders:cart_view' %}" class="btn btn-primary position-relative">
-                        🛒 Корзина
+                        🛒 {% trans "Shopping Cart" %}
                         {% if user.cart.items.count > 0 %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ user.cart.items.count }}
@@ -35,57 +35,54 @@
                 {% endif %}
             </div>
 
-            <!-- Фильтры и поиск -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <form method="get" id="filter-form">
                         <div class="row">
-                            <!-- Поиск -->
                             <div class="col-md-4">
                                 <div class="d-flex position-relative">
                                     <input type="text" name="q" class="form-control me-2"
-                                        placeholder="Начните вводить название товара..." value="{{ request.GET.q }}"
-                                        autocomplete="off" id="search-input"
+                                        placeholder="{% trans 'Start typing product name...' %}"
+                                        value="{{ request.GET.q|default:'' }}" autocomplete="off" id="search-input"
                                         data-autocomplete-url="{% url 'products:autocomplete' %}">
                                     <button type="submit" class="btn btn-outline-brown">🔍</button>
                                     <div id="autocomplete-results" class="autocomplete-dropdown"></div>
                                 </div>
                             </div>
 
-                            <!-- Категории -->
                             <div class="col-md-4">
                                 <select class="form-select" name="category" onchange="this.form.submit()">
-                                    <option value="">Все категории</option>
+                                    <option value="">{% trans "All Categories" %}</option>
                                     {% for category in categories %}
                                     <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>
                                         {{ category.name }}
                                     </option>
                                     {% empty %}
-                                    <option disabled>Нет категорий</option>
+                                    <option disabled>{% trans "No categories available" %}</option>
                                     {% endfor %}
-                                </select>
+                                </select>            
                             </div>
 
-                            <!-- ФИЛЬТР ПО ГОРОДАМ -->
                             <div class="col-md-4">
                                 <select class="form-select" name="city" onchange="this.form.submit()">
-                                    <option value="">Все города</option>
-                                    {% for city in cities %}
-                                    <option value="{{ city.name }}" {% if request.GET.city == city.name %}selected{% endif %}>
-                                        {{ city.name }}
+                                    <option value="">{% trans "All Cities" %}</option>
+                                    {% for city_choice in city_choices %}
+                                    <option value="{{ city_choice.0 }}" {% if
+                                        request.GET.city|stringformat:"s"==city_choice.0|stringformat:"s" %}selected{%
+                                        endif %}>
+                                        {{ city_choice.1 }}
                                     </option>
                                     {% empty %}
-                                    <option disabled>Нет городов</option>
+                                    <option disabled>{% trans "No cities available" %}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Кнопка сброса фильтров -->
                         {% if request.GET.q or request.GET.category or request.GET.city %}
                         <div class="text-center mt-3">
                             <a href="{% url 'products:catalog' %}" class="btn btn-outline-secondary btn-sm">
-                                🗑️ Сбросить все фильтры
+                                🗑️ {% trans "Reset All Filters" %}
                             </a>
                         </div>
                         {% endif %}
@@ -93,34 +90,32 @@
                 </div>
             </div>
 
-            <!-- Информация о примененных фильтрах -->
             {% if request.GET.q or request.GET.category or request.GET.city %}
             <div class="alert alert-info mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>🔍 Активные фильтры:</strong>
+                        <strong>🔍 {% trans "Active Filters:" %}</strong>
                         {% if request.GET.q %}
-                        <span class="badge bg-primary ms-2">Поиск: "{{ request.GET.q }}"</span>
+                        <span class="badge bg-primary ms-2">{% trans "Search:" %} "{{ request.GET.q }}"</span>
                         {% endif %}
                         {% if request.GET.category %}
                         {% for category in categories %}
                         {% if category.slug == request.GET.category %}
-                        <span class="badge bg-brown ms-2">Категория: {{ category.name }}</span>
+                        <span class="badge bg-brown ms-2">{% trans "Category:" %} {{ category.name }}</span>
                         {% endif %}
                         {% endfor %}
                         {% endif %}
                         {% if request.GET.city %}
-                        <span class="badge bg-success ms-2">Город: {{ request.GET.city }}</span>
+                        <span class="badge bg-success ms-2">{% trans "City:" %} {{ request.GET.city }}</span>
                         {% endif %}
                     </div>
                     <small class="text-muted">
-                        Найдено товаров: {{ products.paginator.count }}
+                        {% trans "Products Found:" %} {{ products.paginator.count }}
                     </small>
                 </div>
             </div>
             {% endif %}
 
-            <!-- Сетка товаров -->
             <div class="row">
                 {% for product in products %}
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -150,12 +145,11 @@
                                 <p class="card-text text-muted small">{{ product.description|truncatewords:15 }}</p>
                             </div>
 
-                            <!-- БЛОК С ИНФОРМАЦИЕЙ О ГОРОДЕ И МАСТЕРЕ -->
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
                                         <i class="bi bi-geo-alt-fill"></i>
-                                        <strong>Город:</strong> {{ product.get_city_display }}
+                                        <strong>{% trans "City:" %}</strong> {{ product.get_city_display }}
                                     </small>
                                     {% if product.master.username %}
                                     <small class="text-muted">
@@ -165,7 +159,7 @@
                                     {% else %}
                                     <small class="text-muted">
                                         <i class="bi bi-person-circle"></i>
-                                        Мастер
+                                        {% trans "Craftsman" %}
                                     </small>
                                     {% endif %}
                                 </div>
@@ -175,23 +169,24 @@
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="h5 text-brown fw-bold mb-0">{{ product.price }} ₽</span>
 
-                                    <!-- Кнопка добавления в корзину -->
                                     {% if user.is_authenticated %}
                                     {% if product.master != user %}
                                     <form method="post" action="{% url 'orders:add_to_cart' product.pk %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary btn-sm" title="Добавить в корзину">
+                                        <button type="submit" class="btn btn-primary btn-sm"
+                                            title="{% trans 'Add to Cart' %}">
                                             🛒
                                         </button>
                                     </form>
                                     {% else %}
-                                    <button class="btn btn-outline-secondary btn-sm" disabled title="Это ваш товар">
+                                    <button class="btn btn-outline-secondary btn-sm" disabled
+                                        title="{% trans 'This is your product' %}">
                                         🛒
                                     </button>
                                     {% endif %}
                                     {% else %}
                                     <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-sm"
-                                        title="Войдите, чтобы добавить в корзину">
+                                        title="{% trans 'Log in to add to cart' %}">
                                         🛒
                                     </a>
                                     {% endif %}
@@ -200,30 +195,34 @@
                                 <div class="d-grid gap-2">
                                     <a href="{% url 'products:product_detail' product.pk %}"
                                         class="btn btn-outline-primary btn-sm">
-                                        👀 Подробнее
+                                        👀 {% trans "View Details" %}
                                     </a>
 
                                     {% if user.is_authenticated %}
                                     {% if product.master == user %}
                                     <button class="btn btn-outline-secondary btn-sm" disabled>
-                                        ⭐ Ваш товар
+                                        ⭐ {% trans "Your Product" %}
                                     </button>
                                     {% elif product.pk in user_favorites %}
                                     <form method="post"
                                         action="{% url 'products:remove_from_favorites_by_product' product.pk %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">❤️ В избранном</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            ❤️ {% trans "In Favorites" %}
+                                        </button>
                                     </form>
                                     {% else %}
                                     <form method="post" action="{% url 'products:add_to_favorites' product.pk %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">🤍 Добавить в
-                                            избранное</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            🤍 {% trans "Add to Favorites" %}
+                                        </button>
                                     </form>
                                     {% endif %}
                                     {% else %}
-                                    <a href="{% url 'users:login' %}" class="btn btn-outline-secondary btn-sm">🤍
-                                        Войдите, чтобы добавить в избранное</a>
+                                    <a href="{% url 'users:login' %}" class="btn btn-outline-secondary btn-sm">
+                                        🤍 {% trans "Log in to add to favorites" %}
+                                    </a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -233,16 +232,18 @@
                 {% empty %}
                 <div class="col-12 text-center py-5">
                     <div class="mb-4" style="font-size: 4rem;">🔍</div>
-                    <h3 class="fw-bold mb-3">Товары не найдены</h3>
+                    <h3 class="fw-bold mb-3">{% trans "No Products Found" %}</h3>
                     <p class="text-muted mb-4">
                         {% if request.GET.q or request.GET.category or request.GET.city %}
-                        Попробуйте изменить параметры поиска или сбросить фильтры
+                        {% trans "Try adjusting your search criteria or reset the filters" %}
                         {% else %}
-                        В каталоге пока нет товаров
+                        {% trans "There are no products in the catalog yet" %}
                         {% endif %}
                     </p>
                     {% if request.GET.q or request.GET.category or request.GET.city %}
-                    <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">📋 Сбросить фильтры</a>
+                    <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
+                        📋 {% trans "Reset Filters" %}
+                    </a>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -255,7 +256,7 @@
                     <li class="page-item">
                         <a class="page-link"
                             href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
-                            ← Назад
+                            ← {% trans "Previous" %}
                         </a>
                     </li>
                     {% endif %}
@@ -277,7 +278,7 @@
                     <li class="page-item">
                         <a class="page-link"
                             href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.city %}&city={{ request.GET.city }}{% endif %}">
-                            Вперед →
+                            {% trans "Next" %} →
                         </a>
                     </li>
                     {% endif %}
@@ -330,7 +331,7 @@
         transform: translateY(-5px);
     }
 
-    /* Стили для автодополнения */
+    /* Autocomplete styles */
     .autocomplete-dropdown {
         position: absolute;
         top: 100%;
@@ -441,11 +442,7 @@
         color: #dc3545;
     }
 
-    #search-form {
-        position: relative;
-    }
-
-    /* Анимация появления */
+    /* Animation */
     .autocomplete-dropdown {
         animation: slideDown 0.2s ease-out;
     }
@@ -479,26 +476,26 @@
             this.input.addEventListener('focus', this.showResultsIfNotEmpty.bind(this));
             document.addEventListener('click', this.handleClickOutside.bind(this));
 
-            // Навигация с клавиатуры
+            // Keyboard navigation
             this.input.addEventListener('keydown', this.handleKeydown.bind(this));
         }
 
         handleInput(event) {
             const query = this.input.value.trim();
 
-            // Очищаем предыдущий таймер
+            // Clear previous timer
             if (this.debounceTimeout) {
                 clearTimeout(this.debounceTimeout);
             }
 
-            // Дебаунс - ждем завершения ввода (300мс)
+            // Debounce - wait for input to finish (300ms)
             this.debounceTimeout = setTimeout(() => {
                 this.searchProducts(query);
             }, 300);
         }
 
         async searchProducts(query) {
-            // Отменяем предыдущий запрос
+            // Cancel previous request
             if (this.currentRequest) {
                 this.currentRequest.abort();
             }
@@ -511,7 +508,7 @@
             this.showLoading();
 
             try {
-                // Создаем новый AbortController для отмены запроса
+                // Create new AbortController for request cancellation
                 const controller = new AbortController();
                 this.currentRequest = controller;
 
@@ -550,7 +547,7 @@
 
         displayResults(products) {
             if (products.length === 0) {
-                this.results.innerHTML = '<div class="autocomplete-empty">😔 По вашему запросу ничего не найдено</div>';
+                this.results.innerHTML = '<div class="autocomplete-empty">😔 {% trans "No products found for your query" %}</div>';
                 this.showResults();
                 return;
             }
@@ -586,12 +583,12 @@
         }
 
         showLoading() {
-            this.results.innerHTML = '<div class="autocomplete-loading">🔍 Ищем товары...</div>';
+            this.results.innerHTML = '<div class="autocomplete-loading">🔍 {% trans "Searching products..." %}</div>';
             this.showResults();
         }
 
         showError() {
-            this.results.innerHTML = '<div class="autocomplete-error">⚠️ Произошла ошибка при поиске</div>';
+            this.results.innerHTML = '<div class="autocomplete-error">⚠️ {% trans "An error occurred while searching" %}</div>';
             this.showResults();
         }
 
@@ -616,7 +613,7 @@
         }
 
         handleKeydown(event) {
-            // Навигация стрелками только если есть результаты
+            // Arrow navigation only if there are results
             const items = this.results.querySelectorAll('.autocomplete-item');
             if (items.length === 0) return;
 
@@ -650,13 +647,13 @@
             items.forEach(item => item.classList.remove('active'));
             if (items[index]) {
                 items[index].classList.add('active');
-                // Прокручиваем к активному элементу если нужно
+                // Scroll to active element if needed
                 items[index].scrollIntoView({ block: 'nearest' });
             }
         }
     }
 
-    // Инициализация при загрузке страницы
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('search-input');
         const resultsContainer = document.getElementById('autocomplete-results');

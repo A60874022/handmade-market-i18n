@@ -1,18 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = [
-        ("new_order", "🎉 Новый заказ"),
-        ("order_status_changed", "📦 Статус заказа изменен"),
-        ("new_message", "💬 Новое сообщение"),
-        ("product_favorited", "❤️ Товар добавлен в избранное"),
-        ("system", "🔔 Системное уведомление"),
-        ("order_cancelled", "❌ Заказ отменен"),  # Добавим этот тип
+        ("new_order", _("🎉 New order")),
+        ("order_status_changed", _("📦 Order status changed")),
+        ("new_message", _("💬 New message")),
+        ("product_favorited", _("❤️ Product added to favorites")),
+        ("system", _("🔔 System notification")),
+        ("order_cancelled", _("❌ Order cancelled")),
     ]
 
     user = models.ForeignKey(
@@ -24,7 +25,7 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
-    # Ссылки на связанные объекты
+    # Links to related objects
     related_object_id = models.PositiveIntegerField(null=True, blank=True)
     related_content_type = models.CharField(max_length=100, blank=True)
     action_url = models.CharField(max_length=500, blank=True)
@@ -36,7 +37,10 @@ class Notification(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.get_notification_type_display()} для {self.user.email}"
+        return _("%(type)s for %(email)s") % {
+            "type": self.get_notification_type_display(),
+            "email": self.user.email
+        }
 
     def mark_as_read(self):
         self.is_read = True
@@ -47,5 +51,5 @@ class Notification(models.Model):
         return (timezone.now() - self.created_at).days < 1
 
     def can_delete(self):
-        """Можно удалять только прочитанные уведомления"""
+        """Only read notifications can be deleted"""
         return self.is_read

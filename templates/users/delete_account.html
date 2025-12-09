@@ -1,31 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Удаление аккаунта | HandmadeMarket{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Account Deletion" %} | HandmadeMarket{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-danger text-white text-center py-3">
-                    <h4 class="mb-0">🗑️ Удаление аккаунта</h4>
+                    <h4 class="mb-0">🗑️ {% trans "Account Deletion" %}</h4>
                 </div>
                 <div class="card-body p-4">
-                    <!-- Предупреждение -->
+                    <!-- Warning -->
                     <div class="alert alert-danger">
-                        <h5 class="alert-heading">⚠️ Внимание!</h5>
-                        <p class="mb-2">Вы собираетесь удалить свой аккаунт. Это действие:</p>
+                        <h5 class="alert-heading">⚠️ {% trans "Warning!" %}</h5>
+                        <p class="mb-2">{% trans "You are about to delete your account. This action:" %}</p>
                         <ul class="mb-2">
-                            <li>Невозможно отменить</li>
-                            <li>Удалит все ваши данные</li>
-                            <li>Удалит ваши товары и заказы</li>
-                            <li>Прервет все активные диалоги</li>
+                            <li>{% trans "Cannot be undone" %}</li>
+                            <li>{% trans "Will delete all your data" %}</li>
+                            <li>{% trans "Will delete your products and orders" %}</li>
+                            <li>{% trans "Will interrupt all active dialogs" %}</li>
                         </ul>
                     </div>
 
-                    <!-- Форма -->
+                    <!-- Form -->
                     <form method="post">
                         {% csrf_token %}
 
-                        <!-- Подтверждение -->
+                        <!-- Confirmation -->
                         <div class="mb-4">
                             <div class="form-check">
                                 {{ form.confirm }}
@@ -38,7 +39,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- Пароль -->
+                        <!-- Password -->
                         <div class="mb-4">
                             <label for="{{ form.password.id_for_label }}" class="form-label">
                                 {{ form.password.label }}
@@ -49,27 +50,27 @@
                             {% endif %}
                         </div>
 
-                        <!-- Кнопки -->
+                        <!-- Buttons -->
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-danger btn-lg">
-                                🗑️ Удалить аккаунт навсегда
+                                🗑️ {% trans "Delete Account Permanently" %}
                             </button>
                             <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-secondary">
-                                ← Отмена, вернуться в профиль
+                                ← {% trans "Cancel, return to profile" %}
                             </a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Дополнительная информация -->
+            <!-- Additional information -->
             <div class="card border-0 bg-light mt-4">
                 <div class="card-body">
-                    <h6>💡 Вместо удаления вы можете:</h6>
+                    <h6>💡 {% trans "Instead of deletion you can:" %}</h6>
                     <ul class="small mb-0">
-                        <li>Изменить email в настройках профиля</li>
-                        <li>Деактивировать ваши товары временно</li>
-                        <li>Обратиться в поддержку за помощью</li>
+                        <li>{% trans "Change email in profile settings" %}</li>
+                        <li>{% trans "Temporarily deactivate your products" %}</li>
+                        <li>{% trans "Contact support for assistance" %}</li>
                     </ul>
                 </div>
             </div>

@@ -1,11 +1,12 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Category, Product, ProductImage
 
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # Количество пустых форм для добавления изображений
+    extra = 1  # Number of empty forms for adding images
     fields = ["image", "is_main"]
 
 
@@ -33,8 +34,8 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
     fieldsets = (
         (
-            "Основная информация",
+            _("Basic Information"),
             {"fields": ("master", "category", "title", "description", "price")},
         ),
-        ("Статус", {"fields": ("is_active", "is_approved")}),
+        (_("Status"), {"fields": ("is_active", "is_approved")}),
     )

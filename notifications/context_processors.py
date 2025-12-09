@@ -1,4 +1,3 @@
-# notifications/context_processors.py
 from django.db.models import Count, Q
 
 from chat.models import Dialogue
@@ -7,13 +6,11 @@ from .models import Notification
 
 
 def notifications_context(request):
-    """Добавляет уведомления в контекст всех шаблонов"""
+    """Add notifications to context of all templates"""
     if request.user.is_authenticated:
         unread_notifications = Notification.objects.filter(
             user=request.user, is_read=False
-        ).order_by("-created_at")[
-            :5
-        ]  # Последние 5 непрочитанных
+        ).order_by("-created_at")[:5]  # Last 5 unread
 
         unread_count = Notification.objects.filter(
             user=request.user, is_read=False
@@ -27,9 +24,9 @@ def notifications_context(request):
 
 
 def chat_context(request):
-    """Добавляет информацию о чате в контекст всех шаблонов"""
+    """Add chat information to context of all templates"""
     if request.user.is_authenticated:
-        # Подсчет всех непрочитанных сообщений
+        # Count all unread messages
         total_unread_messages = (
             Dialogue.objects.filter(
                 Q(user1=request.user) | Q(user2=request.user)

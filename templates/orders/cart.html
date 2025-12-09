@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Корзина | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Shopping Cart" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <h1 class="fw-bold mb-2">🛒 Корзина</h1>
+            <h1 class="fw-bold mb-2">🛒 {% trans "Shopping Cart" %}</h1>
 
             {% if cart_items %}
             <div class="card border-0 shadow-sm">
@@ -30,7 +30,7 @@
                             <h6 class="fw-bold mb-1">{{ item.product.title }}</h6>
                             <p class="text-muted small mb-1">{{ item.product.description|truncatewords:15 }}</p>
                             <small class="text-muted">
-                                🎨 Мастер:
+                                🎨 {% trans "Master:" %}
                                 {% if item.product.master.get_full_name %}
                                 {{ item.product.master.get_full_name }}
                                 {% else %}
@@ -55,13 +55,13 @@
                             </div>
                             <div class="text-danger small mt-1 validation-message" id="validation-{{ item.id }}"
                                 style="display: none;">
-                                Количество должно быть от 1 до 99
+                                {% trans "Quantity must be from 1 to 99" %}
                             </div>
                         </div>
 
                         <div class="col-md-2 text-center">
                             <span class="fw-bold text-brown h5">{{ item.total_price }} ₽</span>
-                            <div class="text-muted small">за шт: {{ item.product.price }} ₽</div>
+                            <div class="text-muted small">{% trans "per piece:" %} {{ item.product.price }} ₽</div>
                         </div>
 
                         <div class="col-md-1 text-end">
@@ -69,7 +69,7 @@
                                 class="remove-form">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
-                                    onclick="return confirm('Удалить товар из корзины?')">
+                                    onclick="return confirm('{% trans 'Remove product from cart?' %}')">
                                     ✕
                                 </button>
                             </form>
@@ -81,14 +81,15 @@
                 <div class="card-footer bg-white">
                     <div class="row align-items-center">
                         <div class="col-md-6">
-                            <h4 class="fw-bold text-brown mb-0">Итого: {{ cart.total_price }} ₽</h4>
-                            <small class="text-muted">За {{ cart.total_quantity }} товар(а)</small>
+                            <h4 class="fw-bold text-brown mb-0">{% trans "Total:" %} {{ cart.total_price }} ₽</h4>
+                            <small class="text-muted">{% trans "For" %} {{ cart.total_quantity }} {% trans "product(s)"
+                                %}</small>
                         </div>
                         <div class="col-md-6 text-end">
                             <form method="post" action="{% url 'orders:create_order' %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-primary btn-lg px-5">
-                                    🛒 Оформить заказ
+                                    🛒 {% trans "Place Order" %}
                                 </button>
                             </form>
                         </div>
@@ -98,16 +99,16 @@
 
             <div class="text-center mt-4">
                 <a href="{% url 'products:catalog' %}" class="btn btn-outline-secondary">
-                    ← Продолжить покупки
+                    ← {% trans "Continue Shopping" %}
                 </a>
             </div>
             {% else %}
             <div class="text-center py-5">
                 <div class="mb-4" style="font-size: 4rem;">🛒</div>
-                <h3 class="fw-bold mb-3">Ваша корзина пуста</h3>
-                <p class="text-muted mb-4">Добавьте товары из каталога, чтобы сделать заказ</p>
+                <h3 class="fw-bold mb-3">{% trans "Your cart is empty" %}</h3>
+                <p class="text-muted mb-4">{% trans "Add products from the catalog to place an order" %}</p>
                 <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
-                    🛍️ Перейти в каталог
+                    🛍️ {% trans "Go to Catalog" %}
                 </a>
             </div>
             {% endif %}
@@ -134,10 +135,17 @@
 </style>
 
 <script>
+    // Объект переводов для JavaScript
+    const translations = {
+        removeFromCart: "{% trans 'Remove product from cart?' %}",
+        quantityValidation: "{% trans 'Quantity must be from 1 to 99' %}",
+        productRemoval: "{% trans 'Remove product from cart?' %}"
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         // Функция для проверки валидности количества
         function validateQuantity(value) {
-            return value >= 1 && value <= 99;
+            return value >= 1 &amp;&amp; value <= 99;
         }
 
         // Функция для обновления количества товара
@@ -184,7 +192,7 @@
                 } else {
                     // Если количество становится 0, удаляем товар
                     const removeForm = document.querySelector(`.remove-form [data-item-id="${itemId}"]`).closest('form');
-                    if (confirm('Удалить товар из корзины?')) {
+                    if (confirm(translations.productRemoval)) {
                         removeForm.submit();
                     }
                 }
@@ -225,13 +233,13 @@
                 // Разрешаем: backspace, delete, tab, escape, enter, точки, цифры
                 if ([46, 8, 9, 27, 13, 110, 190].includes(e.keyCode) ||
                     // Разрешаем: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                    (e.keyCode === 65 && e.ctrlKey === true) ||
-                    (e.keyCode === 67 && e.ctrlKey === true) ||
-                    (e.keyCode === 86 && e.ctrlKey === true) ||
-                    (e.keyCode === 88 && e.ctrlKey === true) ||
+                    (e.keyCode === 65 &amp;&amp; e.ctrlKey === true) ||
+                    (e.keyCode === 67 &amp;&amp; e.ctrlKey === true) ||
+                    (e.keyCode === 86 &amp;&amp; e.ctrlKey === true) ||
+                    (e.keyCode === 88 &amp;&amp; e.ctrlKey === true) ||
                     // Разрешаем: цифры на основной клавиатуре и numpad
-                    (e.keyCode >= 48 && e.keyCode <= 57) ||
-                    (e.keyCode >= 96 && e.keyCode <= 105)) {
+                    (e.keyCode >= 48 &amp;&amp; e.keyCode <= 57) ||
+                    (e.keyCode >= 96 &amp;&amp; e.keyCode <= 105)) {
                     return;
                 }
                 // Запрещаем все остальное

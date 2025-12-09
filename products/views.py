@@ -8,6 +8,8 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -31,11 +33,11 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("products:my_products")
 
     def dispatch(self, request, *args, **kwargs):
-        # ПРОВЕРКА ГОРОДА ПЕРЕД СОЗДАНИЕМ ТОВАРА
+        # CHECK CITY BEFORE CREATING PRODUCT
         if not hasattr(request.user, "profile") or not request.user.profile.city:
             messages.warning(
                 request,
-                "⚠️ Пожалуйста, укажите город в вашем профиле перед созданием товара.",
+                _("⚠️ Please specify your city in your profile before creating a product."),
             )
             return redirect("users:edit_profile")
         return super().dispatch(request, *args, **kwargs)
@@ -44,7 +46,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         try:
             with transaction.atomic():
                 form.instance.master = self.request.user
-                # Город автоматически берется из профиля через свойство city модели Product
+                # City is automatically taken from profile through city property of Product model
                 response = super().form_valid(form)
 
                 formset = ProductImageFormSet(
@@ -68,15 +70,15 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                             for field, errors in form.errors.items():
                                 for error in errors:
                                     messages.error(
-                                        self.request, f"Ошибка в изображении: {error}"
+                                        self.request, _("Error in image: %(error)s") % {"error": error}
                                     )
 
-            messages.success(self.request, "✅ Товар успешно создан!")
+            messages.success(self.request, _("✅ Product successfully created!"))
             return response
 
         except Exception as e:
             logger.error("Product creation failed: %s", str(e), exc_info=True)
-            messages.error(self.request, "Ошибка при создании товара")
+            messages.error(self.request, _("Error creating product"))
             return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
@@ -88,7 +90,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         else:
             context["formset"] = ProductImageFormSet()
 
-        # Добавляем информацию о городе в контекст
+        # Add city information to context
         context["user_city"] = (
             self.request.user.profile.city
             if hasattr(self.request.user, "profile")
@@ -144,11 +146,11 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                             for field, errors in form.errors.items():
                                 for error in errors:
                                     messages.error(
-                                        self.request, f"Ошибка в изображении: {error}"
+                                        self.request, _("Error in image: %(error)s") % {"error": error}
                                     )
                     return self.form_invalid(form)
 
-            messages.success(self.request, "Товар успешно обновлен!")
+            messages.success(self.request, _("Product successfully updated!"))
             return super().form_valid(form)
 
         except Exception as e:
@@ -158,7 +160,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 str(e),
                 exc_info=True,
             )
-            messages.error(self.request, "Ошибка при обновлении товара")
+            messages.error(self.request, _("Error updating product"))
             return self.form_invalid(form)
 
 
@@ -174,7 +176,7 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         try:
             product = self.get_object()
             result = super().delete(request, *args, **kwargs)
-            messages.success(request, "Товар успешно удален!")
+            messages.success(request, _("Product successfully deleted!"))
             return result
         except Exception as e:
             logger.error(
@@ -183,7 +185,7 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
                 str(e),
                 exc_info=True,
             )
-            messages.error(request, "Ошибка при удалении товара")
+            messages.error(request, _("Error deleting product"))
             return redirect("products:my_products")
 
 
@@ -204,23 +206,23 @@ class ProductCatalogView(ListView):
 
     def get_queryset(self):
         try:
-            # Только активные и одобренные товары
+            # Only active and approved products
             queryset = Product.objects.filter(
                 is_active=True, is_approved=True
             ).select_related("master", "category", "master__profile__city")
 
-            # Фильтрация по категории
+            # Filter by category
             category_slug = self.request.GET.get("category")
             if category_slug:
-                # НЕ используем get_object_or_404, чтобы не вызывать 404 при некорректной категории
+                # NOT using get_object_or_404 to avoid 404 for incorrect category
                 try:
                     category = Category.objects.get(slug=category_slug)
                     queryset = queryset.filter(category=category)
                 except Category.DoesNotExist:
-                    # Если категория не найдена, просто игнорируем фильтр
+                    # If category not found, just ignore filter
                     pass
 
-            # Поиск по названию и описанию
+            # Search by title and description
             search_query = self.request.GET.get("q")
             if search_query:
                 queryset = queryset.filter(
@@ -228,7 +230,7 @@ class ProductCatalogView(ListView):
                     | Q(description__icontains=search_query)
                 )
 
-            # ФИЛЬТРАЦИЯ ПО ГОРОДУ
+            # FILTER BY CITY
             city_query = self.request.GET.get("city")
             if city_query:
                 queryset = queryset.filter(
@@ -244,10 +246,10 @@ class ProductCatalogView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # ДОБАВЛЯЕМ КАТЕГОРИИ В КОНТЕКСТ
+        # ADD CATEGORIES TO CONTEXT
         context["categories"] = Category.objects.all().order_by("name")
 
-        # Получаем список всех городов, в которых есть активные товары
+        # Get list of all cities where there are active products
         from users.models import City
 
         context["cities"] = (
@@ -260,7 +262,7 @@ class ProductCatalogView(ListView):
             .order_by("name")
         )
 
-        # Добавляем информацию об избранных товарах для текущего пользователя
+        # Add favorite product information for current user
         if self.request.user.is_authenticated:
             context["user_favorites"] = self.request.user.favorites.values_list(
                 "product_id", flat=True
@@ -277,7 +279,7 @@ class ProductDetailView(DetailView):
     context_object_name = "product"
 
     def get_queryset(self):
-        # Владелец видит свой товар всегда, остальные - только одобренные
+        # Owner always sees their product, others - only approved ones
         if self.request.user.is_authenticated:
             return Product.objects.filter(
                 Q(is_active=True, is_approved=True) | Q(master=self.request.user)
@@ -290,7 +292,7 @@ class ProductDetailView(DetailView):
 
 @login_required
 def profile(request):
-    """Главная страница профиля мастера с вкладками"""
+    """Master profile main page with tabs"""
     try:
         active_tab = request.GET.get("tab", "orders")
 
@@ -299,7 +301,7 @@ def profile(request):
         }
 
         if active_tab == "orders":
-            # Показываем заказы как покупателя
+            # Show orders as buyer
             context["orders"] = Order.objects.filter(
                 customer=request.user
             ).prefetch_related("items__product")
@@ -308,12 +310,12 @@ def profile(request):
                 user=request.user
             ).select_related("product")
         elif active_tab == "my_products":
-            # Показываем товары мастера
+            # Show master products
             context["my_products"] = Product.objects.filter(
                 master=request.user
             ).order_by("-created_at")
         elif active_tab == "master_orders":
-            # Показываем заказы на товары мастера
+            # Show orders for master products
             context["master_orders"] = Order.objects.filter(
                 items__product__master=request.user
             ).distinct()
@@ -327,13 +329,13 @@ def profile(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке профиля")
+        messages.error(request, _("Error loading profile"))
         return redirect("products:catalog")
 
 
 @login_required
 def add_to_favorites(request, pk):
-    """Добавление товара в избранное"""
+    """Add product to favorites"""
     try:
         product = get_object_or_404(Product, id=pk, is_active=True)
         favorite, created = Favorite.objects.get_or_create(
@@ -341,9 +343,9 @@ def add_to_favorites(request, pk):
         )
 
         if created:
-            messages.success(request, f'Товар "{product.title}" добавлен в избранное')
+            messages.success(request, _('Product "%(title)s" added to favorites') % {"title": product.title})
         else:
-            messages.info(request, f'Товар "{product.title}" уже в избранном')
+            messages.info(request, _('Product "%(title)s" is already in favorites') % {"title": product.title})
 
         return redirect(request.META.get("HTTP_REFERER", "catalog"))
 
@@ -355,19 +357,19 @@ def add_to_favorites(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при добавлении в избранное")
+        messages.error(request, _("Error adding to favorites"))
         return redirect("products:catalog")
 
 
 @login_required
 def remove_from_favorites(request, pk):
-    """Удаление товара из избранного"""
+    """Remove product from favorites"""
     try:
         favorite = get_object_or_404(Favorite, id=pk, user=request.user)
         product_title = favorite.product.title
         favorite.delete()
 
-        messages.success(request, f'Товар "{product_title}" удален из избранного')
+        messages.success(request, _('Product "%(title)s" removed from favorites') % {"title": product_title})
         return redirect(f"{reverse('products:profile')}?tab=favorites")
 
     except Exception as e:
@@ -378,20 +380,20 @@ def remove_from_favorites(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при удалении из избранного")
+        messages.error(request, _("Error removing from favorites"))
         return redirect("products:profile")
 
 
 @login_required
 def remove_from_favorites_by_product(request, pk):
-    """Удаление товара из избранного по product_id"""
+    """Remove product from favorites by product_id"""
     try:
         product = get_object_or_404(Product, id=pk)
         favorite = get_object_or_404(Favorite, user=request.user, product=product)
         product_title = favorite.product.title
         favorite.delete()
 
-        messages.success(request, f'Товар "{product_title}" удален из избранного')
+        messages.success(request, _('Product "%(title)s" removed from favorites') % {"title": product_title})
         return redirect(request.META.get("HTTP_REFERER", "products:catalog"))
 
     except Exception as e:
@@ -402,7 +404,7 @@ def remove_from_favorites_by_product(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при удалении из избранного")
+        messages.error(request, _("Error removing from favorites"))
         return redirect(request.META.get("HTTP_REFERER", "products:catalog"))
 
 
@@ -412,14 +414,14 @@ from django.views.decorators.http import require_GET
 
 @require_GET
 def product_autocomplete(request):
-    """Автодополнение для поиска товаров"""
+    """Autocomplete for product search"""
     try:
         query = request.GET.get("q", "").strip()
 
         if len(query) < 2:
             return JsonResponse({"success": True, "results": []})
 
-        # Ищем только среди одобренных товаров
+        # Search only among approved products
         products = (
             Product.objects.filter(
                 (Q(title__icontains=query) | Q(description__icontains=query)),
@@ -436,7 +438,7 @@ def product_autocomplete(request):
             image_url = main_image.image.url if main_image else None
 
             category_name = (
-                product.category.name if product.category else "Без категории"
+                product.category.name if product.category else _("No category")
             )
 
             results.append(

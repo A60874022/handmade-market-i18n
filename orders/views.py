@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from notifications.services import NotificationService
 from products.models import Product
@@ -16,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def cart_view(request):
-    """Просмотр корзины"""
+    """View cart"""
     try:
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_items = cart.items.select_related(
@@ -33,38 +35,39 @@ def cart_view(request):
         logger.error(
             "Error loading cart for user %s: %s", request.user.id, str(e), exc_info=True
         )
-        messages.error(request, "Ошибка при загрузке корзины")
+        messages.error(request, _("Error loading cart"))
         return redirect("products:catalog")
 
 
 @login_required
 def add_to_cart(request, pk):
-    """Добавление товара в корзину"""
+    """Add product to cart"""
     try:
         product = get_object_or_404(Product, id=pk, is_active=True)
 
-        # ВОССТАНАВЛИВАЕМ ПРОВЕРКУ: мастер не может покупать свои товары
+        # RESTORE CHECK: master cannot buy their own products
         if product.master == request.user:
-            messages.error(request, "Вы не можете покупать свои собственные товары")
+            messages.error(request, _("You cannot buy your own products"))
             return redirect("products:product_detail", pk=product.id)
 
         cart, created = Cart.objects.get_or_create(user=request.user)
 
-        # Проверяем, есть ли уже этот товар в корзине
+        # Check if this product is already in cart
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart, product=product, defaults={"quantity": 1}
         )
 
         if not item_created:
-            # Если товар уже есть в корзине, увеличиваем количество
+            # If product already in cart, increase quantity
             cart_item.quantity += 1
             cart_item.save()
             messages.success(
                 request,
-                f'Количество товара "{product.title}" увеличено до {cart_item.quantity}',
+                _('Quantity of product "%(title)s" increased to %(quantity)d') % 
+                {"title": product.title, "quantity": cart_item.quantity},
             )
         else:
-            messages.success(request, f'Товар "{product.title}" добавлен в корзину!')
+            messages.success(request, _('Product "%(title)s" added to cart!') % {"title": product.title})
 
         return redirect("orders:cart_view")
 
@@ -76,13 +79,13 @@ def add_to_cart(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при добавлении товара в корзину")
+        messages.error(request, _("Error adding product to cart"))
         return redirect("products:product_detail", pk=pk)
 
 
 @login_required
 def update_cart_item(request, item_id):
-    """Обновление количества товара в корзине"""
+    """Update product quantity in cart"""
     try:
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
 
@@ -94,7 +97,7 @@ def update_cart_item(request, item_id):
                 cart_item.save()
             else:
                 cart_item.delete()
-                messages.success(request, "Товар удален из корзины")
+                messages.success(request, _("Product removed from cart"))
 
         return redirect("orders:cart_view")
 
@@ -106,19 +109,19 @@ def update_cart_item(request, item_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при обновлении корзины")
+        messages.error(request, _("Error updating cart"))
         return redirect("orders:cart_view")
 
 
 @login_required
 def remove_from_cart(request, item_id):
-    """Удаление товара из корзины"""
+    """Remove product from cart"""
     try:
         cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
         product_title = cart_item.product.title
         cart_item.delete()
 
-        messages.success(request, f'Товар "{product_title}" удален из корзины')
+        messages.success(request, _('Product "%(title)s" removed from cart') % {"title": product_title})
         return redirect("orders:cart_view")
 
     except Exception as e:
@@ -129,61 +132,63 @@ def remove_from_cart(request, item_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при удалении товара из корзины")
+        messages.error(request, _("Error removing product from cart"))
         return redirect("orders:cart_view")
 
 
 @login_required
 @transaction.atomic
 def create_order(request):
-    """Создание заказа из корзины"""
+    """Create order from cart"""
     try:
         cart = get_object_or_404(Cart, user=request.user)
         cart_items = cart.items.select_related("product").all()
 
         if not cart_items:
-            messages.error(request, "Ваша корзина пуста")
+            messages.error(request, _("Your cart is empty"))
             return redirect("orders:cart_view")
+        
         own_products_removed = False
         items_to_remove = []
 
         for item in cart_items:
-            # Проверяем, что товар активен
+            # Check that product is active
             if not item.product.is_active:
                 messages.error(
-                    request, f'Товар "{item.product.title}" больше не доступен'
+                    request, _('Product "%(title)s" is no longer available') % {"title": item.product.title}
                 )
                 return redirect("orders:cart_view")
 
-            # Проверяем, что товар не принадлежит пользователю
+            # Check that product does not belong to user
             if item.product.master == request.user:
                 items_to_remove.append(item)
                 own_products_removed = True
 
-        # Удаляем собственные товары пользователя
+        # Remove user's own products
         for item in items_to_remove:
             item.delete()
 
-        # Обновляем список товаров после удаления
+        # Update product list after removal
         cart_items = cart.items.select_related("product").all()
 
-        # Если после удаления своих товаров корзина пуста
+        # If cart is empty after removing own products
         if not cart_items:
             if own_products_removed:
                 messages.error(
                     request,
-                    "Вы не можете покупать свои собственные товары. Эти товары были удалены из корзины.",
+                    _("You cannot buy your own products. These products have been removed from cart."),
                 )
             else:
-                messages.error(request, "Ваша корзина пуста")
+                messages.error(request, _("Your cart is empty"))
             return redirect("orders:cart_view")
+        
         if own_products_removed:
             messages.warning(
                 request,
-                "Ваши собственные товары были удалены из корзины перед оформлением заказа.",
+                _("Your own products have been removed from cart before order placement."),
             )
 
-        order = Order.objects.create(customer=request.user, status="оформлен")
+        order = Order.objects.create(customer=request.user, status=_("placed"))
         total_amount = 0
         masters_notified = set()
 
@@ -197,15 +202,15 @@ def create_order(request):
 
             total_amount += cart_item.product.price * cart_item.quantity
 
-            # Создаем уведомление для мастера (если это не наш собственный товар)
+            # Create notification for master (if it's not our own product)
             master = cart_item.product.master
 
-            # Дополнительная проверка (на всякий случай)
+            # Additional check (just in case)
             if master.id != request.user.id and master.id not in masters_notified:
                 NotificationService.create_order_notification(order, master)
                 masters_notified.add(master.id)
 
-        # Обновляем общую сумму заказа
+        # Update total order amount
         order.total_amount = total_amount
         order.save()
         cart.items.all().delete()
@@ -218,7 +223,8 @@ def create_order(request):
         )
 
         messages.success(
-            request, f"Заказ #{order.id} успешно оформлен! Сумма: {total_amount} ₽"
+            request, _("Order #%(id)s successfully placed! Amount: %(amount)s RUB") % 
+            {"id": order.id, "amount": total_amount}
         )
         return redirect("orders:purchase_orders")
 
@@ -229,13 +235,13 @@ def create_order(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, f"Ошибка при создании заказа: {str(e)}")
+        messages.error(request, _("Error creating order: %(error)s") % {"error": str(e)})
         return redirect("orders:cart_view")
 
 
 @login_required
 def purchase_orders(request):
-    """Страница покупок (заказы как покупателя)"""
+    """Purchases page (orders as buyer)"""
     try:
         orders = (
             Order.objects.filter(customer=request.user)
@@ -253,15 +259,15 @@ def purchase_orders(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке заказов")
+        messages.error(request, _("Error loading orders"))
         return redirect("products:catalog")
 
 
 @login_required
 def sale_orders(request):
-    """Страница продаж (заказы на товары мастера)"""
+    """Sales page (orders for master's products)"""
     try:
-        # Заказы, где есть товары этого мастера
+        # Orders containing this master's products
         orders = (
             Order.objects.filter(items__product__master=request.user)
             .distinct()
@@ -279,7 +285,7 @@ def sale_orders(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке заказов")
+        messages.error(request, _("Error loading orders"))
         return redirect("products:catalog")
 
 
@@ -287,28 +293,28 @@ def sale_orders(request):
 @transaction.atomic
 def delete_order(request, order_id):
     """
-    Удаление заказа покупателем с проверками и уведомлениями
+    Delete order by buyer with checks and notifications
     """
     try:
-        # Находим заказ и проверяем, что он принадлежит текущему пользователю
+        # Find order and check that it belongs to current user
         order = get_object_or_404(Order, id=order_id, customer=request.user)
 
-        # Сохраняем информацию для сообщения
+        # Save information for message
         order_id_val = order.id
         order_status = order.status
 
-        # Дополнительная проверка: нельзя удалять доставленные заказы
-        if order.status == "доставлен":
-            messages.error(request, "Нельзя удалить доставленный заказ.")
+        # Additional check: cannot delete delivered orders
+        if order.status == _("delivered"):
+            messages.error(request, _("Cannot delete delivered order."))
             return redirect("orders:purchase_orders")
 
-        # Создаем уведомления для мастеров перед удалением (если это не наш собственный товар)
+        # Create notifications for masters before deletion (if not our own product)
         masters_notified = set()
         for item in order.items.all():
             master = item.product.master
             if master.id != request.user.id and master.id not in masters_notified:
                 try:
-                    # Уведомляем мастера об отмене заказа покупателем
+                    # Notify master about order cancellation by buyer
                     NotificationService.create_cancellation_notification(
                         order, master, request.user
                     )
@@ -320,7 +326,7 @@ def delete_order(request, order_id):
                         str(e),
                     )
 
-        # Удаляем заказ
+        # Delete order
         order.delete()
 
         logger.info(
@@ -329,7 +335,7 @@ def delete_order(request, order_id):
             request.user.id,
         )
 
-        messages.success(request, f"Заказ #{order_id_val} успешно удален.")
+        messages.success(request, _("Order #%(id)s successfully deleted.") % {"id": order_id_val})
 
     except Order.DoesNotExist:
         logger.error(
@@ -337,7 +343,7 @@ def delete_order(request, order_id):
             order_id,
             request.user.id,
         )
-        messages.error(request, "Заказ не найден или у вас нет прав для его удаления.")
+        messages.error(request, _("Order not found or you don't have permission to delete it."))
     except Exception as e:
         logger.error(
             "Error deleting order %s by user %s: %s",
@@ -346,7 +352,7 @@ def delete_order(request, order_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, f"Ошибка при удалении заказа: {str(e)}")
+        messages.error(request, _("Error deleting order: %(error)s") % {"error": str(e)})
 
     return redirect("orders:purchase_orders")
 
@@ -355,19 +361,19 @@ def delete_order(request, order_id):
 @transaction.atomic
 def delete_sale_order(request, order_id):
     """
-    Удаление заказа мастером с улучшенной логикой
+    Delete order by master with improved logic
     """
     try:
-        # Получаем заказ
+        # Get order
         order = get_object_or_404(Order, id=order_id)
 
-        # Проверяем, что в заказе есть товары этого мастера
+        # Check that order contains this master's products
         master_items = order.items.filter(product__master=request.user)
         if not master_items.exists():
-            messages.error(request, "Этот заказ не содержит ваших товаров.")
+            messages.error(request, _("This order does not contain your products."))
             return redirect("orders:sale_orders")
 
-        # Уведомляем покупателя об отмене заказа мастером (если это не наш собственный заказ)
+        # Notify buyer about order cancellation by master (if not our own order)
         if order.customer.id != request.user.id:
             try:
                 NotificationService.create_master_cancellation_notification(
@@ -389,7 +395,7 @@ def delete_sale_order(request, order_id):
             request.user.id,
         )
 
-        messages.success(request, f"Заказ #{order_id_val} был успешно удален.")
+        messages.success(request, _("Order #%(id)s has been successfully deleted.") % {"id": order_id_val})
 
     except Order.DoesNotExist:
         logger.error(
@@ -397,7 +403,7 @@ def delete_sale_order(request, order_id):
             order_id,
             request.user.id,
         )
-        messages.error(request, "Заказ не найден.")
+        messages.error(request, _("Order not found."))
     except Exception as e:
         logger.error(
             "Error deleting sale order %s by user %s: %s",
@@ -406,6 +412,6 @@ def delete_sale_order(request, order_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, f"При удалении заказа произошла ошибка: {str(e)}")
+        messages.error(request, _("An error occurred while deleting order: %(error)s") % {"error": str(e)})
 
     return redirect("orders:sale_orders")

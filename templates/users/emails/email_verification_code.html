@@ -1,10 +1,11 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Код подтверждения email</title>
+    <title>{% trans "Email Verification Code" %}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -69,34 +70,35 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Подтверждение email адреса</h1>
+            <h1>{% trans "Email Address Verification" %}</h1>
         </div>
 
-        <p>Здравствуйте{% if user_name %}, <strong>{{ user_name }}</strong>{% endif %}!</p>
+        <p>{% trans "Hello" %}{% if user_name %}, <strong>{{ user_name }}</strong>{% endif %}!</p>
 
-        <p>Для завершения регистрации и подтверждения вашего email адреса, пожалуйста, используйте следующий код
-            подтверждения:</p>
+        <p>{% trans "To complete your registration and verify your email address, please use the following verification
+            code:" %}</p>
 
         <div class="code-container">
             <div class="verification-code">{{ verification_code }}</div>
         </div>
 
         <div class="warning">
-            <strong>Внимание:</strong> Код действителен в течение <strong>15 минут</strong>.
-            Никому не сообщайте этот код.
+            <strong>{% trans "Important:" %}</strong> {% trans "This code is valid for" %} <strong>{% trans "15 minutes"
+                %}</strong>.
+            {% trans "Do not share this code with anyone." %}
         </div>
 
-        <p>Введите этот код на странице подтверждения для активации вашего аккаунта.</p>
+        <p>{% trans "Enter this code on the verification page to activate your account." %}</p>
 
-        <p>Если вы не регистрировались на нашем сайте, проигнорируйте это письмо.</p>
+        <p>{% trans "If you did not register on our website, please ignore this email." %}</p>
 
         <div class="footer">
-            <p>С уважением,<br>
-                <strong>Команда {{ site_name }}</strong>
+            <p>{% trans "Best regards," %}<br>
+                <strong>{% blocktrans %}The {{ site_name }} Team{% endblocktrans %}</strong>
             </p>
 
-            <p>Если у вас возникли проблемы с подтверждением email, пожалуйста,
-                свяжитесь с поддержкой: {{ support_email|default:'support@example.com' }}</p>
+            <p>{% trans "If you are experiencing issues with email verification, please contact support:" %} {{
+                support_email|default:'support@example.com' }}</p>
         </div>
     </div>
 </body>

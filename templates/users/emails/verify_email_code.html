@@ -1,14 +1,14 @@
 <!-- templates/users/verify_email_code.html -->
 {% extends 'users/base_auth.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Подтверждение email{% endblock %}
+{% block title %}{% trans "Email Verification" %}{% endblock %}
 
 {% block content %}
 <div class="text-center mb-4">
-    <h2 class="fw-bold">Подтверждение email</h2>
+    <h2 class="fw-bold">{% trans "Email Verification" %}</h2>
     <p class="text-muted">
-        Код подтверждения отправлен на <strong>{{ user_email }}</strong>
+        {% trans "Verification code sent to" %} <strong>{{ user_email }}</strong>
     </p>
 </div>
 
@@ -24,35 +24,35 @@
 <form method="post" novalidate>
     {% csrf_token %}
 
-    <!-- Поле для кода -->
+    <!-- Code field -->
     <div class="mb-3">
         <label for="{{ form.verification_code.id_for_label }}" class="form-label">
-            Код подтверждения
+            {% trans "Verification Code" %}
         </label>
         <input type="text" name="{{ form.verification_code.name }}" id="{{ form.verification_code.id_for_label }}"
             class="form-control {% if form.verification_code.errors %}is-invalid{% endif %}"
-            placeholder="Введите 6-значный код" maxlength="6" minlength="6" required pattern="[0-9]{6}">
+            placeholder="{% trans 'Enter 6-digit code' %}" maxlength="6" minlength="6" required pattern="[0-9]{6}">
         {% if form.verification_code.errors %}
         <div class="invalid-feedback">
             {{ form.verification_code.errors.0 }}
         </div>
         {% endif %}
         <div class="form-text">
-            Введите 6-значный код, который вы получили по email
+            {% trans "Enter the 6-digit code you received by email" %}
         </div>
     </div>
 
-    <!-- Кнопка подтверждения -->
+    <!-- Verification button -->
     <button type="submit" class="btn btn-primary w-100 py-2 mb-3 fw-bold">
-        Подтвердить email
+        {% trans "Verify Email" %}
     </button>
 </form>
 
-<!-- Кнопка для повторной отправки кода -->
+<!-- Resend code button -->
 <form method="post" action="{% url 'users:resend_verification_code' %}">
     {% csrf_token %}
     <button type="submit" class="btn btn-outline-secondary w-100 py-2">
-        Отправить код еще раз
+        {% trans "Send Code Again" %}
     </button>
 </form>
 {% endblock %}

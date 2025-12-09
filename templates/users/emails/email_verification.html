@@ -1,23 +1,25 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
-    <title>Подтверждение email</title>
+    <title>{% trans "Email Verification" %}</title>
 </head>
 
 <body>
-    <h2>Подтверждение email адреса</h2>
-    <p>Здравствуйте{% if user_name %}, {{ user_name }}{% endif %}!</p>
-    <p>Для завершения регистрации и подтверждения вашего email адреса, пожалуйста, перейдите по ссылке:</p>
+    <h2>{% trans "Email Address Verification" %}</h2>
+    <p>{% trans "Hello" %}{% if user_name %}, {{ user_name }}{% endif %}!</p>
+    <p>{% trans "To complete your registration and verify your email address, please click the link below:" %}
+    </p>
     <p><a href="{{ verification_url }}"
-            style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Подтвердить
-            email</a></p>
-    <p>Если ссылка не работает, скопируйте и вставьте в браузер следующую ссылку:<br>
+            style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">{%
+            trans "Verify Email" %}</a></p>
+    <p>{% trans "If the link does not work, copy and paste the following URL into your browser:" %}<br>
         {{ verification_url }}</p>
-    <p>Если вы не регистрировались на нашем сайте, проигнорируйте это письмо.</p>
+    <p>{% trans "If you did not register on our website, please ignore this email." %}</p>
     <hr>
-    <p>С уважением,<br>Команда {{ site_name }}</p>
+    <p>{% trans "Best regards," %}<br>{% blocktrans %}The {{ site_name }} Team{% endblocktrans %}</p>
 </body>
 
 </html>

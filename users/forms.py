@@ -1,4 +1,3 @@
-# users/forms.py
 import re
 
 from django import forms
@@ -7,24 +6,24 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy as _
 
-from .models import Profile, User
+from .models import Profile, User, City
 
 
 def validate_password_no_russian(value):
     """
-    Валидатор пароля: проверяет отсутствие русских букв.
+    Password validator: check for absence of Russian letters.
     """
     russian_chars_pattern = re.compile("[а-яёА-ЯЁ]")
     if russian_chars_pattern.search(value):
         raise ValidationError(
-            _("Пароль не должен содержать русские буквы."),
+            _("Password must not contain Russian letters."),
             code="password_contains_russian",
         )
 
 
 class UserRegistrationForm(UserCreationForm):
     """
-    Кастомная форма регистрации пользователя с расширенной валидацией.
+    Custom user registration form with extended validation.
     """
 
     email = forms.EmailField(
@@ -38,8 +37,8 @@ class UserRegistrationForm(UserCreationForm):
                 "autofocus": True,
             }
         ),
-        label=_("Email адрес"),
-        help_text=_("Введите действующий email адрес."),
+        label=_("Email address"),
+        help_text=_("Enter a valid email address."),
         validators=[validate_email],
     )
 
@@ -49,36 +48,36 @@ class UserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         """
-        Инициализация формы с кастомизацией полей.
+        Form initialization with field customization.
         """
         super().__init__(*args, **kwargs)
 
-        # Кастомизация поля password1
+        # Customize password1 field
         self.fields["password1"].widget.attrs.update(
             {
                 "class": "form-control",
-                "placeholder": _("Создайте надежный пароль"),
+                "placeholder": _("Create a strong password"),
                 "autocomplete": "new-password",
             }
         )
         self.fields["password1"].validators.append(validate_password_no_russian)
 
-        # Кастомизация поля password2
+        # Customize password2 field
         self.fields["password2"].widget.attrs.update(
             {
                 "class": "form-control",
-                "placeholder": _("Повторите ваш пароль"),
+                "placeholder": _("Repeat your password"),
                 "autocomplete": "new-password",
             }
         )
 
-        # Установка лейблов и вспомогательных текстов
-        self.fields["password1"].label = _("Пароль")
-        self.fields["password2"].label = _("Подтверждение пароля")
+        # Set labels and help texts
+        self.fields["password1"].label = _("Password")
+        self.fields["password2"].label = _("Password confirmation")
         self.fields["password1"].help_text = _(
-            "Пароль должен содержать минимум 8 символов, "
-            "не состоять только из цифр и не быть слишком простым. "
-            "Русские буквы не допускаются."
+            "Password must contain at least 8 characters, "
+            "not consist only of numbers and not be too simple. "
+            "Russian letters are not allowed."
         )
 
     def clean_email(self):
@@ -87,11 +86,11 @@ class UserRegistrationForm(UserCreationForm):
             user = User.objects.get(email=email)
             if user.email_verified:
                 raise ValidationError(
-                    _("Пользователь с таким email уже существует."),
+                    _("User with this email already exists."),
                     code="duplicate_email",
                 )
             else:
-                # Email есть, но не подтверждён — используем существующего пользователя
+                # Email exists but not verified - use existing user
                 self.instance = user
         except User.DoesNotExist:
             pass
@@ -99,14 +98,14 @@ class UserRegistrationForm(UserCreationForm):
 
     def clean_password1(self):
         """
-        Валидация пароля.
+        Password validation.
         """
         password1 = self.cleaned_data.get("password1")
 
-        # Проверка на русские символы
+        # Check for Russian characters
         validate_password_no_russian(password1)
 
-        # Стандартная валидация пароля Django
+        # Standard Django password validation
         from django.contrib.auth.password_validation import validate_password
 
         validate_password(password1)
@@ -115,7 +114,7 @@ class UserRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         """
-        Сохранение пользователя с нормализованным email.
+        Save user with normalized email.
         """
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"].lower().strip()
@@ -128,8 +127,8 @@ class UserRegistrationForm(UserCreationForm):
 
 class UserLoginForm(AuthenticationForm):
     """
-    Форма входа пользователя.
-    Наследуется от AuthenticationForm, меняем username на email.
+    User login form.
+    Inherits from AuthenticationForm, changes username to email.
     """
 
     username = forms.EmailField(
@@ -162,7 +161,7 @@ class UserLoginForm(AuthenticationForm):
 
     def confirm_login_allowed(self, user):
         """
-        Проверяет, может ли пользователь войти в систему.
+        Check if user can log in.
         """
         if not user.email_verified:
             raise forms.ValidationError(
@@ -174,36 +173,36 @@ class UserLoginForm(AuthenticationForm):
 
 class EmailVerificationForm(forms.Form):
     """
-    Форма для ввода кода подтверждения email
+    Form for entering email verification code
     """
 
     verification_code = forms.CharField(
-        label=_("Код подтверждения"),
+        label=_("Verification code"),
         max_length=6,
         min_length=6,
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": _("Введите 6-значный код"),
+                "placeholder": _("Enter 6-digit code"),
                 "maxlength": "6",
                 "pattern": "[0-9]{6}",
             }
         ),
-        help_text=_("Введите 6-значный код, отправленный на ваш email"),
+        help_text=_("Enter 6-digit code sent to your email"),
     )
 
     def clean_verification_code(self):
-        """Валидация кода подтверждения"""
+        """Validate verification code"""
         code = self.cleaned_data.get("verification_code", "").strip()
         if not code.isdigit() or len(code) != 6:
             raise ValidationError(
-                _("Код должен состоять из 6 цифр."), code="invalid_code_format"
+                _("Code must consist of 6 digits."), code="invalid_code_format"
             )
         return code
 
 
 class UserEditForm(forms.ModelForm):
-    # Убираем поле password, чтобы пользователь не видел его в открытом виде
+    # Remove password field so user doesn't see it in plain text
     password = None
 
     class Meta:
@@ -212,70 +211,62 @@ class UserEditForm(forms.ModelForm):
             "email",
             "first_name",
             "last_name",
-        )  # Добавляем поля при необходимости
-
-
-import os
-
-from django import forms
-from django.core.validators import MaxLengthValidator, RegexValidator
-
-from .models import Profile, City
+        )  # Add fields as needed
 
 
 class ProfileEditForm(forms.ModelForm):
-    # Переопределяем поле bio для добавления счетчика символов
+    # Override bio field to add character counter
     bio = forms.CharField(
         max_length=500,
         required=False,
         widget=forms.Textarea(
             attrs={
                 "rows": 4,
-                "placeholder": "Расскажите о себе и своем творчестве...",
+                "placeholder": _("Tell about yourself and your creativity..."),
                 "class": "form-control",
                 "maxlength": "500",
                 "data-max-length": "500",
             }
         ),
-        label="О себе",
-        help_text="Максимум 500 символов",
+        label=_("About me"),
+        help_text=_("Maximum 500 characters"),
     )
 
-    # Переопределяем поле city для использования текстового ввода с автодополнением
+    # Override city field for autocomplete text input
     city = forms.ModelChoiceField(
         queryset=City.objects.filter(is_active=True).order_by("name"),
         required=False,
-        widget=forms.HiddenInput(),  # Скрытое поле для хранения ID выбранного города
+        widget=forms.HiddenInput(),  # Hidden field for storing selected city ID
     )
 
-    # Новое поле для текстового ввода с автодополнением
+    # New field for autocomplete text input
     city_search = forms.CharField(
         max_length=150,
         required=False,
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Начните вводить название города...",
+                "placeholder": _("Start typing city name..."),
                 "list": "cities-datalist",
                 "autocomplete": "off",
                 "id": "city-search-input",
             }
         ),
-        label="Город",
-        help_text="Начните вводить название города и выберите из списка",
+        label=_("City"),
+        help_text=_("Start typing city name and select from list"),
     )
 
-    # Переопределяем поле avatar для добавления валидации
+    # Override avatar field to add validation
     avatar = forms.ImageField(
         required=False,
         widget=forms.FileInput(
             attrs={
                 "class": "form-control",
                 "accept": ".jpg,.jpeg,.png,.gif,.webp",
-                "data-max-size": "5242880",  # 5MB в байтах
+                "data-max-size": "5242880",  # 5MB in bytes
             }
         ),
-        label="Аватар профиля",
+        label=_("Profile avatar"),
     )
 
     class Meta:
@@ -284,29 +275,29 @@ class ProfileEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Добавляем CSS классы для валидации
+        # Add CSS classes for validation
         self.fields["email"] = forms.EmailField(
             required=True,
             widget=forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Введите ваш email"}
+                attrs={"class": "form-control", "placeholder": _("Enter your email")}
             ),
-            label="Email адрес",
+            label=_("Email address"),
         )
 
-        # Обновляем queryset для поля city в init, чтобы всегда получать актуальные данные
+        # Update queryset for city field in init to always get current data
         self.fields["city"].queryset = City.objects.filter(is_active=True).order_by(
             "name"
         )
 
-        # Устанавливаем начальное значение для поля поиска города
+        # Set initial value for city search field
         if self.instance and self.instance.city:
             self.fields["city_search"].initial = self.instance.city.name
 
     def clean(self):
-        """Общая валидация формы"""
+        """General form validation"""
         cleaned_data = super().clean()
 
-        # Проверяем, что выбран существующий город
+        # Check that existing city is selected
         city_search = cleaned_data.get("city_search")
         city_id = cleaned_data.get("city")
 
@@ -315,47 +306,47 @@ class ProfileEditForm(forms.ModelForm):
                 city = City.objects.get(name=city_search)
                 cleaned_data["city"] = city
             except City.DoesNotExist:
-                self.add_error("city_search", "Выберите город из списка")
+                self.add_error("city_search", _("Select city from list"))
 
-        # Можно добавить кросс-полевые проверки если нужно
+        # Can add cross-field validations if needed
         city = cleaned_data.get("city")
         bio = cleaned_data.get("bio")
 
-        # Пример: если указан город, но нет информации о себе - предупреждение
+        # Example: if city specified but no bio - warning
         if city and not bio:
             self.add_warning(
                 "bio",
-                "Рекомендуем добавить информацию о себе для лучшего представления вашего профиля.",
+                _("We recommend adding information about yourself for better profile presentation."),
             )
 
         return cleaned_data
 
     def clean_avatar(self):
-        """Кастомная очистка поля avatar"""
+        """Custom avatar field cleaning"""
         avatar = self.cleaned_data.get("avatar")
 
         if avatar:
-            # Дополнительная проверка расширения (на всякий случай)
+            # Additional extension check (just in case)
             ext = os.path.splitext(avatar.name)[1].lower()
             if ext == ".tiff" or ext == ".tif":
                 raise forms.ValidationError(
-                    "Формат TIFF не поддерживается. Используйте JPG, PNG, GIF или WebP."
+                    _("TIFF format is not supported. Use JPG, PNG, GIF or WebP.")
                 )
 
-            # Дополнительная проверка размера
+            # Additional size check
             if avatar.size > 5 * 1024 * 1024:
-                raise forms.ValidationError("Размер файла не должен превышать 5MB.")
+                raise forms.ValidationError(_("File size must not exceed 5MB."))
 
         return avatar
 
     def add_warning(self, field, message):
-        """Метод для добавления предупреждений (не ошибок)"""
+        """Method for adding warnings (not errors)"""
         if not hasattr(self, "_warnings"):
             self._warnings = {}
         self._warnings[field] = message
 
     def get_warnings(self):
-        """Получить предупреждения формы"""
+        """Get form warnings"""
         return getattr(self, "_warnings", {})
 
 
@@ -363,25 +354,25 @@ class AccountDeleteForm(forms.Form):
     confirm = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
-        label="Я понимаю, что это действие нельзя отменить",
+        label=_("I understand this action cannot be undone"),
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Введите ваш пароль для подтверждения",
+                "placeholder": _("Enter your password to confirm"),
             }
         ),
-        label="Текущий пароль",
+        label=_("Current password"),
         required=True,
     )
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user", None)  # Извлекаем user из kwargs
+        self.user = kwargs.pop("user", None)  # Extract user from kwargs
         super().__init__(*args, **kwargs)
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
         if self.user and not self.user.check_password(password):
-            raise forms.ValidationError("Неверный пароль")
+            raise forms.ValidationError(_("Incorrect password"))
         return password

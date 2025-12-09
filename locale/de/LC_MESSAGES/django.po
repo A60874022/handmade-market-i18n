@@ -1,0 +1,2547 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-09 19:50+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: .\ad_service\settings.py:183
+msgid "English"
+msgstr "Englisch"
+
+#: .\ad_service\settings.py:184
+msgid "Français"
+msgstr "Französisch"
+
+#: .\ad_service\settings.py:185
+msgid "Deutsch"
+msgstr "Deutsch"
+
+#: .\notifications\models.py:11
+msgid "🎉 New order"
+msgstr "🎉 Neue Bestellung"
+
+#: .\notifications\models.py:12
+msgid "📦 Order status changed"
+msgstr "📦 Bestellstatus geändert"
+
+#: .\notifications\models.py:13 .\notifications\services.py:72
+msgid "💬 New message"
+msgstr "💬 Neue Nachricht"
+
+#: .\notifications\models.py:14
+msgid "❤️ Product added to favorites"
+msgstr "❤️ Produkt zu Favoriten hinzugefügt"
+
+#: .\notifications\models.py:15
+msgid "🔔 System notification"
+msgstr "🔔 Systembenachrichtigung"
+
+#: .\notifications\models.py:16 .\notifications\services.py:119
+msgid "❌ Order cancelled"
+msgstr "❌ Bestellung storniert"
+
+#: .\notifications\models.py:40
+#, python-format
+msgid "%(type)s for %(email)s"
+msgstr "%(type)s für %(email)s"
+
+#: .\notifications\services.py:19
+#, python-format
+msgid " and %(count)d more products"
+msgstr " und %(count)d weitere Produkte"
+
+#: .\notifications\services.py:30
+msgid "🎉 New order!"
+msgstr "🎉 Neue Bestellung!"
+
+#: .\notifications\services.py:31
+#, python-format
+msgid ""
+"Customer %(email)s placed an order for your products: %(items)s. Total "
+"amount: %(total)s RUB."
+msgstr ""
+"Kunde %(email)s hat eine Bestellung für Ihre Produkte aufgegeben: %(items)s. "
+"Gesamtbetrag: %(total)s RUB."
+
+#: .\notifications\services.py:61
+#, python-format
+msgid "New message from %(email)s: %(text)s%(ellipsis)s"
+msgstr "Neue Nachricht von %(email)s: %(text)s%(ellipsis)s"
+
+#: .\notifications\services.py:73
+#, python-format
+msgid "%(email)s: %(text)s%(ellipsis)s"
+msgstr "%(email)s: %(text)s%(ellipsis)s"
+
+#: .\notifications\services.py:120
+#, python-format
+msgid "Customer %(email)s cancelled order #%(id)s"
+msgstr "Kunde %(email)s hat Bestellung #%(id)s storniert"
+
+#: .\notifications\services.py:142
+msgid "❌ Order cancelled by master"
+msgstr "❌ Bestellung vom Handwerker storniert"
+
+#: .\notifications\services.py:143
+#, python-format
+msgid "Master %(email)s cancelled your order #%(id)s"
+msgstr "Handwerker %(email)s hat Ihre Bestellung #%(id)s storniert"
+
+#: .\notifications\views.py:37
+msgid "Error loading notifications"
+msgstr "Fehler beim Laden der Benachrichtigungen"
+
+#: .\orders\models.py:19
+#, python-format
+msgid "Cart of %(email)s"
+msgstr "Warenkorb von %(email)s"
+
+#: .\orders\models.py:53
+msgid "Placed"
+msgstr "Aufgegeben"
+
+#: .\orders\models.py:54
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+#: .\orders\models.py:55
+msgid "Shipped"
+msgstr "Versandt"
+
+#: .\orders\models.py:56
+msgid "Delivered"
+msgstr "Geliefert"
+
+#: .\orders\models.py:57
+msgid "Cancelled"
+msgstr "Storniert"
+
+#: .\orders\models.py:67
+#, python-format
+msgid "Order #%(id)s - %(email)s"
+msgstr "Bestellung #%(id)s - %(email)s"
+
+#: .\orders\views.py:38
+msgid "Error loading cart"
+msgstr "Fehler beim Laden des Warenkorbs"
+
+#: .\orders\views.py:50
+msgid "You cannot buy your own products"
+msgstr "Sie können keine eigenen Produkte kaufen"
+
+#: .\orders\views.py:66
+#, python-format
+msgid "Quantity of product \"%(title)s\" increased to %(quantity)d"
+msgstr "Menge des Produkts \"%(title)s\" erhöht auf %(quantity)d"
+
+#: .\orders\views.py:70
+#, python-format
+msgid "Product \"%(title)s\" added to cart!"
+msgstr "Produkt \"%(title)s\" zum Warenkorb hinzugefügt!"
+
+#: .\orders\views.py:82
+msgid "Error adding product to cart"
+msgstr "Fehler beim Hinzufügen des Produkts zum Warenkorb"
+
+#: .\orders\views.py:100
+msgid "Product removed from cart"
+msgstr "Produkt aus Warenkorb entfernt"
+
+#: .\orders\views.py:112
+msgid "Error updating cart"
+msgstr "Fehler beim Aktualisieren des Warenkorbs"
+
+#: .\orders\views.py:124
+#, python-format
+msgid "Product \"%(title)s\" removed from cart"
+msgstr "Produkt \"%(title)s\" aus Warenkorb entfernt"
+
+#: .\orders\views.py:135
+msgid "Error removing product from cart"
+msgstr "Fehler beim Entfernen des Produkts aus dem Warenkorb"
+
+#: .\orders\views.py:148 .\orders\views.py:182
+#: .\templates\orders\cart.html:108
+msgid "Your cart is empty"
+msgstr "Ihr Warenkorb ist leer"
+
+#: .\orders\views.py:158
+#, python-format
+msgid "Product \"%(title)s\" is no longer available"
+msgstr "Produkt \"%(title)s\" ist nicht mehr verfügbar"
+
+#: .\orders\views.py:179
+msgid ""
+"You cannot buy your own products. These products have been removed from cart."
+msgstr ""
+"Sie können keine eigenen Produkte kaufen. Diese Produkte wurden aus dem "
+"Warenkorb entfernt."
+
+#: .\orders\views.py:188
+msgid "Your own products have been removed from cart before order placement."
+msgstr ""
+"Ihre eigenen Produkte wurden vor der Bestellaufgabe aus dem Warenkorb "
+"entfernt."
+
+#: .\orders\views.py:191
+msgid "placed"
+msgstr "aufgegeben"
+
+#: .\orders\views.py:226
+#, python-format
+msgid "Order #%(id)s successfully placed! Amount: %(amount)s RUB"
+msgstr "Bestellung #%(id)s erfolgreich aufgegeben! Betrag: %(amount)s RUB"
+
+#: .\orders\views.py:238
+#, python-format
+msgid "Error creating order: %(error)s"
+msgstr "Fehler beim Erstellen der Bestellung: %(error)s"
+
+#: .\orders\views.py:262 .\orders\views.py:288
+msgid "Error loading orders"
+msgstr "Fehler beim Laden der Bestellungen"
+
+#: .\orders\views.py:307
+msgid "delivered"
+msgstr "geliefert"
+
+#: .\orders\views.py:308
+msgid "Cannot delete delivered order."
+msgstr "Gelieferte Bestellung kann nicht gelöscht werden."
+
+#: .\orders\views.py:338
+#, python-format
+msgid "Order #%(id)s successfully deleted."
+msgstr "Bestellung #%(id)s erfolgreich gelöscht."
+
+#: .\orders\views.py:346
+msgid "Order not found or you don't have permission to delete it."
+msgstr "Bestellung nicht gefunden oder Sie haben keine Berechtigung zum Löschen."
+
+#: .\orders\views.py:355
+#, python-format
+msgid "Error deleting order: %(error)s"
+msgstr "Fehler beim Löschen der Bestellung: %(error)s"
+
+#: .\orders\views.py:373
+msgid "This order does not contain your products."
+msgstr "Diese Bestellung enthält nicht Ihre Produkte."
+
+#: .\orders\views.py:398
+#, python-format
+msgid "Order #%(id)s has been successfully deleted."
+msgstr "Bestellung #%(id)s wurde erfolgreich gelöscht."
+
+#: .\orders\views.py:406
+msgid "Order not found."
+msgstr "Bestellung nicht gefunden."
+
+#: .\orders\views.py:415
+#, python-format
+msgid "An error occurred while deleting order: %(error)s"
+msgstr "Fehler beim Löschen der Bestellung: %(error)s"
+
+#: .\products\admin.py:37
+msgid "Basic Information"
+msgstr "Grundlegende Informationen"
+
+#: .\products\admin.py:40 .\templates\products\product_detail.html:122
+msgid "Status"
+msgstr "Status"
+
+#: .\products\forms.py:17
+msgid "For example: Knitted wool hat"
+msgstr "Zum Beispiel: Gestrickte Wollmütze"
+
+#: .\products\forms.py:25
+msgid "Describe your product, materials, sizes..."
+msgstr "Beschreiben Sie Ihr Produkt, Materialien, Größen..."
+
+#: .\products\forms.py:45 .\products\models.py:51
+msgid "Title must contain only Latin characters, numbers and spaces"
+msgstr "Titel darf nur lateinische Zeichen, Zahlen und Leerzeichen enthalten"
+
+#: .\products\forms.py:51 .\products\models.py:61
+msgid "Description must contain only Latin characters, numbers and punctuation"
+msgstr "Beschreibung darf nur lateinische Zeichen, Zahlen und Satzzeichen enthalten"
+
+#: .\products\forms.py:58
+msgid "Enter product price"
+msgstr "Produktpreis eingeben"
+
+#: .\products\forms.py:64
+msgid "Enter correct price (numbers only)"
+msgstr "Geben Sie den korrekten Preis ein (nur Zahlen)"
+
+#: .\products\forms.py:68 .\products\models.py:70
+#: .\templates\products\product_edit.html:493
+msgid "Price must be at least 1 ruble"
+msgstr "Preis muss mindestens 1 Rubel betragen"
+
+#: .\products\forms.py:71
+msgid "Price cannot exceed 5,000,000 rubles"
+msgstr "Preis darf 5.000.000 Rubel nicht überschreiten"
+
+#: .\products\forms.py:79
+msgid "Title cannot exceed 60 characters"
+msgstr "Titel darf 60 Zeichen nicht überschreiten"
+
+#: .\products\forms.py:86
+msgid "Description cannot exceed 300 characters"
+msgstr "Beschreibung darf 300 Zeichen nicht überschreiten"
+
+#: .\products\models.py:12
+msgid "Name"
+msgstr "Name"
+
+#: .\products\models.py:13
+msgid "URL"
+msgstr "URL"
+
+#: .\products\models.py:16 .\products\models.py:43
+#: .\templates\products\product_edit.html:38
+#: .\templates\products\product_form.html:41
+msgid "Category"
+msgstr "Kategorie"
+
+#: .\products\models.py:17
+msgid "Categories"
+msgstr "Kategorien"
+
+#: .\products\models.py:36
+msgid "Master"
+msgstr "Handwerker"
+
+#: .\products\models.py:47
+msgid "Title"
+msgstr "Titel"
+
+#: .\products\models.py:57 .\templates\products\product_edit.html:114
+#: .\templates\products\product_form.html:117
+msgid "Description"
+msgstr "Beschreibung"
+
+#: .\products\models.py:68
+msgid "Price"
+msgstr "Preis"
+
+#: .\products\models.py:72
+#, python-format
+msgid "Price cannot exceed %(max_price)s rubles"
+msgstr "Preis darf %(max_price)s Rubel nicht überschreiten"
+
+#: .\products\models.py:76 .\users\models.py:151 .\users\models.py:195
+msgid "Created at"
+msgstr "Erstellt am"
+
+#: .\products\models.py:77 .\users\models.py:196
+msgid "Updated at"
+msgstr "Aktualisiert am"
+
+#: .\products\models.py:78 .\templates\products\my_products.html:50
+#: .\templates\products\product_detail.html:125 .\users\models.py:150
+msgid "Active"
+msgstr "Aktiv"
+
+#: .\products\models.py:80
+msgid "Approved by moderator"
+msgstr "Von Moderator genehmigt"
+
+#: .\products\models.py:84
+msgid "Product"
+msgstr "Produkt"
+
+#: .\products\models.py:85
+msgid "Products"
+msgstr "Produkte"
+
+#: .\products\models.py:107 .\templates\users\edit_profile.html:79
+msgid "City not specified"
+msgstr "Stadt nicht angegeben"
+
+#: .\products\models.py:132 .\templates\products\product_detail.html:338
+#: .\templates\products\product_form.html:222
+msgid "Image"
+msgstr "Bild"
+
+#: .\products\models.py:133
+msgid "Main image"
+msgstr "Hauptbild"
+
+#: .\products\models.py:136
+msgid "Product image"
+msgstr "Produktbild"
+
+#: .\products\models.py:137 .\templates\products\product_edit.html:144
+#: .\templates\products\product_form.html:147
+msgid "Product images"
+msgstr "Produktbilder"
+
+#: .\products\models.py:140
+#, python-format
+msgid "Image of %(title)s"
+msgstr "Bild von %(title)s"
+
+#: .\products\models.py:162
+msgid "Favorite"
+msgstr "Favorit"
+
+#: .\products\models.py:163
+msgid "Favorite products"
+msgstr "Lieblingsprodukte"
+
+#: .\products\views.py:40
+msgid "⚠️ Please specify your city in your profile before creating a product."
+msgstr "⚠️ Bitte geben Sie Ihre Stadt im Profil an, bevor Sie ein Produkt erstellen."
+
+#: .\products\views.py:73 .\products\views.py:149
+#, python-format
+msgid "Error in image: %(error)s"
+msgstr "Fehler im Bild: %(error)s"
+
+#: .\products\views.py:76
+msgid "✅ Product successfully created!"
+msgstr "✅ Produkt erfolgreich erstellt!"
+
+#: .\products\views.py:81
+msgid "Error creating product"
+msgstr "Fehler beim Erstellen des Produkts"
+
+#: .\products\views.py:153
+msgid "Product successfully updated!"
+msgstr "Produkt erfolgreich aktualisiert!"
+
+#: .\products\views.py:163
+msgid "Error updating product"
+msgstr "Fehler beim Aktualisieren des Produkts"
+
+#: .\products\views.py:179
+msgid "Product successfully deleted!"
+msgstr "Produkt erfolgreich gelöscht!"
+
+#: .\products\views.py:188
+msgid "Error deleting product"
+msgstr "Fehler beim Löschen des Produkts"
+
+#: .\products\views.py:332
+msgid "Error loading profile"
+msgstr "Fehler beim Laden des Profils"
+
+#: .\products\views.py:346
+#, python-format
+msgid "Product \"%(title)s\" added to favorites"
+msgstr "Produkt \"%(title)s\" zu Favoriten hinzugefügt"
+
+#: .\products\views.py:348
+#, python-format
+msgid "Product \"%(title)s\" is already in favorites"
+msgstr "Produkt \"%(title)s\" ist bereits in den Favoriten"
+
+#: .\products\views.py:360
+msgid "Error adding to favorites"
+msgstr "Fehler beim Hinzufügen zu Favoriten"
+
+#: .\products\views.py:372 .\products\views.py:396
+#, python-format
+msgid "Product \"%(title)s\" removed from favorites"
+msgstr "Produkt \"%(title)s\" aus Favoriten entfernt"
+
+#: .\products\views.py:383 .\products\views.py:407
+msgid "Error removing from favorites"
+msgstr "Fehler beim Entfernen aus Favoriten"
+
+#: .\products\views.py:441
+msgid "No category"
+msgstr "Keine Kategorie"
+
+#: .\templates\base.html:9
+msgid "Handmade Marketplace"
+msgstr "Handgemachter Marktplatz"
+
+#: .\templates\base.html:302 .\templates\base.html:395
+#: .\templates\base.html:476 .\templates\base.html:544
+#: .\templates\users\emails\email_verification.html:12
+#: .\templates\users\emails\email_verification.txt:4
+#: .\templates\users\emails\email_verification_code.html:76
+msgid "Hello"
+msgstr "Hallo"
+
+#: .\templates\base.html:306 .\templates\base.html:343
+#: .\templates\base.html:477 .\templates\base.html:545
+msgid "Catalog"
+msgstr "Katalog"
+
+#: .\templates\base.html:328
+msgid "The site is in test mode."
+msgstr "Die Seite befindet sich im Testmodus."
+
+#: .\templates\base.html:331
+msgid "Hide notification"
+msgstr "Benachrichtigung ausblenden"
+
+#: .\templates\base.html:339 .\templates\base.html:492
+msgid "HandmadeMarket"
+msgstr "HandmadeMarket"
+
+#: .\templates\base.html:396
+msgid "master"
+msgstr "Handwerker"
+
+#: .\templates\base.html:413
+msgid "Cart"
+msgstr "Warenkorb"
+
+#: .\templates\base.html:416 .\templates\products\catalog.html:19
+#: .\templates\users\customer_profile.html:41
+msgid "Favorites"
+msgstr "Favoriten"
+
+#: .\templates\base.html:419
+msgid "My dialogues"
+msgstr "Meine Dialoge"
+
+#: .\templates\base.html:434
+msgid "Logout"
+msgstr "Abmelden"
+
+#: .\templates\base.html:441 .\templates\users\login.html:4
+#: .\templates\users\login.html:56
+msgid "Login"
+msgstr "Anmelden"
+
+#: .\templates\base.html:442 .\templates\users\login.html:62
+#: .\templates\users\register.html:84
+msgid "Register"
+msgstr "Registrieren"
+
+#: .\templates\base.html:463 .\templates\products\my_products.html:112
+#: .\templates\products\product_detail.html:265
+#: .\templates\products\product_detail.html:316
+msgid "Close"
+msgstr "Schließen"
+
+#: .\templates\base.html:495
+msgid "All rights reserved."
+msgstr "Alle Rechte vorbehalten."
+
+#: .\templates\base.html:500
+msgid "Information"
+msgstr "Information"
+
+#: .\templates\base.html:502 .\templates\pages\privacy_policy.html:3
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"
+
+#: .\templates\base.html:504
+msgid "Terms of Use"
+msgstr "Nutzungsbedingungen"
+
+#: .\templates\base.html:505 .\templates\pages\contacts.html:3
+#: .\templates\pages\contacts.html:8 .\templates\pages\returns.html:52
+#: .\templates\pages\shipping.html:52 .\templates\pages\terms_of_use.html:68
+msgid "Contacts"
+msgstr "Kontakte"
+
+#: .\templates\base.html:511
+msgid "Help"
+msgstr "Hilfe"
+
+#: .\templates\base.html:513
+msgid "FAQ"
+msgstr "FAQ"
+
+#: .\templates\base.html:514
+msgid "Shipping & Payment"
+msgstr "Versand & Zahlung"
+
+#: .\templates\base.html:516
+msgid "Returns & Exchanges"
+msgstr "Rückgaben & Umtausch"
+
+#: .\templates\base.html:526
+msgid ""
+"HandmadeMarket is a secure platform for buying and selling unique handmade "
+"goods"
+msgstr "HandmadeMarket ist eine sichere Plattform für den Kauf und Verkauf einzigartiger handgefertigter Waren"
+
+#: .\templates\home.html:7 .\templates\home.html:11
+msgid "Привет, мир!"
+msgstr "Hallo Welt!"
+
+#: .\templates\notifications\notification_list.html:4
+#: .\templates\notifications\notification_list.html:12
+#: .\templates\orders\sale_orders.html:20
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+#: .\templates\notifications\notification_list.html:13
+msgid "All notifications about your activity on the platform"
+msgstr "Alle Benachrichtigungen über Ihre Aktivität auf der Plattform"
+
+#: .\templates\notifications\notification_list.html:18
+msgid "Mark All as Read"
+msgstr "Alle als gelesen markieren"
+
+#: .\templates\notifications\notification_list.html:24
+msgid "Delete Read"
+msgstr "Gelesene löschen"
+
+#: .\templates\notifications\notification_list.html:29
+#: .\templates\orders\purchase_orders.html:17
+#: .\templates\orders\sale_orders.html:4
+#: .\templates\orders\sale_orders.html:12
+msgid "My Sales"
+msgstr "Meine Verkäufe"
+
+#: .\templates\notifications\notification_list.html:54
+msgid "Today"
+msgstr "Heute"
+
+#: .\templates\notifications\notification_list.html:75
+msgid "Go to"
+msgstr "Gehe zu"
+
+#: .\templates\notifications\notification_list.html:81
+#: .\templates\notifications\notification_list.html:248
+msgid "Mark as read"
+msgstr "Als gelesen markieren"
+
+#: .\templates\notifications\notification_list.html:85
+#: .\templates\notifications\notification_list.html:261
+msgid "Read"
+msgstr "Gelesen"
+
+#: .\templates\notifications\notification_list.html:88
+#: .\templates\notifications\notification_list.html:249
+msgid "Delete notification"
+msgstr "Benachrichtigung löschen"
+
+#: .\templates\notifications\notification_list.html:106
+msgid "Back"
+msgstr "Zurück"
+
+#: .\templates\notifications\notification_list.html:120
+#: .\templates\products\catalog.html:283
+#: .\templates\products\product_detail.html:49
+msgid "Next"
+msgstr "Weiter"
+
+#: .\templates\notifications\notification_list.html:130
+msgid "No notifications yet"
+msgstr "Noch keine Benachrichtigungen"
+
+#: .\templates\notifications\notification_list.html:135
+#: .\templates\orders\cart.html:111
+#: .\templates\orders\purchase_orders.html:170
+#: .\templates\users\customer_profile.html:216
+msgid "Go to Catalog"
+msgstr "Zum Katalog"
+
+#: .\templates\notifications\notification_list.html:138
+#: .\templates\orders\purchase_orders.html:173
+#: .\templates\orders\sale_orders.html:167
+#: .\templates\products\my_products.html:4
+#: .\templates\products\my_products.html:11
+#: .\templates\products\product_detail.html:232
+#: .\templates\users\edit_profile.html:27
+#: .\templates\users\edit_profile.html:253
+msgid "My Products"
+msgstr "Meine Produkte"
+
+#: .\templates\notifications\notification_list.html:141
+#: .\templates\products\my_products.html:19
+msgid "Add Product"
+msgstr "Produkt hinzufügen"
+
+#: .\templates\notifications\notification_list.html:250
+msgid "Mark all notifications as read?"
+msgstr "Alle Benachrichtigungen als gelesen markieren?"
+
+#: .\templates\notifications\notification_list.html:251
+msgid "Delete all read notifications? This action cannot be undone."
+msgstr "Alle gelesenen Benachrichtigungen löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: .\templates\notifications\notification_list.html:252
+msgid "Delete this notification?"
+msgstr "Diese Benachrichtigung löschen?"
+
+#: .\templates\notifications\notification_list.html:253
+msgid "Notification marked as read"
+msgstr "Benachrichtigung als gelesen markiert"
+
+#: .\templates\notifications\notification_list.html:254
+msgid "All notifications marked as read"
+msgstr "Alle Benachrichtigungen als gelesen markiert"
+
+#: .\templates\notifications\notification_list.html:255
+msgid "Notification deleted"
+msgstr "Benachrichtigung gelöscht"
+
+#: .\templates\notifications\notification_list.html:256
+msgid "Deleted {{ count }} read notifications"
+msgstr "{{ count }} gelesene Benachrichtigungen gelöscht"
+
+#: .\templates\notifications\notification_list.html:257
+msgid "Error marking notification as read"
+msgstr "Fehler beim Markieren der Benachrichtigung als gelesen"
+
+#: .\templates\notifications\notification_list.html:258
+msgid "Error marking all notifications as read"
+msgstr "Fehler beim Markieren aller Benachrichtigungen als gelesen"
+
+#: .\templates\notifications\notification_list.html:259
+msgid "Error deleting notification"
+msgstr "Fehler beim Löschen der Benachrichtigung"
+
+#: .\templates\notifications\notification_list.html:260
+msgid "Error deleting notifications"
+msgstr "Fehler beim Löschen der Benachrichtigungen"
+
+#: .\templates\orders\cart.html:4 .\templates\orders\cart.html:10
+#: .\templates\orders\purchase_orders.html:20
+#: .\templates\products\catalog.html:27
+msgid "Shopping Cart"
+msgstr "Warenkorb"
+
+#: .\templates\orders\cart.html:33 .\templates\orders\purchase_orders.html:82
+msgid "Master:"
+msgstr "Handwerker:"
+
+#: .\templates\orders\cart.html:58 .\templates\orders\cart.html:141
+msgid "Quantity must be from 1 to 99"
+msgstr "Menge muss zwischen 1 und 99 liegen"
+
+#: .\templates\orders\cart.html:64 .\templates\orders\purchase_orders.html:95
+#: .\templates\orders\sale_orders.html:95
+msgid "per piece:"
+msgstr "pro Stück:"
+
+#: .\templates\orders\cart.html:72 .\templates\orders\cart.html:140
+#: .\templates\orders\cart.html:142
+msgid "Remove product from cart?"
+msgstr "Produkt aus Warenkorb entfernen?"
+
+#: .\templates\orders\cart.html:84
+msgid "Total:"
+msgstr "Gesamt:"
+
+#: .\templates\orders\cart.html:85
+msgid "For"
+msgstr "Für"
+
+#: .\templates\orders\cart.html:92
+msgid "Place Order"
+msgstr "Bestellung aufgeben"
+
+#: .\templates\orders\cart.html:102 .\templates\users\customer_profile.html:70
+msgid "Continue Shopping"
+msgstr "Weiter einkaufen"
+
+#: .\templates\orders\cart.html:109
+msgid "Add products from the catalog to place an order"
+msgstr "Fügen Sie Produkte aus dem Katalog hinzu, um eine Bestellung aufzugeben"
+
+#: .\templates\orders\purchase_orders.html:4
+#: .\templates\orders\purchase_orders.html:12
+#: .\templates\orders\sale_orders.html:17
+msgid "My Purchases"
+msgstr "Meine Einkäufe"
+
+#: .\templates\orders\purchase_orders.html:13
+msgid "History of your handmade products purchases"
+msgstr "Verlauf Ihrer handgefertigten Produktkäufe"
+
+#: .\templates\orders\purchase_orders.html:44
+#: .\templates\orders\sale_orders.html:44
+msgid "Order"
+msgstr "Bestellung"
+
+#: .\templates\orders\purchase_orders.html:45
+#: .\templates\orders\sale_orders.html:47
+msgid "Created:"
+msgstr "Erstellt:"
+
+#: .\templates\orders\purchase_orders.html:104
+#: .\templates\orders\sale_orders.html:105
+msgid "Updated:"
+msgstr "Aktualisiert:"
+
+#: .\templates\orders\purchase_orders.html:110
+#: .\templates\orders\purchase_orders.html:153
+#: .\templates\orders\sale_orders.html:110
+#: .\templates\orders\sale_orders.html:147
+msgid "Delete Order"
+msgstr "Bestellung löschen"
+
+#: .\templates\orders\purchase_orders.html:128
+#: .\templates\orders\sale_orders.html:124
+msgid "Delete Confirmation"
+msgstr "Löschbestätigung"
+
+#: .\templates\orders\purchase_orders.html:134
+#: .\templates\orders\sale_orders.html:130
+msgid "Are you sure you want to delete order"
+msgstr "Sind Sie sicher, dass Sie die Bestellung löschen möchten"
+
+#: .\templates\orders\purchase_orders.html:166
+msgid "You have no purchases yet"
+msgstr "Sie haben noch keine Einkäufe"
+
+#: .\templates\orders\purchase_orders.html:167
+msgid "When you place an order, it will appear on this page"
+msgstr "Wenn Sie eine Bestellung aufgeben, erscheint sie auf dieser Seite"
+
+#: .\templates\orders\sale_orders.html:13
+msgid "Customer orders for your handmade products"
+msgstr "Kundenbestellungen für Ihre handgefertigten Produkte"
+
+#: .\templates\orders\sale_orders.html:45
+msgid "Customer:"
+msgstr "Kunde:"
+
+#: .\templates\orders\sale_orders.html:68
+msgid "My products in order:"
+msgstr "Meine Produkte in der Bestellung:"
+
+#: .\templates\orders\sale_orders.html:88
+msgid "SKU:"
+msgstr "Artikelnummer:"
+
+#: .\templates\orders\sale_orders.html:160
+msgid "No sales yet"
+msgstr "Noch keine Verkäufe"
+
+#: .\templates\orders\sale_orders.html:161
+msgid "When customers order your products, orders will appear here"
+msgstr "Wenn Kunden Ihre Produkte bestellen, erscheinen Bestellungen hier"
+
+#: .\templates\orders\sale_orders.html:164
+msgid "Add More Products"
+msgstr "Weitere Produkte hinzufügen"
+
+#: .\templates\pages\contacts.html:11
+msgid "Page content will be added later."
+msgstr "Seiteninhalt wird später hinzugefügt."
+
+#: .\templates\pages\faq.html:3 .\templates\pages\faq.html:8
+msgid "Frequently Asked Questions"
+msgstr "Häufig gestellte Fragen"
+
+#: .\templates\pages\faq.html:18
+msgid "How to register on the platform?"
+msgstr "Wie registriere ich mich auf der Plattform?"
+
+#: .\templates\pages\faq.html:35
+msgid "How to add a product for sale?"
+msgstr "Wie füge ich ein Produkt zum Verkauf hinzu?"
+
+#: .\templates\pages\faq.html:52
+msgid "How to place an order?"
+msgstr "Wie gebe ich eine Bestellung auf?"
+
+#: .\templates\pages\faq.html:69
+msgid "How to contact the seller?"
+msgstr "Wie kontaktiere ich den Verkäufer?"
+
+#: .\templates\pages\faq.html:86
+msgid "What payment methods are accepted?"
+msgstr "Welche Zahlungsmethoden werden akzeptiert?"
+
+#: .\templates\pages\faq.html:103
+msgid "How to manage your products?"
+msgstr "Wie verwalte ich meine Produkte?"
+
+#: .\templates\pages\faq.html:120
+msgid "How to track my orders?"
+msgstr "Wie verfolge ich meine Bestellungen?"
+
+#: .\templates\pages\faq.html:136
+msgid "Didn't find an answer to your question?"
+msgstr "Keine Antwort auf Ihre Frage gefunden?"
+
+#: .\templates\pages\faq.html:137
+msgid "Contact our support service:"
+msgstr "Kontaktieren Sie unseren Support:"
+
+#: .\templates\pages\privacy_policy.html:8
+msgid "Privacy Policy and Personal Data Processing"
+msgstr "Datenschutzerklärung und Verarbeitung personenbezogener Daten"
+
+#: .\templates\pages\privacy_policy.html:13
+msgid "Last updated: December 4, 2025"
+msgstr "Zuletzt aktualisiert: 4. Dezember 2025"
+
+#: .\templates\pages\privacy_policy.html:18
+msgid "Attention:"
+msgstr "Achtung:"
+
+#: .\templates\pages\privacy_policy.html:23
+msgid "Personal data operator"
+msgstr "Verantwortlicher für personenbezogene Daten"
+
+#: .\templates\pages\privacy_policy.html:30
+msgid "What data we process"
+msgstr "Welche Daten wir verarbeiten"
+
+#: .\templates\pages\privacy_policy.html:31
+msgid "We process the following categories of data:"
+msgstr "Wir verarbeiten folgende Datenkategorien:"
+
+#: .\templates\pages\privacy_policy.html:33
+msgid "Data provided by you:"
+msgstr "Von Ihnen bereitgestellte Daten:"
+
+#: .\templates\pages\privacy_policy.html:37
+msgid "Automatically collected data:"
+msgstr "Automatisch gesammelte Daten:"
+
+#: .\templates\pages\privacy_policy.html:44
+msgid "Data processing purposes"
+msgstr "Zwecke der Datenverarbeitung"
+
+#: .\templates\pages\privacy_policy.html:45
+msgid "We use your data exclusively for lawful purposes:"
+msgstr "Wir verwenden Ihre Daten ausschließlich zu rechtmäßigen Zwecken:"
+
+#: .\templates\pages\privacy_policy.html:47
+msgid "Registration of your account and its maintenance."
+msgstr "Registrierung Ihres Kontos und dessen Verwaltung."
+
+#: .\templates\pages\privacy_policy.html:50
+msgid "Providing customer support, responding to your inquiries."
+msgstr "Bereitstellung von Kundensupport, Beantwortung Ihrer Anfragen."
+
+#: .\templates\pages\privacy_policy.html:53
+msgid "Conducting internal analysis and improving the quality of our services."
+msgstr "Durchführung interner Analysen und Verbesserung der Qualität unserer Dienste."
+
+#: .\templates\pages\privacy_policy.html:54
+msgid "Protection against fraudulent activities and ensuring Site security."
+msgstr "Schutz vor betrügerischen Aktivitäten und Gewährleistung der Website-Sicherheit."
+
+#: .\templates\pages\privacy_policy.html:57
+msgid "Data transfer to third parties"
+msgstr "Datenübermittlung an Dritte"
+
+#: .\templates\pages\privacy_policy.html:58
+msgid ""
+"We undertake not to disclose your personal data, except in the following "
+"cases:"
+msgstr "Wir verpflichten uns, Ihre personenbezogenen Daten nicht offenzulegen, außer in folgenden Fällen:"
+
+#: .\templates\pages\privacy_policy.html:60
+msgid "Contractors:"
+msgstr "Auftragsverarbeiter:"
+
+#: .\templates\pages\privacy_policy.html:64
+msgid "By law requirement:"
+msgstr "Aufgrund gesetzlicher Anforderung:"
+
+#: .\templates\pages\privacy_policy.html:67
+msgid "With your consent:"
+msgstr "Mit Ihrer Zustimmung:"
+
+#: .\templates\pages\privacy_policy.html:71
+msgid "Data storage and protection"
+msgstr "Datenspeicherung und -schutz"
+
+#: .\templates\pages\privacy_policy.html:77
+msgid "Your rights"
+msgstr "Ihre Rechte"
+
+#: .\templates\pages\privacy_policy.html:78
+msgid "You have the right:"
+msgstr "Sie haben das Recht:"
+
+#: .\templates\pages\privacy_policy.html:80
+msgid "Receive information about the processing of your personal data."
+msgstr "Informationen über die Verarbeitung Ihrer personenbezogenen Daten zu erhalten."
+
+#: .\templates\pages\privacy_policy.html:83
+msgid "Withdraw consent to the processing of personal data."
+msgstr "Die Zustimmung zur Verarbeitung personenbezogener Daten zu widerrufen."
+
+#: .\templates\pages\privacy_policy.html:89
+msgid "Use of cookies"
+msgstr "Verwendung von Cookies"
+
+#: .\templates\pages\privacy_policy.html:90
+msgid "The Site uses cookies and similar technologies for:"
+msgstr "Die Website verwendet Cookies und ähnliche Technologien für:"
+
+#: .\templates\pages\privacy_policy.html:96
+msgid "Personalizing content (for example, showing recommended products)."
+msgstr "Personalisierung von Inhalten (z.B. Anzeige empfohlener Produkte)."
+
+#: .\templates\pages\privacy_policy.html:102
+msgid "Final provisions"
+msgstr "Schlussbestimmungen"
+
+#: .\templates\pages\privacy_policy.html:109
+msgid "Consent to personal data processing"
+msgstr "Zustimmung zur Verarbeitung personenbezogener Daten"
+
+#: .\templates\pages\privacy_policy.html:115
+msgid "Text for checkbox:"
+msgstr "Text für Checkbox:"
+
+#: .\templates\pages\privacy_policy.html:130
+msgid "Important for integration:"
+msgstr "Wichtig für die Integration:"
+
+#: .\templates\pages\returns.html:3 .\templates\pages\returns.html:8
+#: .\templates\pages\shipping.html:3 .\templates\pages\shipping.html:8
+#: .\templates\pages\terms_of_use.html:3 .\templates\pages\terms_of_use.html:8
+msgid "Returns and Exchanges"
+msgstr "Rückgaben und Umtausch"
+
+#: .\templates\pages\returns.html:13 .\templates\pages\shipping.html:13
+#: .\templates\pages\terms_of_use.html:20
+msgid "Return Conditions"
+msgstr "Rückgabebedingungen"
+
+#: .\templates\pages\returns.html:17 .\templates\pages\shipping.html:17
+#: .\templates\pages\terms_of_use.html:27
+msgid "Attention!"
+msgstr "Achtung!"
+
+#: .\templates\pages\returns.html:21 .\templates\pages\shipping.html:21
+#: .\templates\pages\terms_of_use.html:31
+msgid "Returns are accepted in cases:"
+msgstr "Rückgaben werden in folgenden Fällen akzeptiert:"
+
+#: .\templates\pages\returns.html:23 .\templates\pages\shipping.html:23
+#: .\templates\pages\terms_of_use.html:33
+msgid "Product does not match the description"
+msgstr "Produkt entspricht nicht der Beschreibung"
+
+#: .\templates\pages\returns.html:24 .\templates\pages\shipping.html:24
+#: .\templates\pages\terms_of_use.html:34
+msgid "Manufacturing defect detected"
+msgstr "Herstellungsfehler festgestellt"
+
+#: .\templates\pages\returns.html:25 .\templates\pages\shipping.html:25
+#: .\templates\pages\terms_of_use.html:35
+msgid "Product damaged during delivery"
+msgstr "Produkt während der Lieferung beschädigt"
+
+#: .\templates\pages\returns.html:26 .\templates\pages\shipping.html:26
+#: .\templates\pages\terms_of_use.html:36
+msgid "Required kit not included"
+msgstr "Erforderliches Zubehör nicht enthalten"
+
+#: .\templates\pages\returns.html:29 .\templates\pages\shipping.html:29
+#: .\templates\pages\terms_of_use.html:39
+msgid "Returns are not accepted:"
+msgstr "Rückgaben werden nicht akzeptiert:"
+
+#: .\templates\pages\returns.html:31 .\templates\pages\shipping.html:31
+#: .\templates\pages\terms_of_use.html:41
+msgid "Product made to individual order"
+msgstr "Produkt nach individueller Bestellung angefertigt"
+
+#: .\templates\pages\returns.html:32 .\templates\pages\shipping.html:32
+#: .\templates\pages\terms_of_use.html:42
+msgid "Color/size didn't suit the buyer (if not seller's error)"
+msgstr "Farbe/Größe passte dem Käufer nicht (wenn nicht Verkäuferfehler)"
+
+#: .\templates\pages\returns.html:33 .\templates\pages\shipping.html:33
+#: .\templates\pages\terms_of_use.html:43
+msgid "Product was used"
+msgstr "Produkt wurde benutzt"
+
+#: .\templates\pages\returns.html:34 .\templates\pages\shipping.html:34
+#: .\templates\pages\terms_of_use.html:44
+msgid "Original packaging damaged"
+msgstr "Originalverpackung beschädigt"
+
+#: .\templates\pages\returns.html:42 .\templates\pages\shipping.html:42
+#: .\templates\pages\terms_of_use.html:56
+msgid "Return Process"
+msgstr "Rückgabeprozess"
+
+#: .\templates\pages\returns.html:53 .\templates\pages\shipping.html:53
+msgid "Contact the seller"
+msgstr "Kontaktieren Sie den Verkäufer"
+
+#: .\templates\pages\returns.html:62 .\templates\pages\shipping.html:62
+#: .\templates\pages\terms_of_use.html:77
+msgid "Application"
+msgstr "Antrag"
+
+#: .\templates\pages\returns.html:63 .\templates\pages\shipping.html:63
+msgid "Fill out a return application"
+msgstr "Füllen Sie einen Rückgabeantrag aus"
+
+#: .\templates\pages\returns.html:72 .\templates\pages\shipping.html:72
+#: .\templates\pages\terms_of_use.html:86
+msgid "Shipment"
+msgstr "Versand"
+
+#: .\templates\pages\returns.html:73 .\templates\pages\shipping.html:73
+msgid "Send the product back"
+msgstr "Senden Sie das Produkt zurück"
+
+#: .\templates\pages\returns.html:83 .\templates\pages\shipping.html:83
+#: .\templates\pages\terms_of_use.html:100
+msgid "Terms and Cost"
+msgstr "Bedingungen und Kosten"
+
+#: .\templates\pages\returns.html:88 .\templates\pages\shipping.html:88
+#: .\templates\pages\terms_of_use.html:108
+msgid "Consideration Period"
+msgstr "Prüfungsfrist"
+
+#: .\templates\pages\returns.html:89 .\templates\pages\shipping.html:89
+msgid ""
+"Usually 3-5 business days from the moment the seller receives the product"
+msgstr "Normalerweise 3-5 Werktage ab dem Zeitpunkt, an dem der Verkäufer das Produkt erhält"
+
+#: .\templates\pages\returns.html:93 .\templates\pages\shipping.html:93
+#: .\templates\pages\terms_of_use.html:113
+msgid "Return Cost"
+msgstr "Rückgabekosten"
+
+#: .\templates\pages\returns.html:94 .\templates\pages\shipping.html:94
+msgid ""
+"If the return is due to seller's fault - expenses are borne by the seller"
+msgstr "Wenn die Rückgabe auf Verkäuferfehler zurückzuführen ist - trägt der Verkäufer die Kosten"
+
+#: .\templates\pages\returns.html:98 .\templates\pages\shipping.html:98
+#: .\templates\pages\terms_of_use.html:118
+msgid "Money Refund"
+msgstr "Geldrückerstattung"
+
+#: .\templates\pages\returns.html:99 .\templates\pages\shipping.html:99
+#: .\templates\pages\terms_of_use.html:119
+msgid "Money is refunded within 10 business days"
+msgstr "Geld wird innerhalb von 10 Werktagen zurückerstattet"
+
+#: .\templates\pages\returns.html:102 .\templates\pages\shipping.html:102
+#: .\templates\pages\terms_of_use.html:122
+msgid "Product Exchange"
+msgstr "Produktaustausch"
+
+#: .\templates\pages\returns.html:103 .\templates\pages\shipping.html:103
+#: .\templates\pages\terms_of_use.html:123
+msgid "Possible within 14 days from receipt"
+msgstr "Möglich innerhalb von 14 Tagen nach Erhalt"
+
+#: .\templates\pages\returns.html:111 .\templates\pages\shipping.html:111
+#: .\templates\pages\terms_of_use.html:163
+msgid "Important Information:"
+msgstr "Wichtige Informationen:"
+
+#: .\templates\pages\terms_of_use.html:136
+msgid "Information for Sellers"
+msgstr "Informationen für Verkäufer"
+
+#: .\templates\pages\terms_of_use.html:142
+msgid "How to manage returns:"
+msgstr "Wie Sie Rückgaben verwalten:"
+
+#: .\templates\pages\terms_of_use.html:146
+msgid "You can accept or reject a return with reason"
+msgstr "Sie können eine Rückgabe mit Begründung annehmen oder ablehnen"
+
+#: .\templates\pages\terms_of_use.html:149
+msgid "After receiving the product, confirm its condition"
+msgstr "Nach Erhalt des Produkts bestätigen Sie dessen Zustand"
+
+#: .\templates\products\catalog.html:4 .\templates\products\catalog.html:12
+msgid "Product Catalog"
+msgstr "Produktkatalog"
+
+#: .\templates\products\catalog.html:13
+msgid "Unique handmade products from talented craftsmen"
+msgstr "Einzigartige handgefertigte Produkte von talentierten Handwerkern"
+
+#: .\templates\products\catalog.html:45
+msgid "Start typing product name..."
+msgstr "Beginnen Sie mit der Eingabe des Produktnamens..."
+
+#: .\templates\products\catalog.html:55
+msgid "All Categories"
+msgstr "Alle Kategorien"
+
+#: .\templates\products\catalog.html:62
+msgid "No categories available"
+msgstr "Keine Kategorien verfügbar"
+
+#: .\templates\products\catalog.html:70
+msgid "All Cities"
+msgstr "Alle Städte"
+
+#: .\templates\products\catalog.html:79
+msgid "No cities available"
+msgstr "Keine Städte verfügbar"
+
+#: .\templates\products\catalog.html:87
+msgid "Reset All Filters"
+msgstr "Alle Filter zurücksetzen"
+
+#: .\templates\products\catalog.html:99
+msgid "Active Filters:"
+msgstr "Aktive Filter:"
+
+#: .\templates\products\catalog.html:101
+msgid "Search:"
+msgstr "Suche:"
+
+#: .\templates\products\catalog.html:106
+msgid "Category:"
+msgstr "Kategorie:"
+
+#: .\templates\products\catalog.html:111 .\templates\products\catalog.html:154
+msgid "City:"
+msgstr "Stadt:"
+
+#: .\templates\products\catalog.html:115
+msgid "Products Found:"
+msgstr "Gefundene Produkte:"
+
+#: .\templates\products\catalog.html:164
+#: .\templates\users\edit_profile.html:84
+msgid "Craftsman"
+msgstr "Handwerker"
+
+#: .\templates\products\catalog.html:179
+#: .\templates\products\product_detail.html:142
+msgid "Add to Cart"
+msgstr "In den Warenkorb"
+
+#: .\templates\products\catalog.html:185
+#: .\templates\products\product_detail.html:154
+#: .\templates\products\product_detail.html:170
+msgid "This is your product"
+msgstr "Dies ist Ihr Produkt"
+
+#: .\templates\products\catalog.html:191
+#: .\templates\products\product_detail.html:161
+msgid "Log in to add to cart"
+msgstr "Melden Sie sich an, um in den Warenkorb zu legen"
+
+#: .\templates\products\catalog.html:200
+#: .\templates\users\customer_profile.html:193
+msgid "View Details"
+msgstr "Details anzeigen"
+
+#: .\templates\products\catalog.html:206
+#: .\templates\products\product_detail.html:155
+#: .\templates\products\product_detail.html:171
+msgid "Your Product"
+msgstr "Ihr Produkt"
+
+#: .\templates\products\catalog.html:213
+#: .\templates\products\product_detail.html:179
+msgid "In Favorites"
+msgstr "In Favoriten"
+
+#: .\templates\products\catalog.html:220
+#: .\templates\products\product_detail.html:187
+#: .\templates\products\product_detail.html:195
+msgid "Add to Favorites"
+msgstr "Zu Favoriten hinzufügen"
+
+#: .\templates\products\catalog.html:226
+#: .\templates\products\product_detail.html:194
+msgid "Log in to add to favorites"
+msgstr "Melden Sie sich an, um zu Favoriten hinzuzufügen"
+
+#: .\templates\products\catalog.html:237
+msgid "No Products Found"
+msgstr "Keine Produkte gefunden"
+
+#: .\templates\products\catalog.html:240
+msgid "Try adjusting your search criteria or reset the filters"
+msgstr "Versuchen Sie, Ihre Suchkriterien anzupassen oder die Filter zurückzusetzen"
+
+#: .\templates\products\catalog.html:242
+msgid "There are no products in the catalog yet"
+msgstr "Es sind noch keine Produkte im Katalog"
+
+#: .\templates\products\catalog.html:247
+msgid "Reset Filters"
+msgstr "Filter zurücksetzen"
+
+#: .\templates\products\catalog.html:261
+#: .\templates\products\product_detail.html:44
+msgid "Previous"
+msgstr "Vorherige"
+
+#: .\templates\products\catalog.html:556
+msgid "No products found for your query"
+msgstr "Keine Produkte für Ihre Suche gefunden"
+
+#: .\templates\products\catalog.html:592
+msgid "Searching products..."
+msgstr "Suche nach Produkten..."
+
+#: .\templates\products\catalog.html:597
+msgid "An error occurred while searching"
+msgstr "Fehler bei der Suche"
+
+#: .\templates\products\my_products.html:12
+msgid "Manage your handmade products"
+msgstr "Verwalten Sie Ihre handgefertigten Produkte"
+
+#: .\templates\products\my_products.html:16
+msgid "My Profile"
+msgstr "Mein Profil"
+
+#: .\templates\products\my_products.html:41
+#: .\templates\users\customer_profile.html:129
+msgid "No image"
+msgstr "Kein Bild"
+
+#: .\templates\products\my_products.html:50
+#: .\templates\products\product_detail.html:127
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: .\templates\products\my_products.html:75
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: .\templates\products\my_products.html:80
+msgid "Delete product"
+msgstr "Produkt löschen"
+
+#: .\templates\products\my_products.html:86
+msgid "Number of images:"
+msgstr "Anzahl der Bilder:"
+
+#: .\templates\products\my_products.html:96
+msgid "Added"
+msgstr "Hinzugefügt am"
+
+#: .\templates\products\my_products.html:109
+#: .\templates\products\product_confirm_delete.html:4
+#: .\templates\products\product_detail.html:239
+#: .\templates\products\product_detail.html:262
+msgid "Delete Product"
+msgstr "Produkt löschen"
+
+#: .\templates\products\my_products.html:116
+#: .\templates\products\product_detail.html:269
+msgid "Are you sure you want to delete this product?"
+msgstr "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?"
+
+#: .\templates\products\my_products.html:133
+msgid "This action cannot be undone. All product data will be deleted."
+msgstr "Diese Aktion kann nicht rückgängig gemacht werden. Alle Produktdaten werden gelöscht."
+
+#: .\templates\products\my_products.html:138
+#: .\templates\products\product_confirm_delete.html:40
+#: .\templates\products\product_detail.html:295
+#: .\templates\products\product_edit.html:311
+#: .\templates\products\product_edit.html:473
+#: .\templates\products\product_form.html:278
+#: .\templates\products\product_form.html:282
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: .\templates\products\my_products.html:143
+#: .\templates\products\product_detail.html:300
+#: .\templates\products\product_edit.html:186
+#: .\templates\products\product_edit.html:283
+#: .\templates\products\product_edit.html:472
+#: .\templates\products\product_form.html:255
+msgid "Delete"
+msgstr "Löschen"
+
+#: .\templates\products\my_products.html:156
+msgid "You don't have any products yet"
+msgstr "Sie haben noch keine Produkte"
+
+#: .\templates\products\my_products.html:157
+msgid "Add your first handmade product and start selling"
+msgstr "Fügen Sie Ihr erstes handgefertigtes Produkt hinzu und beginnen Sie mit dem Verkauf"
+
+#: .\templates\products\my_products.html:160
+msgid "Add First Product"
+msgstr "Erstes Produkt hinzufügen"
+
+#: .\templates\products\my_products.html:163
+msgid "Browse Catalog"
+msgstr "Katalog durchsuchen"
+
+#: .\templates\products\product_confirm_delete.html:13
+msgid "Delete Product?"
+msgstr "Produkt löschen?"
+
+#: .\templates\products\product_confirm_delete.html:37
+msgid "Yes, Delete"
+msgstr "Ja, Löschen"
+
+#: .\templates\products\product_detail.html:33
+msgid "Slide"
+msgstr "Folie"
+
+#: .\templates\products\product_detail.html:87
+msgid "Handmade"
+msgstr "Handgefertigt"
+
+#: .\templates\products\product_detail.html:98
+msgid "Product Description"
+msgstr "Produktbeschreibung"
+
+#: .\templates\products\product_detail.html:104
+msgid "Craftsman Information"
+msgstr "Informationen zum Handwerker"
+
+#: .\templates\products\product_detail.html:107
+#: .\templates\users\edit_profile.html:158 .\users\forms.py:255
+#: .\users\models.py:154 .\users\models.py:191
+msgid "City"
+msgstr "Stadt"
+
+#: .\templates\products\product_detail.html:115
+msgid "Product Details"
+msgstr "Produktdetails"
+
+#: .\templates\products\product_detail.html:118
+msgid "Creation Date"
+msgstr "Erstellungsdatum"
+
+#: .\templates\products\product_detail.html:149
+msgid "Start discussion about this product with the craftsman"
+msgstr "Starten Sie eine Diskussion über dieses Produkt mit dem Handwerker"
+
+#: .\templates\products\product_detail.html:150
+msgid "Discuss Product with Craftsman"
+msgstr "Produkt mit Handwerker besprechen"
+
+#: .\templates\products\product_detail.html:178
+#: .\templates\users\customer_profile.html:140
+msgid "Remove from favorites"
+msgstr "Aus Favoriten entfernen"
+
+#: .\templates\products\product_detail.html:186
+msgid "Add to favorites"
+msgstr "Zu Favoriten hinzufügen"
+
+#: .\templates\products\product_detail.html:205
+#: .\templates\users\customer_profile.html:67
+msgid "Go to Cart"
+msgstr "Zum Warenkorb"
+
+#: .\templates\products\product_detail.html:210
+#: .\templates\users\edit_profile.html:210
+msgid "Back to Catalog"
+msgstr "Zurück zum Katalog"
+
+#: .\templates\products\product_detail.html:224
+#: .\templates\users\edit_profile.html:248
+msgid "Product Management"
+msgstr "Produktverwaltung"
+
+#: .\templates\products\product_detail.html:229
+msgid "Edit Product"
+msgstr "Produkt bearbeiten"
+
+#: .\templates\products\product_detail.html:235
+msgid "My Product Dialogs"
+msgstr "Meine Produktdialoge"
+
+#: .\templates\products\product_detail.html:245
+msgid "Information for Craftsman"
+msgstr "Informationen für Handwerker"
+
+#: .\templates\products\product_detail.html:284
+#: .\templates\users\delete_account.html:15
+msgid "Warning!"
+msgstr "Warnung!"
+
+#: .\templates\products\product_detail.html:285
+msgid ""
+"When deleting a product, all dialogs related to this product will also be "
+"deleted."
+msgstr "Beim Löschen eines Produkts werden auch alle damit verbundenen Dialoge gelöscht."
+
+#: .\templates\products\product_detail.html:338
+msgid "of"
+msgstr "von"
+
+#: .\templates\products\product_edit.html:4
+#: .\templates\products\product_edit.html:12
+#: .\templates\products\product_form.html:4
+#: .\templates\products\product_form.html:14
+msgid "Edit product"
+msgstr "Produkt bearbeiten"
+
+#: .\templates\products\product_edit.html:13
+msgid "Update information about your handmade product"
+msgstr "Aktualisieren Sie die Informationen über Ihr handgefertigtes Produkt"
+
+#: .\templates\products\product_edit.html:14
+#: .\templates\products\product_form.html:17
+msgid "required fields"
+msgstr "erforderliche Felder"
+
+#: .\templates\products\product_edit.html:34
+#: .\templates\products\product_form.html:37
+msgid "Basic information"
+msgstr "Grundlegende Informationen"
+
+#: .\templates\products\product_edit.html:62
+#: .\templates\products\product_form.html:65
+msgid "Price (rub.)"
+msgstr "Preis (Rub.)"
+
+#: .\templates\products\product_edit.html:84
+#: .\templates\products\product_edit.html:508
+#: .\templates\products\product_form.html:87
+msgid "Integer from 1 to 5,000,000 rubles"
+msgstr "Ganzzahl von 1 bis 5.000.000 Rubel"
+
+#: .\templates\products\product_edit.html:88
+#: .\templates\products\product_form.html:91
+msgid "Product name"
+msgstr "Produktname"
+
+#: .\templates\products\product_edit.html:152
+#: .\templates\products\product_edit.html:503
+#: .\templates\products\product_form.html:155
+msgid "Important!"
+msgstr "Wichtig!"
+
+#: .\templates\products\product_edit.html:160
+#: .\templates\products\product_edit.html:506
+#: .\templates\products\product_form.html:163
+msgid "You can upload up to 4 photos."
+msgstr "Sie können bis zu 4 Fotos hochladen."
+
+#: .\templates\products\product_edit.html:161
+#: .\templates\products\product_edit.html:507
+#: .\templates\products\product_form.html:164
+msgid "At least one image must be uploaded."
+msgstr "Mindestens ein Bild muss hochgeladen werden."
+
+#: .\templates\products\product_edit.html:174
+#: .\templates\products\product_edit.html:514
+#: .\templates\products\product_form.html:203
+msgid "Current image"
+msgstr "Aktuelles Bild"
+
+#: .\templates\products\product_edit.html:182
+#: .\templates\products\product_edit.html:471
+#: .\templates\products\product_form.html:211
+msgid "Replace"
+msgstr "Ersetzen"
+
+#: .\templates\products\product_edit.html:203
+#: .\templates\products\product_edit.html:484
+msgid "Cancel replacement"
+msgstr "Ersetzung abbrechen"
+
+#: .\templates\products\product_edit.html:222
+#: .\templates\products\product_edit.html:271
+#: .\templates\products\product_edit.html:516
+#: .\templates\products\product_form.html:240
+msgid "Main"
+msgstr "Haupt"
+
+#: .\templates\products\product_edit.html:227
+#: .\templates\products\product_edit.html:276
+#: .\templates\products\product_edit.html:517
+#: .\templates\products\product_form.html:245
+msgid "First upload an image"
+msgstr "Laden Sie zuerst ein Bild hoch"
+
+#: .\templates\products\product_edit.html:248
+#: .\templates\products\product_edit.html:515
+msgid "New image"
+msgstr "Neues Bild"
+
+#: .\templates\products\product_edit.html:256
+#: .\templates\products\product_edit.html:483
+#: .\templates\products\product_form.html:224
+msgid "Select an image file"
+msgstr "Wählen Sie eine Bilddatei"
+
+#: .\templates\products\product_edit.html:298
+#: .\templates\products\product_edit.html:485
+msgid "Add another image"
+msgstr "Weiteres Bild hinzufügen"
+
+#: .\templates\products\product_edit.html:300
+#: .\templates\products\product_edit.html:505
+msgid "Maximum 4 images"
+msgstr "Maximal 4 Bilder"
+
+#: .\templates\products\product_edit.html:307
+#: .\templates\products\product_edit.html:486
+#: .\templates\products\product_form.html:272
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+#: .\templates\products\product_edit.html:474
+msgid "Save"
+msgstr "Speichern"
+
+#: .\templates\products\product_edit.html:477
+msgid "Select category"
+msgstr "Kategorie auswählen"
+
+#: .\templates\products\product_edit.html:478
+msgid "For example: Handmade knitted scarf"
+msgstr "Zum Beispiel: Handgestrickter Schal"
+
+#: .\templates\products\product_edit.html:479
+msgid "Describe your product: materials, sizes, manufacturing features..."
+msgstr "Beschreiben Sie Ihr Produkt: Materialien, Größen, Herstellungsmerkmale..."
+
+#: .\templates\products\product_edit.html:480
+msgid "1000"
+msgstr "1000"
+
+#: .\templates\products\product_edit.html:481
+msgid "Choose category"
+msgstr "Kategorie wählen"
+
+#: .\templates\products\product_edit.html:482
+msgid "Select a new image to replace"
+msgstr "Wählen Sie ein neues Bild zum Ersetzen"
+
+#: .\templates\products\product_edit.html:489
+msgid "Maximum number of images: {{ count }}"
+msgstr "Maximale Anzahl Bilder: {{ count }}"
+
+#: .\templates\products\product_edit.html:490
+msgid "Cannot set image as main without uploaded file!"
+msgstr "Bild kann nicht als Hauptbild festgelegt werden, ohne dass eine Datei hochgeladen wurde!"
+
+#: .\templates\products\product_edit.html:491
+msgid "Select product category"
+msgstr "Produktkategorie auswählen"
+
+#: .\templates\products\product_edit.html:492
+msgid "Enter valid price"
+msgstr "Gültigen Preis eingeben"
+
+#: .\templates\products\product_edit.html:494
+msgid "Price cannot exceed {{ max_price }} rubles"
+msgstr "Preis darf {{ max_price }} Rubel nicht überschreiten"
+
+#: .\templates\products\product_edit.html:495
+msgid "Enter product name"
+msgstr "Produktnamen eingeben"
+
+#: .\templates\products\product_edit.html:496
+msgid "Name must contain only letters, numbers and spaces"
+msgstr "Name darf nur Buchstaben, Zahlen und Leerzeichen enthalten"
+
+#: .\templates\products\product_edit.html:497
+msgid "Enter product description"
+msgstr "Produktbeschreibung eingeben"
+
+#: .\templates\products\product_edit.html:498
+msgid "Description must contain only letters, numbers and punctuation"
+msgstr "Beschreibung darf nur Buchstaben, Zahlen und Satzzeichen enthalten"
+
+#: .\templates\products\product_edit.html:499
+msgid "At least one product image must be uploaded"
+msgstr "Mindestens ein Produktbild muss hochgeladen werden"
+
+#: .\templates\products\product_edit.html:500
+msgid "Main image must be selected"
+msgstr "Hauptbild muss ausgewählt werden"
+
+#: .\templates\products\product_edit.html:504
+msgid ""
+"You can select any uploaded image as main. For new images - the first "
+"uploaded one will automatically become main."
+msgstr ""
+"Sie können jedes hochgeladene Bild als Hauptbild auswählen. Bei neuen Bildern "
+"wird das zuerst hochgeladene automatisch zum Hauptbild."
+
+#: .\templates\products\product_edit.html:509
+msgid "Max 60 characters, only letters, numbers and spaces"
+msgstr "Max. 60 Zeichen, nur Buchstaben, Zahlen und Leerzeichen"
+
+#: .\templates\products\product_edit.html:510
+msgid "Max 300 characters, only letters, numbers and punctuation"
+msgstr "Max. 300 Zeichen, nur Buchstaben, Zahlen und Satzzeichen"
+
+#: .\templates\products\product_edit.html:511
+#: .\templates\users\edit_profile.html:192
+msgid "characters left"
+msgstr "Zeichen übrig"
+
+#: .\templates\products\product_edit.html:518
+msgid "You can enter up to {{ digits }} digits"
+msgstr "Sie können bis zu {{ digits }} Ziffern eingeben"
+
+#: .\templates\products\product_form.html:4
+#: .\templates\products\product_form.html:272
+msgid "Add product"
+msgstr "Produkt hinzufügen"
+
+#: .\templates\products\product_form.html:14
+msgid "Add new product"
+msgstr "Neues Produkt hinzufügen"
+
+#: .\templates\products\product_form.html:16
+msgid "Fill in information about your handmade product"
+msgstr "Füllen Sie die Informationen zu Ihrem handgefertigten Produkt aus"
+
+#: .\templates\products\product_form.html:174
+#: .\templates\products\product_form.html:187
+msgid "Delete file"
+msgstr "Datei löschen"
+
+#: .\templates\products\product_form.html:217
+msgid "Select a new image"
+msgstr "Neues Bild auswählen"
+
+#: .\templates\products\product_form.html:293
+msgid "Information for craftsman"
+msgstr "Informationen für Handwerker"
+
+#: .\templates\products\product_form.html:298
+msgid "Your opportunities:"
+msgstr "Ihre Möglichkeiten:"
+
+#: .\templates\products\product_form.html:300
+msgid "Sell your handmade products"
+msgstr "Verkaufen Sie Ihre handgefertigten Produkte"
+
+#: .\templates\products\product_form.html:301
+msgid "Buy products from other craftsmen"
+msgstr "Kaufen Sie Produkte von anderen Handwerkern"
+
+#: .\templates\products\product_form.html:302
+msgid "Add any products to favorites"
+msgstr "Fügen Sie beliebige Produkte zu Favoriten hinzu"
+
+#: .\templates\products\product_form.html:303
+msgid "Communicate with other craftsmen"
+msgstr "Kommunizieren Sie mit anderen Handwerkern"
+
+#: .\templates\products\product_form.html:307
+msgid "Product management:"
+msgstr "Produktverwaltung:"
+
+#: .\templates\products\product_form.html:309
+msgid "All products are displayed in the catalog"
+msgstr "Alle Produkte werden im Katalog angezeigt"
+
+#: .\templates\products\product_form.html:310
+msgid "You can edit and delete your products"
+msgstr "Sie können Ihre Produkte bearbeiten und löschen"
+
+#: .\templates\products\product_form.html:311
+msgid "Up to 4 photos per product"
+msgstr "Bis zu 4 Fotos pro Produkt"
+
+#: .\templates\products\product_form.html:312
+msgid "Manage orders in profile"
+msgstr "Verwalten Sie Bestellungen im Profil"
+
+#: .\templates\users\base_auth.html:8
+msgid "Authentication"
+msgstr "Authentifizierung"
+
+#: .\templates\users\customer_profile.html:4
+#: .\templates\users\customer_profile.html:13
+msgid "User Profile"
+msgstr "Benutzerprofil"
+
+#: .\templates\users\customer_profile.html:14
+msgid "Manage your orders and preferences"
+msgstr "Verwalten Sie Ihre Bestellungen und Präferenzen"
+
+#: .\templates\users\customer_profile.html:34
+msgid "My Orders"
+msgstr "Meine Bestellungen"
+
+#: .\templates\users\customer_profile.html:48
+msgid "Dialogs"
+msgstr "Dialoge"
+
+#: .\templates\users\customer_profile.html:61
+msgid "Your Shopping Cart"
+msgstr "Ihr Warenkorb"
+
+#: .\templates\users\customer_profile.html:62
+msgid "Here you can view and complete your orders"
+msgstr "Hier können Sie Ihre Bestellungen einsehen und abschließen"
+
+#: .\templates\users\customer_profile.html:80
+msgid "Order History"
+msgstr "Bestellverlauf"
+
+#: .\templates\users\customer_profile.html:90
+msgid "Order Tracking"
+msgstr "Bestellverfolgung"
+
+#: .\templates\users\customer_profile.html:100
+msgid "Payment Methods"
+msgstr "Zahlungsmethoden"
+
+#: .\templates\users\customer_profile.html:159
+msgid "Craftsman avatar"
+msgstr "Handwerker-Avatar"
+
+#: .\templates\users\customer_profile.html:187
+msgid "Added:"
+msgstr "Hinzugefügt:"
+
+#: .\templates\users\customer_profile.html:199
+msgid "Add to Order"
+msgstr "Zur Bestellung hinzufügen"
+
+#: .\templates\users\customer_profile.html:212
+msgid "Favorites is empty"
+msgstr "Favoriten sind leer"
+
+#: .\templates\users\customer_profile.html:227
+msgid "Your dialogs with craftsmen"
+msgstr "Ihre Dialoge mit Handwerkern"
+
+#: .\templates\users\customer_profile.html:228
+msgid "Communicate with craftsmen about products and orders"
+msgstr "Kommunizieren Sie mit Handwerkern über Produkte und Bestellungen"
+
+#: .\templates\users\customer_profile.html:231
+msgid "Go to Messages"
+msgstr "Zu Nachrichten"
+
+#: .\templates\users\customer_profile.html:322
+msgid "Remove product from favorites?"
+msgstr "Produkt aus Favoriten entfernen?"
+
+#: .\templates\users\delete_account.html:3
+#: .\templates\users\delete_account.html:10
+#: .\templates\users\edit_profile.html:227
+msgid "Account Deletion"
+msgstr "Kontolöschung"
+
+#: .\templates\users\delete_account.html:16
+msgid "You are about to delete your account. This action:"
+msgstr "Sie sind dabei, Ihr Konto zu löschen. Diese Aktion:"
+
+#: .\templates\users\delete_account.html:18
+msgid "Cannot be undone"
+msgstr "Kann nicht rückgängig gemacht werden"
+
+#: .\templates\users\delete_account.html:19
+msgid "Will delete all your data"
+msgstr "Löscht alle Ihre Daten"
+
+#: .\templates\users\delete_account.html:20
+msgid "Will delete your products and orders"
+msgstr "Löscht Ihre Produkte und Bestellungen"
+
+#: .\templates\users\delete_account.html:21
+msgid "Will interrupt all active dialogs"
+msgstr "Unterbricht alle aktiven Dialoge"
+
+#: .\templates\users\delete_account.html:56
+msgid "Delete Account Permanently"
+msgstr "Konto dauerhaft löschen"
+
+#: .\templates\users\delete_account.html:59
+msgid "Cancel, return to profile"
+msgstr "Abbrechen, zum Profil zurückkehren"
+
+#: .\templates\users\delete_account.html:69
+msgid "Instead of deletion you can:"
+msgstr "Statt Löschung können Sie:"
+
+#: .\templates\users\delete_account.html:71
+msgid "Change email in profile settings"
+msgstr "E-Mail in den Profileinstellungen ändern"
+
+#: .\templates\users\delete_account.html:72
+msgid "Temporarily deactivate your products"
+msgstr "Ihre Produkte vorübergehend deaktivieren"
+
+#: .\templates\users\delete_account.html:73
+msgid "Contact support for assistance"
+msgstr "Support für Hilfe kontaktieren"
+
+#: .\templates\users\edit_profile.html:4
+#: .\templates\users\edit_profile.html:12
+msgid "Edit Profile"
+msgstr "Profil bearbeiten"
+
+#: .\templates\users\edit_profile.html:13
+msgid "Update your information and configure your craftsman account"
+msgstr "Aktualisieren Sie Ihre Informationen und konfigurieren Sie Ihr Handwerkerkonto"
+
+#: .\templates\users\edit_profile.html:21
+msgid "Main Information"
+msgstr "Hauptinformationen"
+
+#: .\templates\users\edit_profile.html:64
+#, python-format
+msgid "Avatar of %(user.email)s"
+msgstr "Avatar von %(user.email)s"
+
+#: .\templates\users\edit_profile.html:90
+msgid "Change Avatar"
+msgstr "Avatar ändern"
+
+#: .\templates\users\edit_profile.html:100
+msgid "Replace Avatar"
+msgstr "Avatar ersetzen"
+
+#: .\templates\users\edit_profile.html:104
+msgid "Remove"
+msgstr "Entfernen"
+
+#: .\templates\users\edit_profile.html:144
+msgid "Email Address"
+msgstr "E-Mail-Adresse"
+
+#: .\templates\users\edit_profile.html:175 .\users\forms.py:256
+msgid "Start typing city name and select from list"
+msgstr "Beginnen Sie mit der Eingabe des Stadtnamens und wählen Sie aus der Liste"
+
+#: .\templates\users\edit_profile.html:183
+msgid "About Me"
+msgstr "Über mich"
+
+#: .\templates\users\edit_profile.html:206
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+#: .\templates\users\edit_profile.html:222
+msgid "Danger Zone"
+msgstr "Gefahrenzone"
+
+#: .\templates\users\edit_profile.html:235
+msgid "Delete Account"
+msgstr "Konto löschen"
+
+#: .\templates\users\edit_profile.html:249
+msgid "Add and edit your handmade products"
+msgstr "Fügen Sie Ihre handgefertigten Produkte hinzu und bearbeiten Sie sie"
+
+#: .\templates\users\edit_profile.html:256
+msgid "Add New Product"
+msgstr "Neues Produkt hinzufügen"
+
+#: .\templates\users\edit_profile.html:412
+msgid "Avatar will be deleted after saving profile"
+msgstr "Avatar wird nach dem Speichern des Profils gelöscht"
+
+#: .\templates\users\edit_profile.html:431 .\users\models.py:120
+msgid "Unsupported file format. Use JPG, PNG, GIF or WebP."
+msgstr "Nicht unterstütztes Dateiformat. Verwenden Sie JPG, PNG, GIF oder WebP."
+
+#: .\templates\users\edit_profile.html:438 .\users\forms.py:338
+msgid "File size must not exceed 5MB."
+msgstr "Dateigröße darf 5 MB nicht überschreiten."
+
+#: .\templates\users\edit_profile.html:478
+msgid "\\"
+msgstr "\\"
+
+#: .\templates\users\emails\email_verification.html:7
+#: .\templates\users\emails\verify_email_code.html:5
+#: .\templates\users\emails\verify_email_code.html:9
+msgid "Email Verification"
+msgstr "E-Mail-Verifizierung"
+
+#: .\templates\users\emails\email_verification.html:11
+#: .\templates\users\emails\email_verification.txt:2
+#: .\templates\users\emails\email_verification_code.html:73
+msgid "Email Address Verification"
+msgstr "E-Mail-Adressen-Verifizierung"
+
+#: .\templates\users\emails\email_verification.html:13
+msgid ""
+"To complete your registration and verify your email address, please click "
+"the link below:"
+msgstr "Um Ihre Registrierung abzuschließen und Ihre E-Mail-Adresse zu verifizieren, klicken Sie bitte auf den folgenden Link:"
+
+#: .\templates\users\emails\email_verification.html:18
+msgid ""
+"If the link does not work, copy and paste the following URL into your "
+"browser:"
+msgstr "Wenn der Link nicht funktioniert, kopieren Sie die folgende URL und fügen Sie sie in Ihren Browser ein:"
+
+#: .\templates\users\emails\email_verification.html:20
+#: .\templates\users\emails\email_verification.txt:9
+#: .\templates\users\emails\email_verification_code.html:93
+msgid "If you did not register on our website, please ignore this email."
+msgstr "Wenn Sie sich nicht auf unserer Website registriert haben, ignorieren Sie bitte diese E-Mail."
+
+#: .\templates\users\emails\email_verification.html:22
+#: .\templates\users\emails\email_verification.txt:11
+#: .\templates\users\emails\email_verification_code.html:96
+msgid "Best regards,"
+msgstr "Mit freundlichen Grüßen,"
+
+#: .\templates\users\emails\email_verification.html:22
+#: .\templates\users\emails\email_verification.txt:12
+#: .\templates\users\emails\email_verification_code.html:97
+#, python-format
+msgid "The %(site_name)s Team"
+msgstr "Das %(site_name)s Team"
+
+#: .\templates\users\emails\email_verification.txt:6
+msgid ""
+"To complete your registration and verify your email address, please follow "
+"the link below:"
+msgstr "Um Ihre Registrierung abzuschließen und Ihre E-Mail-Adresse zu verifizieren, folgen Sie bitte dem folgenden Link:"
+
+#: .\templates\users\emails\email_verification_code.html:8
+msgid "Email Verification Code"
+msgstr "E-Mail-Verifizierungscode"
+
+#: .\templates\users\emails\email_verification_code.html:86
+msgid "Important:"
+msgstr "Wichtig:"
+
+#: .\templates\users\emails\email_verification_code.html:86
+msgid "This code is valid for"
+msgstr "Dieser Code ist gültig für"
+
+#: .\templates\users\emails\email_verification_code.html:88
+msgid "Do not share this code with anyone."
+msgstr "Teilen Sie diesen Code mit niemandem."
+
+#: .\templates\users\emails\email_verification_code.html:91
+msgid "Enter this code on the verification page to activate your account."
+msgstr "Geben Sie diesen Code auf der Verifizierungsseite ein, um Ihr Konto zu aktivieren."
+
+#: .\templates\users\emails\email_verification_code.html:100
+msgid ""
+"If you are experiencing issues with email verification, please contact "
+"support:"
+msgstr "Wenn Sie Probleme mit der E-Mail-Verifizierung haben, kontaktieren Sie bitte den Support:"
+
+#: .\templates\users\emails\verify_email_code.html:11
+msgid "Verification code sent to"
+msgstr "Verifizierungscode gesendet an"
+
+#: .\templates\users\emails\verify_email_code.html:30
+msgid "Verification Code"
+msgstr "Verifizierungscode"
+
+#: .\templates\users\emails\verify_email_code.html:34 .\users\forms.py:186
+msgid "Enter 6-digit code"
+msgstr "6-stelligen Code eingeben"
+
+#: .\templates\users\emails\verify_email_code.html:41
+msgid "Enter the 6-digit code you received by email"
+msgstr "Geben Sie den 6-stelligen Code ein, den Sie per E-Mail erhalten haben"
+
+#: .\templates\users\emails\verify_email_code.html:47
+msgid "Verify Email"
+msgstr "E-Mail verifizieren"
+
+#: .\templates\users\emails\verify_email_code.html:55
+msgid "Send Code Again"
+msgstr "Code erneut senden"
+
+#: .\templates\users\login.html:8
+msgid "Account Login"
+msgstr "Kontoanmeldung"
+
+#: .\templates\users\login.html:9
+msgid "Login to continue"
+msgstr "Melden Sie sich an, um fortzufahren"
+
+#: .\templates\users\login.html:23
+msgid "Incorrect email or password. Please try again."
+msgstr "Falsche E-Mail oder Passwort. Bitte versuchen Sie es erneut."
+
+#: .\templates\users\login.html:33 .\templates\users\password_reset.html:17
+#: .\templates\users\register.html:27
+msgid "Email"
+msgstr "E-Mail"
+
+#: .\templates\users\login.html:39 .\templates\users\register.html:40
+#: .\users\forms.py:75 .\users\forms.py:147
+msgid "Password"
+msgstr "Passwort"
+
+#: .\templates\users\login.html:48
+msgid "Remember me"
+msgstr "Angemeldet bleiben"
+
+#: .\templates\users\login.html:51
+msgid "Forgot password?"
+msgstr "Passwort vergessen?"
+
+#: .\templates\users\login.html:61
+msgid "Don't have an account?"
+msgstr "Noch kein Konto?"
+
+#: .\templates\users\password_reset.html:5
+#: .\templates\users\password_reset.html:9
+#: .\templates\users\password_reset_email.html:6
+msgid "Password Reset"
+msgstr "Passwort zurücksetzen"
+
+#: .\templates\users\password_reset.html:10
+msgid "Enter your email to receive instructions"
+msgstr "Geben Sie Ihre E-Mail ein, um Anweisungen zu erhalten"
+
+#: .\templates\users\password_reset.html:22
+#: .\templates\users\password_reset_email.html:22
+msgid "Reset Password"
+msgstr "Passwort zurücksetzen"
+
+#: .\templates\users\password_reset.html:25
+#: .\templates\users\password_reset_done.html:13
+msgid "Back to Login"
+msgstr "Zurück zur Anmeldung"
+
+#: .\templates\users\password_reset_complete.html:4
+msgid "Password Changed"
+msgstr "Passwort geändert"
+
+#: .\templates\users\password_reset_complete.html:8
+msgid "Password changed successfully!"
+msgstr "Passwort erfolgreich geändert!"
+
+#: .\templates\users\password_reset_complete.html:9
+msgid "Your password has been set. You can now log in."
+msgstr "Ihr Passwort wurde festgelegt. Sie können sich jetzt anmelden."
+
+#: .\templates\users\password_reset_complete.html:10
+#: .\templates\users\register.html:90
+msgid "Log in"
+msgstr "Anmelden"
+
+#: .\templates\users\password_reset_confirm.html:4
+#: .\templates\users\password_reset_confirm.html:8
+msgid "Enter New Password"
+msgstr "Neues Passwort eingeben"
+
+#: .\templates\users\password_reset_confirm.html:17
+msgid "New Password"
+msgstr "Neues Passwort"
+
+#: .\templates\users\password_reset_confirm.html:23
+msgid "Confirm New Password"
+msgstr "Neues Passwort bestätigen"
+
+#: .\templates\users\password_reset_confirm.html:27
+msgid "Update Password"
+msgstr "Passwort aktualisieren"
+
+#: .\templates\users\password_reset_done.html:4
+#: .\templates\users\password_reset_done.html:8
+msgid "Email Sent"
+msgstr "E-Mail gesendet"
+
+#: .\templates\users\password_reset_email.html:10
+msgid "Hello!"
+msgstr "Hallo!"
+
+#: .\templates\users\password_reset_email.html:13
+#, python-format
+msgid ""
+"\n"
+"        You're receiving this email because you requested a password reset "
+"for your account at %(site_name)s.\n"
+"        "
+msgstr ""
+"\n"
+"        Sie erhalten diese E-Mail, weil Sie eine Passwortzurücksetzung für "
+"Ihr Konto bei %(site_name)s angefordert haben.\n"
+"        "
+
+#: .\templates\users\password_reset_email.html:18
+msgid "To set a new password, please follow the link:"
+msgstr "Um ein neues Passwort festzulegen, folgen Sie bitte dem Link:"
+
+#: .\templates\users\password_reset_email.html:27
+#, python-format
+msgid ""
+"\n"
+"        Your username (if you've forgotten): %(username)s\n"
+"        "
+msgstr ""
+"\n"
+"        Ihr Benutzername (falls vergessen): %(username)s\n"
+"        "
+
+#: .\templates\users\password_reset_email.html:32
+msgid "Thank you for using our site!"
+msgstr "Vielen Dank, dass Sie unsere Website nutzen!"
+
+#: .\templates\users\password_reset_email.html:35
+#, python-format
+msgid ""
+"\n"
+"        The %(site_name)s team\n"
+"        "
+msgstr ""
+"\n"
+"        Das %(site_name)s Team\n"
+"        "
+
+#: .\templates\users\register.html:4
+msgid "Registration"
+msgstr "Registrierung"
+
+#: .\templates\users\register.html:8
+msgid "Create Account"
+msgstr "Konto erstellen"
+
+#: .\templates\users\register.html:9
+msgid "Join our community of craftsmen"
+msgstr "Treten Sie unserer Gemeinschaft von Handwerkern bei"
+
+#: .\templates\users\register.html:43 .\users\forms.py:59
+msgid "Create a strong password"
+msgstr "Erstellen Sie ein starkes Passwort"
+
+#: .\templates\users\register.html:56
+msgid "Confirm Password"
+msgstr "Passwort bestätigen"
+
+#: .\templates\users\register.html:59 .\users\forms.py:69
+msgid "Repeat your password"
+msgstr "Wiederholen Sie Ihr Passwort"
+
+#: .\templates\users\register.html:75
+msgid "Your craftsman account"
+msgstr "Ihr Handwerkerkonto"
+
+#: .\templates\users\register.html:89
+msgid "Already have an account?"
+msgstr "Bereits ein Konto?"
+
+#: .\users\admin.py:109
+msgid "Personal info"
+msgstr "Persönliche Informationen"
+
+#: .\users\admin.py:111
+msgid "Email verification"
+msgstr "E-Mail-Verifizierung"
+
+#: .\users\admin.py:118
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: .\users\admin.py:130
+msgid "Important dates"
+msgstr "Wichtige Daten"
+
+#: .\users\forms.py:19
+msgid "Password must not contain Russian letters."
+msgstr "Passwort darf keine russischen Buchstaben enthalten."
+
+#: .\users\forms.py:35 .\users\forms.py:138
+msgid "your.email@example.com"
+msgstr "ihre.email@beispiel.de"
+
+#: .\users\forms.py:40 .\users\forms.py:284
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: .\users\forms.py:41
+msgid "Enter a valid email address."
+msgstr "Geben Sie eine gültige E-Mail-Adresse ein."
+
+#: .\users\forms.py:76
+msgid "Password confirmation"
+msgstr "Passwortbestätigung"
+
+#: .\users\forms.py:78
+msgid ""
+"Password must contain at least 8 characters, not consist only of numbers and "
+"not be too simple. Russian letters are not allowed."
+msgstr ""
+"Passwort muss mindestens 8 Zeichen enthalten, darf nicht nur aus Zahlen "
+"bestehen und nicht zu einfach sein. Russische Buchstaben sind nicht erlaubt."
+
+#: .\users\forms.py:89
+msgid "User with this email already exists."
+msgstr "Benutzer mit dieser E-Mail existiert bereits."
+
+#: .\users\forms.py:155
+#, python-format
+msgid ""
+"Please enter a correct %(username)s and password. Note that both fields may "
+"be case-sensitive."
+msgstr ""
+"Bitte geben Sie einen korrekten %(username)s und ein Passwort ein. Beachten "
+"Sie, dass beide Felder Groß-/Kleinschreibung beachten können."
+
+#: .\users\forms.py:158
+msgid "This account is inactive."
+msgstr "Dieses Konto ist inaktiv."
+
+#: .\users\forms.py:159
+msgid "Please verify your email address before logging in."
+msgstr "Bitte verifizieren Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden."
+
+#: .\users\forms.py:180
+msgid "Verification code"
+msgstr "Verifizierungscode"
+
+#: .\users\forms.py:191
+msgid "Enter 6-digit code sent to your email"
+msgstr "Geben Sie den 6-stelligen Code ein, der an Ihre E-Mail gesendet wurde"
+
+#: .\users\forms.py:199
+msgid "Code must consist of 6 digits."
+msgstr "Code muss aus 6 Ziffern bestehen."
+
+#: .\users\forms.py:225
+msgid "Tell about yourself and your creativity..."
+msgstr "Erzählen Sie über sich und Ihre Kreativität..."
+
+#: .\users\forms.py:231 .\users\models.py:182
+msgid "About me"
+msgstr "Über mich"
+
+#: .\users\forms.py:232 .\users\models.py:183
+msgid "Maximum 500 characters"
+msgstr "Maximal 500 Zeichen"
+
+#: .\users\forms.py:249
+msgid "Start typing city name..."
+msgstr "Beginnen Sie mit der Eingabe des Stadtnamens..."
+
+#: .\users\forms.py:269 .\users\models.py:175
+msgid "Profile avatar"
+msgstr "Profil-Avatar"
+
+#: .\users\forms.py:282
+msgid "Enter your email"
+msgstr "Geben Sie Ihre E-Mail ein"
+
+#: .\users\forms.py:309 .\users\models.py:192
+msgid "Select city from list"
+msgstr "Stadt aus Liste auswählen"
+
+#: .\users\forms.py:319
+msgid ""
+"We recommend adding information about yourself for better profile "
+"presentation."
+msgstr "Wir empfehlen, Informationen über sich selbst für eine bessere Profildarstellung hinzuzufügen."
+
+#: .\users\forms.py:333 .\users\models.py:116
+msgid "TIFF format is not supported. Use JPG, PNG, GIF or WebP."
+msgstr "TIFF-Format wird nicht unterstützt. Verwenden Sie JPG, PNG, GIF oder WebP."
+
+#: .\users\forms.py:357
+msgid "I understand this action cannot be undone"
+msgstr "Ich verstehe, dass diese Aktion nicht rückgängig gemacht werden kann"
+
+#: .\users\forms.py:363
+msgid "Enter your password to confirm"
+msgstr "Geben Sie Ihr Passwort zur Bestätigung ein"
+
+#: .\users\forms.py:366
+msgid "Current password"
+msgstr "Aktuelles Passwort"
+
+#: .\users\forms.py:377
+msgid "Incorrect password"
+msgstr "Falsches Passwort"
+
+#: .\users\models.py:23
+msgid "The given email must be set"
+msgstr "Die angegebene E-Mail muss festgelegt werden"
+
+#: .\users\models.py:42
+msgid "Superuser must have is_staff=True."
+msgstr "Superuser muss is_staff=True haben."
+
+#: .\users\models.py:44
+msgid "Superuser must have is_superuser=True."
+msgstr "Superuser muss is_superuser=True haben."
+
+#: .\users\models.py:50
+msgid "email address"
+msgstr "E-Mail-Adresse"
+
+#: .\users\models.py:51
+msgid "email verified"
+msgstr "E-Mail verifiziert"
+
+#: .\users\models.py:53
+msgid "email verification code"
+msgstr "E-Mail-Verifizierungscode"
+
+#: .\users\models.py:56
+msgid "verification code created at"
+msgstr "Verifizierungscode erstellt am"
+
+#: .\users\models.py:129
+#, python-format
+msgid "File size must not exceed 5MB. Current size: %(size)sKB"
+msgstr "Dateigröße darf 5 MB nicht überschreiten. Aktuelle Größe: %(size)s KB"
+
+#: .\users\models.py:140
+msgid "City name"
+msgstr "Stadtname"
+
+#: .\users\models.py:144
+msgid "City must contain only Latin letters, spaces and hyphens"
+msgstr "Stadtname darf nur lateinische Buchstaben, Leerzeichen und Bindestriche enthalten"
+
+#: .\users\models.py:148
+msgid "Region"
+msgstr "Region"
+
+#: .\users\models.py:149
+msgid "Russia"
+msgstr "Russland"
+
+#: .\users\models.py:149
+msgid "Country"
+msgstr "Land"
+
+#: .\users\models.py:155
+msgid "Cities"
+msgstr "Städte"
+
+#: .\users\models.py:167
+msgid "User"
+msgstr "Benutzer"
+
+#: .\users\models.py:176
+msgid "Supported formats: JPG, PNG, GIF, WebP. Maximum size: 5MB."
+msgstr "Unterstützte Formate: JPG, PNG, GIF, WebP. Maximale Größe: 5 MB."
+
+#: .\users\models.py:199
+msgid "Profile"
+msgstr "Profil"
+
+#: .\users\models.py:200
+msgid "Profiles"
+msgstr "Profile"
+
+#: .\users\models.py:204
+#, python-format
+msgid "Profile of %(email)s"
+msgstr "Profil von %(email)s"
+
+#: .\users\services\email_service.py:61
+msgid "Код подтверждения email"
+msgstr "E-Mail-Bestätigungscode"
+
+#: .\users\services\email_service.py:117
+msgid "Добро пожаловать в Handmade Marketplace!"
+msgstr "Willkommen bei Handmade Marketplace!"
+
+#: .\users\services\email_service.py:166
+msgid "Сброс пароля"
+msgstr "Passwort zurücksetzen"
+
+#: .\users\views.py:71
+msgid "Verification code sent to your email."
+msgstr "Verifizierungscode an Ihre E-Mail gesendet."
+
+#: .\users\views.py:77
+msgid "Error during registration. Please try again later."
+msgstr "Fehler während der Registrierung. Bitte versuchen Sie es später erneut."
+
+#: .\users\views.py:90
+msgid "Please correct errors in the form."
+msgstr "Bitte korrigieren Sie die Fehler im Formular."
+
+#: .\users\views.py:108
+msgid "Please complete registration first."
+msgstr "Bitte schließen Sie zuerst die Registrierung ab."
+
+#: .\users\views.py:144
+msgid "Email successfully verified! Welcome!"
+msgstr "E-Mail erfolgreich verifiziert! Willkommen!"
+
+#: .\users\views.py:152
+msgid "Invalid verification code or it has expired."
+msgstr "Ungültiger Verifizierungscode oder abgelaufen."
+
+#: .\users\views.py:160 .\users\views.py:222
+msgid "User not found."
+msgstr "Benutzer nicht gefunden."
+
+#: .\users\views.py:164
+msgid "Error confirming email."
+msgstr "Fehler bei der E-Mail-Bestätigung."
+
+#: .\users\views.py:191
+msgid "Session expired. Please register again."
+msgstr "Sitzung abgelaufen. Bitte registrieren Sie sich erneut."
+
+#: .\users\views.py:206
+msgid "New verification code sent to your email."
+msgstr "Neuer Verifizierungscode an Ihre E-Mail gesendet."
+
+#: .\users\views.py:212
+msgid "Failed to send verification code. Please try again later."
+msgstr "Fehler beim Senden des Verifizierungscodes. Bitte versuchen Sie es später erneut."
+
+#: .\users\views.py:226
+msgid "Error sending verification code."
+msgstr "Fehler beim Senden des Verifizierungscodes."
+
+#: .\users\views.py:245
+msgid "Successfully logged in!"
+msgstr "Erfolgreich angemeldet!"
+
+#: .\users\views.py:250
+msgid "Please verify your email before logging in."
+msgstr "Bitte verifizieren Sie Ihre E-Mail, bevor Sie sich anmelden."
+
+#: .\users\views.py:255
+msgid "Error logging in."
+msgstr "Fehler bei der Anmeldung."
+
+#: .\users\views.py:273
+msgid ""
+"If an account exists with this email, you will receive password reset "
+"instructions."
+msgstr "Wenn ein Konto mit dieser E-Mail existiert, erhalten Sie Anweisungen zum Zurücksetzen des Passworts."
+
+#: .\users\views.py:281
+msgid "Error requesting password reset."
+msgstr "Fehler bei der Passwortzurücksetzungsanforderung."
+
+#: .\users\views.py:295
+msgid "Your password has been successfully reset!"
+msgstr "Ihr Passwort wurde erfolgreich zurückgesetzt!"
+
+#: .\users\views.py:302
+msgid "Error resetting password."
+msgstr "Fehler beim Zurücksetzen des Passworts."
+
+#: .\users\views.py:356
+msgid "✅ Your profile has been successfully updated!"
+msgstr "✅ Ihr Profil wurde erfolgreich aktualisiert!"
+
+#: .\users\views.py:389
+msgid "❌ Please correct errors in the form."
+msgstr "❌ Bitte korrigieren Sie die Fehler im Formular."
+
+#: .\users\views.py:417
+msgid "⚠️ An error occurred while loading the profile editing page."
+msgstr "⚠️ Fehler beim Laden der Profilbearbeitungsseite."
+
+#: .\users\views.py:440
+#, python-brace-format
+msgid ""
+"Account {user_email} has been successfully deleted. We're sorry to see you "
+"go!"
+msgstr "Konto {user_email} wurde erfolgreich gelöscht. Wir bedauern, dass Sie gehen!"
+
+#: .\users\views.py:456
+msgid "Error deleting account."
+msgstr "Fehler beim Löschen des Kontos."

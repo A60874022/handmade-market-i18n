@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from django.utils.translation import gettext as _
 
 from .models import Notification
 
@@ -8,14 +9,14 @@ class NotificationService:
 
     @staticmethod
     def create_order_notification(order, master):
-        """Создание уведомления о новом заказе для мастера"""
+        """Create new order notification for master"""
         try:
-            # Получаем товары этого мастера в заказе
+            # Get this master's products in order
             master_items = order.items.filter(product__master=master)
             item_titles = ", ".join([item.product.title for item in master_items[:3]])
 
             if master_items.count() > 3:
-                item_titles += f" и ещё {master_items.count() - 3} товаров"
+                item_titles += _(" and %(count)d more products") % {"count": master_items.count() - 3}
 
             total_for_master = sum(item.total_price for item in master_items)
 
@@ -26,8 +27,9 @@ class NotificationService:
             Notification.objects.create(
                 user=master,
                 notification_type="new_order",
-                title="🎉 Новый заказ!",
-                message=f"Покупатель {order.customer.email} оформил заказ на ваши товары: {item_titles}. Общая сумма: {total_for_master} ₽.",
+                title=_("🎉 New order!"),
+                message=_("Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s RUB.") % 
+                {"email": order.customer.email, "items": item_titles, "total": total_for_master},
                 action_url=f"/orders/sales/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,
@@ -39,13 +41,13 @@ class NotificationService:
 
     @staticmethod
     def create_message_notification(sender, recipient, message_text, dialogue_id):
-        """Создание уведомления о новом сообщении"""
+        """Create new message notification"""
         try:
             from chat.models import Dialogue
 
             dialogue_content_type = ContentType.objects.get_for_model(Dialogue)
 
-            # Проверяем, есть ли уже уведомление о непрочитанных сообщениях в этом диалоге
+            # Check if there's already notification about unread messages in this dialogue
             existing_notification = Notification.objects.filter(
                 user=recipient,
                 notification_type="new_message",
@@ -55,16 +57,24 @@ class NotificationService:
             ).first()
 
             if existing_notification:
-                # Обновляем существующее уведомление
-                existing_notification.message = f'Новое сообщение от {sender.email}: {message_text[:100]}{"..." if len(message_text) > 100 else ""}'
+                # Update existing notification
+                existing_notification.message = _('New message from %(email)s: %(text)s%(ellipsis)s') % {
+                    "email": sender.email,
+                    "text": message_text[:100],
+                    "ellipsis": "..." if len(message_text) > 100 else ""
+                }
                 existing_notification.save()
             else:
-                # Создаем новое уведомление
+                # Create new notification
                 Notification.objects.create(
                     user=recipient,
                     notification_type="new_message",
-                    title="💬 Новое сообщение",
-                    message=f'{sender.email}: {message_text[:100]}{"..." if len(message_text) > 100 else ""}',
+                    title=_("💬 New message"),
+                    message=_('%(email)s: %(text)s%(ellipsis)s') % {
+                        "email": sender.email,
+                        "text": message_text[:100],
+                        "ellipsis": "..." if len(message_text) > 100 else ""
+                    },
                     action_url=f"/chat/dialogue/{dialogue_id}/",
                     related_object_id=dialogue_id,
                     related_content_type="dialogue",
@@ -76,7 +86,7 @@ class NotificationService:
 
     @staticmethod
     def mark_dialogue_notifications_read(user, dialogue_id):
-        """Пометить все уведомления о сообщениях в диалоге как прочитанные"""
+        """Mark all message notifications in dialogue as read"""
         Notification.objects.filter(
             user=user,
             notification_type="new_message",
@@ -87,7 +97,7 @@ class NotificationService:
 
     @staticmethod
     def delete_dialogue_notifications(user, dialogue_id):
-        """Удалить все уведомления о сообщениях в диалоге"""
+        """Delete all message notifications in dialogue"""
         Notification.objects.filter(
             user=user,
             notification_type="new_message",
@@ -97,7 +107,7 @@ class NotificationService:
 
     @staticmethod
     def create_cancellation_notification(order, master, customer):
-        """Создание уведомления об отмене заказа покупателем"""
+        """Create order cancellation notification by buyer"""
         try:
             from orders.models import Order
 
@@ -106,8 +116,9 @@ class NotificationService:
             Notification.objects.create(
                 user=master,
                 notification_type="order_cancelled",
-                title="❌ Заказ отменен",
-                message=f"Покупатель {customer.email} отменил заказ #{order.id}",
+                title=_("❌ Order cancelled"),
+                message=_("Customer %(email)s cancelled order #%(id)s") % 
+                {"email": customer.email, "id": order.id},
                 action_url=f"/orders/sales/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,
@@ -119,7 +130,7 @@ class NotificationService:
 
     @staticmethod
     def create_master_cancellation_notification(order, master):
-        """Создание уведомления об отмене заказа мастером"""
+        """Create order cancellation notification by master"""
         try:
             from orders.models import Order
 
@@ -128,8 +139,9 @@ class NotificationService:
             Notification.objects.create(
                 user=order.customer,
                 notification_type="order_cancelled",
-                title="❌ Заказ отменен мастером",
-                message=f"Мастер {master.email} отменил ваш заказ #{order.id}",
+                title=_("❌ Order cancelled by master"),
+                message=_("Master %(email)s cancelled your order #%(id)s") % 
+                {"email": master.email, "id": order.id},
                 action_url=f"/orders/purchases/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,
@@ -141,23 +153,23 @@ class NotificationService:
 
     @staticmethod
     def get_unread_count(user):
-        """Получение количества непрочитанных уведомлений"""
+        """Get count of unread notifications"""
         return Notification.objects.filter(user=user, is_read=False).count()
 
     @staticmethod
     def mark_all_as_read(user):
-        """Пометить все уведомления как прочитанные"""
+        """Mark all notifications as read"""
         Notification.objects.filter(user=user, is_read=False).update(is_read=True)
 
     @staticmethod
     def delete_read_notifications(user):
-        """Удалить все прочитанные уведомления"""
+        """Delete all read notifications"""
         deleted_count, _ = Notification.objects.filter(user=user, is_read=True).delete()
         return deleted_count
 
     @staticmethod
     def delete_single_notification(user, notification_id):
-        """Удалить одно уведомление (только прочитанное)"""
+        """Delete single notification (read only)"""
         try:
             notification = Notification.objects.get(id=notification_id, user=user)
             if notification.is_read:

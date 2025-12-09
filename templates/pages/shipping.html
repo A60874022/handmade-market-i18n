@@ -1,113 +1,118 @@
 {% extends "base.html" %}
-{% block title %}Доставка и оплата | HandmadeMarket{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Returns and Exchanges" %} | HandmadeMarket{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="fw-bold mb-4">🚚 Доставка и оплата</h1>
+            <h1 class="fw-bold mb-4">↩️ {% trans "Returns and Exchanges" %}</h1>
 
-            <!-- Доставка -->
+            <!-- Условия возврата -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">📦 Варианты доставки</h4>
+                    <h4 class="mb-0">📋 {% trans "Return Conditions" %}</h4>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <h5>Почта России</h5>
-                            <ul class="list-unstyled">
-                                <li>• Срок: 7-14 дней</li>
-                                <li>• Стоимость: от 300 ₽</li>
-                                <li>• Трекинг: доступен</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <h5>Курьерские службы</h5>
-                            <ul class="list-unstyled">
-                                <li>• Срок: 3-7 дней</li>
-                                <li>• Стоимость: от 500 ₽</li>
-                                <li>• Трекинг: доступен</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <h5>Самовывоз</h5>
-                            <ul class="list-unstyled">
-                                <li>• Срок: 1-2 дня</li>
-                                <li>• Стоимость: бесплатно</li>
-                                <li>• Только для Москвы</li>
-                            </ul>
-                        </div>
+                    <div class="alert alert-info">
+                        <strong>⚠️ {% trans "Attention!" %}</strong> {% trans "Handmade products have special return
+                        conditions." %}
                     </div>
-                    <p class="text-muted small">
-                        * Конкретные условия доставки уточняйте у продавца при оформлении заказа.
-                    </p>
+
+                    <h5>✅ {% trans "Returns are accepted in cases:" %}</h5>
+                    <ul>
+                        <li>{% trans "Product does not match the description" %}</li>
+                        <li>{% trans "Manufacturing defect detected" %}</li>
+                        <li>{% trans "Product damaged during delivery" %}</li>
+                        <li>{% trans "Required kit not included" %}</li>
+                    </ul>
+
+                    <h5>❌ {% trans "Returns are not accepted:" %}</h5>
+                    <ul>
+                        <li>{% trans "Product made to individual order" %}</li>
+                        <li>{% trans "Color/size didn't suit the buyer (if not seller's error)" %}</li>
+                        <li>{% trans "Product was used" %}</li>
+                        <li>{% trans "Original packaging damaged" %}</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Оплата -->
+            <!-- Процесс возврата -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">💳 Способы оплаты</h4>
+                    <h4 class="mb-0">🔄 {% trans "Return Process" %}</h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <h5>💳 Банковские карты</h5>
-                            <p>Visa, MasterCard, Мир</p>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div class="bg-light rounded-circle p-3 mx-auto mb-2"
+                                    style="width: 70px; height: 70px;">
+                                    <span style="font-size: 1.5rem;">📞</span>
+                                </div>
+                                <h6>1. {% trans "Contacts" %}</h6>
+                                <p class="small text-muted">{% trans "Contact the seller" %}</p>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h5>📱 Электронные кошельки</h5>
-                            <p>ЮMoney, QIWI, WebMoney</p>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div class="bg-light rounded-circle p-3 mx-auto mb-2"
+                                    style="width: 70px; height: 70px;">
+                                    <span style="font-size: 1.5rem;">📝</span>
+                                </div>
+                                <h6>2. {% trans "Application" %}</h6>
+                                <p class="small text-muted">{% trans "Fill out a return application" %}</p>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <h5>🏦 Интернет-банкинг</h5>
-                            <p>Сбербанк Онлайн, Тинькофф</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <h5>🎁 Наложенный платеж</h5>
-                            <p>Оплата при получении</p>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div class="bg-light rounded-circle p-3 mx-auto mb-2"
+                                    style="width: 70px; height: 70px;">
+                                    <span style="font-size: 1.5rem;">🚚</span>
+                                </div>
+                                <h6>3. {% trans "Shipment" %}</h6>
+                                <p class="small text-muted">{% trans "Send the product back" %}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Процесс заказа -->
+            <!-- Сроки и стоимость -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">🔄 Процесс оформления заказа</h4>
+                    <h4 class="mb-0">⏰ {% trans "Terms and Cost" %}</h4>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-light rounded-circle p-3 mx-auto mb-2" style="width: 80px; height: 80px;">
-                                <span style="font-size: 2rem;">🛒</span>
-                            </div>
-                            <h6>1. Выбор товара</h6>
-                            <p class="small text-muted">Добавьте товары в корзину</p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h5>⏱️ {% trans "Consideration Period" %}</h5>
+                            <p>{% trans "Usually 3-5 business days from the moment the seller receives the product" %}
+                            </p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-light rounded-circle p-3 mx-auto mb-2" style="width: 80px; height: 80px;">
-                                <span style="font-size: 2rem;">💳</span>
-                            </div>
-                            <h6>2. Оплата</h6>
-                            <p class="small text-muted">Выберите способ оплаты</p>
+                        <div class="col-md-6 mb-3">
+                            <h5>💰 {% trans "Return Cost" %}</h5>
+                            <p>{% trans "If the return is due to seller's fault - expenses are borne by the seller" %}
+                            </p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-light rounded-circle p-3 mx-auto mb-2" style="width: 80px; height: 80px;">
-                                <span style="font-size: 2rem;">🚚</span>
-                            </div>
-                            <h6>3. Доставка</h6>
-                            <p class="small text-muted">Получите трек-номер</p>
+                        <div class="col-md-6 mb-3">
+                            <h5>💸 {% trans "Money Refund" %}</h5>
+                            <p>{% trans "Money is refunded within 10 business days" %}</p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-light rounded-circle p-3 mx-auto mb-2" style="width: 80px; height: 80px;">
-                                <span style="font-size: 2rem;">📦</span>
-                            </div>
-                            <h6>4. Получение</h6>
-                            <p class="small text-muted">Получите ваш заказ</p>
+                        <div class="col-md-6 mb-3">
+                            <h5>🔄 {% trans "Product Exchange" %}</h5>
+                            <p>{% trans "Possible within 14 days from receipt" %}</p>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Важная информация -->
+            <div class="alert alert-warning mt-4">
+                <h6>💡 {% trans "Important Information:" %}</h6>
+                <p class="mb-0">
+                    {% trans "Before processing a return, be sure to contact the seller to clarify details. Keep the
+                    original packaging and documents until the return procedure is completed." %}
+                </p>
             </div>
         </div>
     </div>

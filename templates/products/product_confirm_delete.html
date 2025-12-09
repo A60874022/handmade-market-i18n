@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Удаление товара | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Delete Product" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -10,7 +10,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center p-5">
                     <div class="mb-4" style="font-size: 4rem;">🗑️</div>
-                    <h2 class="fw-bold mb-3">Удалить товар?</h2>
+                    <h2 class="fw-bold mb-3">{% trans "Delete Product?" %}</h2>
 
                     <div class="card mb-4">
                         <div class="card-body">
@@ -26,17 +26,18 @@
                     </div>
 
                     <p class="text-muted mb-4">
-                        Это действие нельзя отменить. Товар будет полностью удален из системы.
+                        {% trans "This action cannot be undone. The product will be completely removed from the system."
+                        %}
                     </p>
 
                     <form method="post">
                         {% csrf_token %}
                         <div class="d-flex gap-3 justify-content-center">
                             <button type="submit" class="btn btn-danger btn-lg px-4">
-                                ✅ Да, удалить
+                                ✅ {% trans "Yes, Delete" %}
                             </button>
                             <a href="{% url 'products:my_products' %}" class="btn btn-outline-secondary btn-lg px-4">
-                                ❌ Отмена
+                                ❌ {% trans "Cancel" %}
                             </a>
                         </div>
                     </form>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Уведомления | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Notifications" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,24 +9,24 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="fw-bold mb-2">🔔 Уведомления</h1>
-                    <p class="text-muted">Все уведомления о вашей активности на платформе</p>
+                    <h1 class="fw-bold mb-2">🔔 {% trans "Notifications" %}</h1>
+                    <p class="text-muted">{% trans "All notifications about your activity on the platform" %}</p>
                 </div>
                 <div>
                     {% if notifications and unread_notifications_count > 0 %}
                     <button type="button" class="btn btn-outline-primary me-2" id="markAllReadBtn">
-                        📪 Прочитать все
+                        📪 {% trans "Mark All as Read" %}
                     </button>
                     {% endif %}
 
                     {% if notifications.exists %}
                     <button type="button" class="btn btn-outline-danger me-2" id="deleteAllReadBtn">
-                        🗑️ Удалить прочитанные
+                        🗑️ {% trans "Delete Read" %}
                     </button>
                     {% endif %}
 
                     <a href="{% url 'orders:sale_orders' %}" class="btn btn-primary">
-                        💰 Мои продажи
+                        💰 {% trans "My Sales" %}
                     </a>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                                         <small class="text-muted">
                                             📅 {{ notification.created_at|date:"d.m.Y H:i" }}
                                             {% if notification.is_recent %}
-                                            <span class="badge bg-success ms-2">Сегодня</span>
+                                            <span class="badge bg-success ms-2">{% trans "Today" %}</span>
                                             {% endif %}
                                         </small>
                                     </div>
@@ -72,19 +72,20 @@
 
                                     {% if notification.action_url %}
                                     <a href="{{ notification.action_url }}" class="btn btn-outline-primary btn-sm">
-                                        📋 Перейти
+                                        📋 {% trans "Go to" %}
                                     </a>
                                     {% endif %}
 
                                     {% if not notification.is_read %}
                                     <button class="btn btn-outline-success btn-sm mark-read-btn"
-                                        data-notification-id="{{ notification.id }}" title="Отметить как прочитанное">
+                                        data-notification-id="{{ notification.id }}" title="{% trans 'Mark as read' %}">
                                         ✅
                                     </button>
                                     {% else %}
-                                    <span class="badge bg-secondary me-2">Прочитано</span>
+                                    <span class="badge bg-secondary me-2">{% trans "Read" %}</span>
                                     <button class="btn btn-outline-danger btn-sm delete-single-btn"
-                                        data-notification-id="{{ notification.id }}" title="Удалить уведомление">
+                                        data-notification-id="{{ notification.id }}"
+                                        title="{% trans 'Delete notification' %}">
                                         🗑️
                                     </button>
                                     {% endif %}
@@ -102,7 +103,7 @@
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">← Назад</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">← {% trans "Back" %}</a>
                     </li>
                     {% endif %}
 
@@ -116,7 +117,7 @@
 
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед →</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %} →</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -126,18 +127,18 @@
             {% else %}
             <div class="text-center py-5">
                 <div class="mb-4" style="font-size: 4rem;">🔔</div>
-                <h3 class="fw-bold mb-3">Уведомлений пока нет</h3>
-                <p class="text-muted mb-4">Когда появятся новые уведомления о заказах, сообщениях или другой активности,
-                    они отобразятся здесь</p>
+                <h3 class="fw-bold mb-3">{% trans "No notifications yet" %}</h3>
+                <p class="text-muted mb-4">{% trans "When new notifications about orders, messages or other activity
+                    appear, they will be displayed here" %}</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
-                        🛍️ Перейти в каталог
+                        🛍️ {% trans "Go to Catalog" %}
                     </a>
                     <a href="{% url 'products:my_products' %}" class="btn btn-outline-primary btn-lg px-4">
-                        🎨 Мои товары
+                        🎨 {% trans "My Products" %}
                     </a>
                     <a href="{% url 'products:product_add' %}" class="btn btn-outline-brown btn-lg px-4">
-                        ➕ Добавить товар
+                        ➕ {% trans "Add Product" %}
                     </a>
                 </div>
             </div>
@@ -242,6 +243,24 @@
 </style>
 
 <script>
+    // Объект переводов для JavaScript
+    const translations = {
+        markAsRead: "{% trans 'Mark as read' %}",
+        deleteNotification: "{% trans 'Delete notification' %}",
+        markAllReadConfirm: "{% trans 'Mark all notifications as read?' %}",
+        deleteReadConfirm: "{% trans 'Delete all read notifications? This action cannot be undone.' %}",
+        deleteSingleConfirm: "{% trans 'Delete this notification?' %}",
+        notificationMarkedRead: "{% trans 'Notification marked as read' %}",
+        allNotificationsMarkedRead: "{% trans 'All notifications marked as read' %}",
+        notificationDeleted: "{% trans 'Notification deleted' %}",
+        readNotificationsDeleted: "{% trans 'Deleted {{ count }} read notifications' %}",
+        errorMarkingRead: "{% trans 'Error marking notification as read' %}",
+        errorMarkingAllRead: "{% trans 'Error marking all notifications as read' %}",
+        errorDeleting: "{% trans 'Error deleting notification' %}",
+        errorDeletingAll: "{% trans 'Error deleting notifications' %}",
+        read: "{% trans 'Read' %}"
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         // Функция для отметки уведомления как прочитанного
         function markAsRead(notificationId) {
@@ -270,9 +289,9 @@
 
                         // Заменяем кнопку "Прочитать" на бейдж "Прочитано" и кнопку "Удалить"
                         buttonContainer.innerHTML = `
-                            <span class="badge bg-secondary me-2">Прочитано</span>
+                            <span class="badge bg-secondary me-2">${translations.read}</span>
                             <button class="btn btn-outline-danger btn-sm delete-single-btn"
-                                data-notification-id="${notificationId}" title="Удалить уведомление">
+                                data-notification-id="${notificationId}" title="${translations.deleteNotification}">
                                 🗑️
                             </button>
                         `;
@@ -281,7 +300,7 @@
                         const newDeleteBtn = buttonContainer.querySelector('.delete-single-btn');
                         newDeleteBtn.addEventListener('click', function () {
                             const notifId = this.getAttribute('data-notification-id');
-                            if (confirm('Удалить это уведомление?')) {
+                            if (confirm(translations.deleteSingleConfirm)) {
                                 deleteNotification(notifId);
                             }
                         });
@@ -292,12 +311,12 @@
                         // Обновляем кнопку "Прочитать все"
                         updateMarkAllReadButton();
 
-                        showMessage('Уведомление отмечено как прочитанное', 'success');
+                        showMessage(translations.notificationMarkedRead, 'success');
                     }
                 })
                 .catch(error => {
                     console.error('Error marking notification as read:', error);
-                    showMessage('Ошибка при отметке уведомления как прочитанного', 'error');
+                    showMessage(translations.errorMarkingRead, 'error');
                 });
         }
 
@@ -331,9 +350,9 @@
                                 // Заменяем кнопку "Прочитать" на бейдж "Прочитано" и кнопку "Удалить"
                                 const notificationId = markReadBtn.getAttribute('data-notification-id');
                                 markReadBtn.outerHTML = `
-                                    <span class="badge bg-secondary me-2">Прочитано</span>
+                                    <span class="badge bg-secondary me-2">${translations.read}</span>
                                     <button class="btn btn-outline-danger btn-sm delete-single-btn"
-                                        data-notification-id="${notificationId}" title="Удалить уведомление">
+                                        data-notification-id="${notificationId}" title="${translations.deleteNotification}">
                                         🗑️
                                     </button>
                                 `;
@@ -342,7 +361,7 @@
                                 const newDeleteBtn = buttonContainer.querySelector('.delete-single-btn');
                                 newDeleteBtn.addEventListener('click', function () {
                                     const notifId = this.getAttribute('data-notification-id');
-                                    if (confirm('Удалить это уведомление?')) {
+                                    if (confirm(translations.deleteSingleConfirm)) {
                                         deleteNotification(notifId);
                                     }
                                 });
@@ -356,12 +375,12 @@
                         updateMarkAllReadButton();
 
                         // Показываем сообщение об успехе
-                        showMessage('Все уведомления отмечены как прочитанные', 'success');
+                        showMessage(translations.allNotificationsMarkedRead, 'success');
                     }
                 })
                 .catch(error => {
                     console.error('Error marking all notifications as read:', error);
-                    showMessage('Ошибка при отметке всех уведомлений как прочитанных', 'error');
+                    showMessage(translations.errorMarkingAllRead, 'error');
                 });
         }
 
@@ -390,14 +409,14 @@
                             }
                         }, 300);
 
-                        showMessage('Уведомление удалено', 'success');
+                        showMessage(translations.notificationDeleted, 'success');
                     } else {
-                        showMessage('Не удалось удалить уведомление', 'error');
+                        showMessage(translations.errorDeleting, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error deleting notification:', error);
-                    showMessage('Ошибка при удалении уведомления', 'error');
+                    showMessage(translations.errorDeleting, 'error');
                 });
         }
 
@@ -424,18 +443,18 @@
                                 deletedCount++;
 
                                 // Если все уведомления удалены, перезагружаем страницу
-                                if (deletedCount === readNotifications.length && document.querySelectorAll('.notification-item').length === 0) {
+                                if (deletedCount === readNotifications.length &amp;&amp; document.querySelectorAll('.notification-item').length === 0) {
                                     location.reload();
                                 }
                             }, 300);
                         });
 
-                        showMessage(`Удалено ${data.deleted_count} прочитанных уведомлений`, 'success');
+                        showMessage(translations.readNotificationsDeleted.replace('{{ count }}', data.deleted_count), 'success');
                     }
                 })
                 .catch(error => {
                     console.error('Error deleting all read notifications:', error);
-                    showMessage('Ошибка при удалении уведомлений', 'error');
+                    showMessage(translations.errorDeletingAll, 'error');
                 });
         }
 
@@ -465,7 +484,7 @@
             const markAllReadBtn = document.getElementById('markAllReadBtn');
             const unreadNotifications = document.querySelectorAll('.unread').length;
 
-            if (unreadNotifications === 0 && markAllReadBtn) {
+            if (unreadNotifications === 0 &amp;&amp; markAllReadBtn) {
                 markAllReadBtn.style.display = 'none';
             }
         }
@@ -473,7 +492,7 @@
         // Функция для получения CSRF токена
         function getCookie(name) {
             let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
+            if (document.cookie &amp;&amp; document.cookie !== '') {
                 const cookies = document.cookie.split(';');
                 for (let i = 0; i < cookies.length; i++) {
                     const cookie = cookies[i].trim();
@@ -526,20 +545,20 @@
         document.querySelectorAll('.delete-single-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const notificationId = this.getAttribute('data-notification-id');
-                if (confirm('Удалить это уведомление?')) {
+                if (confirm(translations.deleteSingleConfirm)) {
                     deleteNotification(notificationId);
                 }
             });
         });
 
         document.getElementById('markAllReadBtn')?.addEventListener('click', function () {
-            if (confirm('Отметить все уведомления как прочитанные?')) {
+            if (confirm(translations.markAllReadConfirm)) {
                 markAllAsRead();
             }
         });
 
         document.getElementById('deleteAllReadBtn')?.addEventListener('click', function () {
-            if (confirm('Удалить все прочитанные уведомления? Это действие нельзя отменить.')) {
+            if (confirm(translations.deleteReadConfirm)) {
                 deleteAllReadNotifications();
             }
         });

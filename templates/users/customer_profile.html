@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Личный кабинет | HandmadeMarket{% endblock %}
+{% block title %}{% trans "User Profile" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Заголовок -->
+    <!-- Header -->
     <div class="row mb-5">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="fw-bold mb-2">👤 Личный кабинет</h1>
-                    <p class="text-muted">Управление вашими заказами и предпочтениями</p>
+                    <h1 class="fw-bold mb-2">👤 {% trans "User Profile" %}</h1>
+                    <p class="text-muted">{% trans "Manage your orders and preferences" %}</p>
                 </div>
                 <div class="text-end">
                     <p class="mb-1"><strong>{{ user.email }}</strong></p>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <!-- Вкладки -->
+    <!-- Tabs -->
     <div class="row">
         <div class="col-12">
             <ul class="nav nav-tabs nav-justified mb-4" id="profileTabs" role="tablist">
@@ -31,54 +31,55 @@
                     <button class="nav-link {% if active_tab == 'orders' %}active{% endif %}" id="orders-tab"
                         data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab"
                         onclick="changeTab('orders')">
-                        📦 Мои заказы
+                        📦 {% trans "My Orders" %}
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {% if active_tab == 'favorites' %}active{% endif %}" id="favorites-tab"
                         data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab"
                         onclick="changeTab('favorites')">
-                        ❤️ Избранное
+                        ❤️ {% trans "Favorites" %}
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {% if active_tab == 'dialogs' %}active{% endif %}" id="dialogs-tab"
                         data-bs-toggle="tab" data-bs-target="#dialogs" type="button" role="tab"
                         onclick="changeTab('dialogs')">
-                        💬 Диалоги
+                        💬 {% trans "Dialogs" %}
                     </button>
                 </li>
             </ul>
 
-            <!-- Содержимое вкладок -->
+            <!-- Tab content -->
             <div class="tab-content" id="profileTabsContent">
 
-                <!-- Вкладка Заказы -->
+                <!-- Orders Tab -->
                 <div class="tab-pane fade {% if active_tab == 'orders' %}show active{% endif %}" id="orders"
                     role="tabpanel">
                     <div class="text-center py-5">
                         <div class="mb-4" style="font-size: 4rem;">🛒</div>
-                        <h3 class="fw-bold mb-3">Ваша корзина покупок</h3>
-                        <p class="text-muted mb-4">Здесь вы можете просмотреть и оформить ваши заказы</p>
+                        <h3 class="fw-bold mb-3">{% trans "Your Shopping Cart" %}</h3>
+                        <p class="text-muted mb-4">{% trans "Here you can view and complete your orders" %}</p>
 
-                        <!-- Кнопка перехода в корзину -->
+                        <!-- Go to cart button -->
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
                             <a href="{% url 'orders:cart_view' %}" class="btn btn-primary btn-lg px-4">
-                                🛒 Перейти к корзине
+                                🛒 {% trans "Go to Cart" %}
                             </a>
                             <a href="{% url 'products:catalog' %}" class="btn btn-outline-primary btn-lg px-4">
-                                🛍️ Продолжить покупки
+                                🛍️ {% trans "Continue Shopping" %}
                             </a>
                         </div>
 
-                        <!-- Дополнительная информация -->
+                        <!-- Additional information -->
                         <div class="row mt-5">
                             <div class="col-md-4">
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <div class="mb-3" style="font-size: 2rem;">📦</div>
-                                        <h6>История заказов</h6>
-                                        <p class="text-muted small">Просмотрите ваши предыдущие заказы и их статусы</p>
+                                        <h6>{% trans "Order History" %}</h6>
+                                        <p class="text-muted small">{% trans "View your previous orders and their
+                                            statuses" %}</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,8 +87,9 @@
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <div class="mb-3" style="font-size: 2rem;">🚚</div>
-                                        <h6>Отслеживание</h6>
-                                        <p class="text-muted small">Следите за статусом доставки ваших заказов</p>
+                                        <h6>{% trans "Order Tracking" %}</h6>
+                                        <p class="text-muted small">{% trans "Track the delivery status of your orders"
+                                            %}</p>
                                     </div>
                                 </div>
                             </div>
@@ -95,8 +97,9 @@
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <div class="mb-3" style="font-size: 2rem;">💳</div>
-                                        <h6>Способы оплаты</h6>
-                                        <p class="text-muted small">Управление методами оплаты и историей транзакций</p>
+                                        <h6>{% trans "Payment Methods" %}</h6>
+                                        <p class="text-muted small">{% trans "Manage payment methods and transaction
+                                            history" %}</p>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +107,7 @@
                     </div>
                 </div>
 
-                <!-- Вкладка Избранное -->
+                <!-- Favorites Tab -->
                 <div class="tab-pane fade {% if active_tab == 'favorites' %}show active{% endif %}" id="favorites"
                     role="tabpanel">
                     {% if favorites %}
@@ -112,7 +115,7 @@
                         {% for favorite in favorites %}
                         <div class="col-xl-3 col-lg-4 col-md-6">
                             <div class="card h-100 shadow-sm border-0 product-card">
-                                <!-- Изображение товара -->
+                                <!-- Product image -->
                                 <div class="position-relative">
                                     {% if favorite.product.get_main_image %}
                                     <img src="{{ favorite.product.get_main_image.image.url }}"
@@ -123,37 +126,37 @@
                                         style="height: 200px;">
                                         <div class="text-center text-muted">
                                             <span style="font-size: 3rem;">🎨</span>
-                                            <p class="mt-2 small">Нет изображения</p>
+                                            <p class="mt-2 small">{% trans "No image" %}</p>
                                         </div>
                                     </div>
                                     {% endif %}
 
-                                    <!-- Кнопка удаления из избранного -->
+                                    <!-- Remove from favorites button -->
                                     <div class="position-absolute top-0 end-0 m-2">
                                         <form method="post"
                                             action="{% url 'products:remove_from_favorites' favorite.id %}">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip"
-                                                title="Удалить из избранного">
+                                                title="{% trans 'Remove from favorites' %}">
                                                 ❌
                                             </button>
                                         </form>
                                     </div>
                                 </div>
 
-                                <!-- Информация о товаре -->
+                                <!-- Product information -->
                                 <div class="card-body d-flex flex-column">
                                     <h6 class="card-title fw-bold mb-2">{{ favorite.product.title }}</h6>
                                     <p class="card-text text-muted small flex-grow-1">
                                         {{ favorite.product.description|truncatewords:10 }}
                                     </p>
 
-                                    <!-- Информация о мастере - ИСПРАВЛЕНО -->
+                                    <!-- Craftsman information - FIXED -->
                                     <div class="d-flex align-items-center mb-3">
                                         {% if favorite.product.master.profile.avatar %}
                                         <img src="{{ favorite.product.master.profile.avatar.url }}"
-                                            class="rounded-circle me-2" width="30" height="30" alt="Аватар мастера"
-                                            style="object-fit: cover;">
+                                            class="rounded-circle me-2" width="30" height="30"
+                                            alt="{% trans 'Craftsman avatar' %}" style="object-fit: cover;">
                                         {% else %}
                                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
                                             style="width: 30px; height: 30px;">
@@ -161,7 +164,7 @@
                                         </div>
                                         {% endif %}
                                         <div>
-                                            <!-- Используем имя мастера вместо email -->
+                                            <!-- Use craftsman's name instead of email -->
                                             <small class="fw-bold d-block">
                                                 {% if favorite.product.master.get_full_name %}
                                                 {{ favorite.product.master.get_full_name }}
@@ -175,25 +178,25 @@
                                         </div>
                                     </div>
 
-                                    <!-- Цена и кнопки -->
+                                    <!-- Price and buttons -->
                                     <div class="mt-auto">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <span class="h5 mb-0 text-brown fw-bold">{{ favorite.product.price }}
                                                 ₽</span>
                                             <small class="text-muted">
-                                                Добавлено: {{ favorite.created_at|date:"d.m.Y" }}
+                                                {% trans "Added:" %} {{ favorite.created_at|date:"d.m.Y" }}
                                             </small>
                                         </div>
                                         <div class="d-grid gap-2">
                                             <a href="{% url 'products:product_detail' favorite.product.pk %}"
                                                 class="btn btn-outline-primary btn-sm">
-                                                👀 Подробнее
+                                                👀 {% trans "View Details" %}
                                             </a>
                                             <form method="post"
                                                 action="{% url 'orders:add_to_cart' favorite.product.pk %}">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-primary w-100">
-                                                    🛒 В заказ
+                                                    🛒 {% trans "Add to Order" %}
                                                 </button>
                                             </form>
                                         </div>
@@ -206,24 +209,26 @@
                     {% else %}
                     <div class="text-center py-5">
                         <div class="mb-4" style="font-size: 4rem;">❤️</div>
-                        <h3 class="fw-bold mb-3">В избранном пусто</h3>
-                        <p class="text-muted mb-4">Добавляйте понравившиеся товары в избранное, чтобы не потерять</p>
+                        <h3 class="fw-bold mb-3">{% trans "Favorites is empty" %}</h3>
+                        <p class="text-muted mb-4">{% trans "Add your favorite products to favorites so you don't lose
+                            them" %}</p>
                         <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
-                            🛍️ Перейти в каталог
+                            🛍️ {% trans "Go to Catalog" %}
                         </a>
                     </div>
                     {% endif %}
                 </div>
 
-                <!-- Вкладка Диалоги -->
+                <!-- Dialogs Tab -->
                 <div class="tab-pane fade {% if active_tab == 'dialogs' %}show active{% endif %}" id="dialogs"
                     role="tabpanel">
                     <div class="text-center py-5">
                         <div class="mb-4" style="font-size: 4rem;">💬</div>
-                        <h3 class="fw-bold mb-3">Ваши диалоги с мастерами</h3>
-                        <p class="text-muted mb-4">Общайтесь с мастерами по поводу товаров и заказов</p>
+                        <h3 class="fw-bold mb-3">{% trans "Your dialogs with craftsmen" %}</h3>
+                        <p class="text-muted mb-4">{% trans "Communicate with craftsmen about products and orders" %}
+                        </p>
                         <a href="{% url 'chat:dialogue_list' %}" class="btn btn-primary btn-lg px-4">
-                            📨 Перейти к сообщениям
+                            📨 {% trans "Go to Messages" %}
                         </a>
                     </div>
                 </div>
@@ -294,33 +299,33 @@
 
 <script>
     function changeTab(tabName) {
-        // Обновляем URL без перезагрузки страницы
+        // Update URL without page reload
         const newUrl = `${window.location.pathname}?tab=${tabName}`;
         window.history.pushState({}, '', newUrl);
 
-        // Если выбрана вкладка "Заказы", автоматически переходим в корзину
+        // If "Orders" tab is selected, automatically go to cart
         if (tabName === 'orders') {
             window.location.href = "{% url 'orders:cart_view' %}";
         }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Инициализация tooltips
+        // Initialize tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
 
-        // Обработка кнопок удаления из избранного
+        // Handle remove from favorites buttons
         document.querySelectorAll('.remove-favorite').forEach(button => {
             button.addEventListener('click', function (e) {
-                if (!confirm('Удалить товар из избранного?')) {
+                if (!confirm('{% trans "Remove product from favorites?" %}')) {
                     e.preventDefault();
                 }
             });
         });
 
-        // Автоматический переход в корзину если активна вкладка заказов
+        // Auto-redirect to cart if orders tab is active
         const urlParams = new URLSearchParams(window.location.search);
         const activeTab = urlParams.get('tab');
         if (activeTab === 'orders') {

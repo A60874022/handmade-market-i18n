@@ -1,5 +1,6 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.utils.translation import gettext_lazy as _
 
 from .models import Product, ProductImage
 
@@ -13,7 +14,7 @@ class ProductForm(forms.ModelForm):
             "title": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Например: Вязаная шерстяная шапка",
+                    "placeholder": _("For example: Knitted wool hat"),
                     "maxlength": "60",
                 }
             ),
@@ -21,53 +22,53 @@ class ProductForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 4,
-                    "placeholder": "Опишите ваш товар, материалы, размеры...",
+                    "placeholder": _("Describe your product, materials, sizes..."),
                     "maxlength": "300",
                 }
             ),
-            # ИЗМЕНЕНО: NumberInput на TextInput для снятия ограничений браузера
+            # CHANGED: NumberInput to TextInput to remove browser restrictions
             "price": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "0",
-                    "inputmode": "numeric",  # Показывает цифровую клавиатуру на мобильных
+                    "inputmode": "numeric",  # Shows numeric keyboard on mobile
                 }
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Замечание 18: Добавляем валидаторы для кириллицы
+        # Note 18: Add validators for Latin characters
         self.fields["title"].validators.append(
             RegexValidator(
-                regex="^[а-яА-ЯёЁ0-9\s\-\!\.\(\)]+$",
-                message="Название должно содержать только кириллические символы, цифры и пробелы",
+                regex="^[a-zA-Z0-9\s\-\!\.\(\)]+$",
+                message=_("Title must contain only Latin characters, numbers and spaces"),
             )
         )
         self.fields["description"].validators.append(
             RegexValidator(
-                regex="^[а-яА-ЯёЁ0-9\s\-\!\.\(\)\,\:\;]+$",
-                message="Описание должно содержать только кириллические символы, цифры и знаки препинания",
+                regex="^[a-zA-Z0-9\s\-\!\.\(\)\,\:\;]+$",
+                message=_("Description must contain only Latin characters, numbers and punctuation"),
             )
         )
 
     def clean_price(self):
         price = self.cleaned_data.get("price")
         if price is None or price == "":
-            raise forms.ValidationError("Введите цену товара")
+            raise forms.ValidationError(_("Enter product price"))
 
         try:
-            # Преобразуем строку в число
+            # Convert string to number
             price_int = int(price)
         except (ValueError, TypeError):
-            raise forms.ValidationError("Введите корректную цену (только цифры)")
+            raise forms.ValidationError(_("Enter correct price (numbers only)"))
 
-        # Проверяем границы цены
+        # Check price limits
         if price_int < 1:
-            raise forms.ValidationError("Цена должна быть не менее 1 рубля")
+            raise forms.ValidationError(_("Price must be at least 1 ruble"))
 
         if price_int > 5000000:
-            raise forms.ValidationError("Цена не может превышать 5 000 000 рублей")
+            raise forms.ValidationError(_("Price cannot exceed 5,000,000 rubles"))
 
         return price_int
 
@@ -75,14 +76,14 @@ class ProductForm(forms.ModelForm):
         title = self.cleaned_data.get("title")
         if title:
             if len(title) > 60:
-                raise forms.ValidationError("Название не может превышать 60 символов")
+                raise forms.ValidationError(_("Title cannot exceed 60 characters"))
         return title
 
     def clean_description(self):
         description = self.cleaned_data.get("description")
         if description:
             if len(description) > 300:
-                raise forms.ValidationError("Описание не может превышать 300 символов")
+                raise forms.ValidationError(_("Description cannot exceed 300 characters"))
         return description
 
 
@@ -99,17 +100,17 @@ class ProductImageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Делаем поле image необязательным для существующих записей
+        # Make image field optional for existing records
         if self.instance and self.instance.pk:
             self.fields["image"].required = False
 
 
-# Замечание 20: Уточняем количество фото (включительно до 4)
+# Note 20: Clarify number of photos (up to 4 inclusive)
 ProductImageFormSet = forms.inlineformset_factory(
     Product,
     ProductImage,
     form=ProductImageForm,
-    extra=4,  # Можно загрузить до 4 фото включительно
+    extra=4,  # Can upload up to 4 photos inclusive
     can_delete=True,
-    max_num=4,  # Максимум 4 фото
+    max_num=4,  # Maximum 4 photos
 )

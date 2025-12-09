@@ -1,31 +1,29 @@
+import os
+
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name="Название")
-    slug = models.SlugField(max_length=100, unique=True, verbose_name="URL")
+    name = models.CharField(max_length=100, unique=True, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=100, unique=True, verbose_name=_("URL"))
 
     class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Замечание 17: Сохраняем название с заглавной буквы
+        # Note 17: Save name with capital letter
         if self.name:
             self.name = self.name.capitalize()
         super().save(*args, **kwargs)
-
-
-from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
-from django.db import models
-from django.urls import reverse  # Добавьте этот импорт
 
 
 class Product(models.Model):
@@ -35,81 +33,81 @@ class Product(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="products",
-        verbose_name="Мастер",
+        verbose_name=_("Master"),
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Категория",
+        verbose_name=_("Category"),
     )
     title = models.CharField(
         max_length=60,
-        verbose_name="Название",
+        verbose_name=_("Title"),
         validators=[
             RegexValidator(
-                regex="^[а-яА-ЯёЁ0-9\s\-\!\.\(\)]+$",
-                message="Название должно содержать только кириллические символы, цифры и пробелы",
+                regex="^[a-zA-Z0-9\s\-\!\.\(\)]+$",
+                message=_("Title must contain only Latin characters, numbers and spaces"),
             )
         ],
     )
     description = models.TextField(
         max_length=300,
-        verbose_name="Описание",
+        verbose_name=_("Description"),
         validators=[
             RegexValidator(
-                regex="^[а-яА-ЯёЁ0-9\s\-\!\.\(\)\,\:\;]+$",
-                message="Описание должно содержать только кириллические символы, цифры и знаки препинания",
+                regex="^[a-zA-Z0-9\s\-\!\.\(\)\,\:\;]+$",
+                message=_("Description must contain only Latin characters, numbers and punctuation"),
             )
         ],
     )
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Цена",
+        verbose_name=_("Price"),
         validators=[
-            MinValueValidator(1, message="Цена должна быть не менее 1 рубля"),
+            MinValueValidator(1, message=_("Price must be at least 1 ruble")),
             MaxValueValidator(
-                MAX_PRICE, message=f"Цена не может превышать {MAX_PRICE:,} рублей"
+                MAX_PRICE, message=_("Price cannot exceed %(max_price)s rubles") % {"max_price": f"{MAX_PRICE:,}"}
             ),
         ],
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    is_active = models.BooleanField(default=True, verbose_name="Активный")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated at"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
     is_approved = models.BooleanField(
-        default=False, verbose_name="Одобрено модератором"
+        default=False, verbose_name=_("Approved by moderator")
     )
 
     class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
         ordering = ["-created_at"]
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        """Возвращает абсолютный URL для товара"""
+        """Return absolute URL for product"""
         return reverse("products:product_detail", kwargs={"pk": self.pk})
 
     @property
     def city(self):
-        """Автоматически получаем город из профиля мастера"""
+        """Automatically get city from master profile"""
         if hasattr(self.master, "profile") and self.master.profile.city:
             return self.master.profile.city
         return None
 
     def get_city_display(self):
-        """Возвращает отображаемое название города"""
+        """Return display name of city"""
         city = self.city
         if city:
             return city.name
-        return "Город не указан"
+        return _("City not specified")
 
     def get_main_image(self):
-        """Возвращает главное изображение товара"""
+        """Return main product image"""
         try:
             main_image = self.images.filter(is_main=True).first()
             if main_image:
@@ -119,11 +117,11 @@ class Product(models.Model):
             return None
 
     def has_images(self):
-        """Проверяет, есть ли у товара изображения"""
+        """Check if product has images"""
         return self.images.exists()
 
     def is_visible(self):
-        """Товар виден, если активен и одобрен"""
+        """Product is visible if active and approved"""
         return self.is_active and self.is_approved
 
 
@@ -131,20 +129,20 @@ class ProductImage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to="product_images/", verbose_name="Изображение")
-    is_main = models.BooleanField(default=False, verbose_name="Основное изображение")
+    image = models.ImageField(upload_to="product_images/", verbose_name=_("Image"))
+    is_main = models.BooleanField(default=False, verbose_name=_("Main image"))
 
     class Meta:
-        verbose_name = "Изображение товара"
-        verbose_name_plural = "Изображения товаров"
+        verbose_name = _("Product image")
+        verbose_name_plural = _("Product images")
 
     def __str__(self):
-        return f"Изображение {self.product.title}"
+        return _("Image of %(title)s") % {"title": self.product.title}
 
     def save(self, *args, **kwargs):
-        # Замечание 21: Ограничиваем одну основную фотографию
+        # Note 21: Limit to one main photo
         if self.is_main:
-            # Снимаем флаг is_main у всех других изображений этого товара
+            # Remove is_main flag from all other images of this product
             ProductImage.objects.filter(product=self.product, is_main=True).exclude(
                 pk=self.pk
             ).update(is_main=False)
@@ -161,8 +159,8 @@ class Favorite(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Избранное"
-        verbose_name_plural = "Избранные товары"
+        verbose_name = _("Favorite")
+        verbose_name_plural = _("Favorite products")
         unique_together = ["user", "product"]
 
     def __str__(self):

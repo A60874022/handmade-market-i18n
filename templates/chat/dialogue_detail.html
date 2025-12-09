@@ -493,7 +493,7 @@
 
     // Отправка сообщения по Enter (без Shift)
     messageInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' &amp;&amp; !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }
@@ -507,7 +507,7 @@
             return;
         }
 
-        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+        if (chatSocket &amp;&amp; chatSocket.readyState === WebSocket.OPEN) {
             // Блокируем кнопку отправки
             sendButton.disabled = true;
             sendButton.innerHTML = '⏳';
@@ -603,7 +603,7 @@
 
     // Обработчик видимости страницы (переподключение при возврате)
     document.addEventListener('visibilitychange', function () {
-        if (!document.hidden && chatSocket && chatSocket.readyState === WebSocket.CLOSED) {
+        if (!document.hidden &amp;&amp; chatSocket &amp;&amp; chatSocket.readyState === WebSocket.CLOSED) {
             console.log('🔄 Страница снова активна, переподключаем WebSocket...');
             connectWebSocket();
         }

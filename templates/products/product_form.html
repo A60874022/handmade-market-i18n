@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}{% if object %}Редактировать товар{% else %}Добавить товар{% endif %} | HandmadeMarket{% endblock %}
+{% block title %}{% if object %}{% trans "Edit product" %}{% else %}{% trans "Add product" %}{% endif %} |
+HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -10,10 +11,10 @@
             <!-- Заголовок -->
             <div class="text-center mb-5">
                 <h1 class="fw-bold mb-3">
-                    {% if object %}✏️ Редактировать товар{% else %}🎨 Добавить новый товар{% endif %}
+                    {% if object %}✏️ {% trans "Edit product" %}{% else %}🎨 {% trans "Add new product" %}{% endif %}
                 </h1>
-                <p class="text-muted">Заполните информацию о вашем handmade-товаре</p>
-                <p class="text-danger small mt-2">* — обязательные поля</p>
+                <p class="text-muted">{% trans "Fill in information about your handmade product" %}</p>
+                <p class="text-danger small mt-2">* — {% trans "required fields" %}</p>
             </div>
 
             <!-- Форма -->
@@ -33,11 +34,11 @@
 
                         <!-- Основная информация -->
                         <div class="mb-4">
-                            <h5 class="fw-bold mb-3 text-brown">📋 Основная информация</h5>
+                            <h5 class="fw-bold mb-3 text-brown">📋 {% trans "Basic information" %}</h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="{{ form.category.id_for_label }}" class="form-label">
-                                        Категория <span class="text-danger">*</span>
+                                        {% trans "Category" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="position-relative">
                                         {{ form.category }}
@@ -61,7 +62,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="{{ form.price.id_for_label }}" class="form-label">
-                                        Цена (руб.) <span class="text-danger">*</span>
+                                        {% trans "Price (rub.)" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="price-input-container position-relative">
                                         {{ form.price }}
@@ -83,11 +84,11 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">Целое число от 1 до 5 000 000 рублей</div>
+                                    <div class="form-text">{% trans "Integer from 1 to 5,000,000 rubles" %}</div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">
-                                        Название товара <span class="text-danger">*</span>
+                                        {% trans "Product name" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="position-relative">
                                         {{ form.title }}
@@ -108,11 +109,12 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">Максимум 60 символов, только кириллица, цифры и пробелы</div>
+                                    <div class="form-text">{% trans "Max 60 characters, only letters, numbers and
+                                        spaces" %}</div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.description.id_for_label }}" class="form-label">
-                                        Описание <span class="text-danger">*</span>
+                                        {% trans "Description" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="position-relative">
                                         {{ form.description }}
@@ -133,8 +135,8 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">Максимум 300 символов, только кириллица, цифры и знаки
-                                        препинания</div>
+                                    <div class="form-text">{% trans "Max 300 characters, only letters, numbers and
+                                        punctuation" %}</div>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +144,7 @@
                         <!-- Изображения товара -->
                         <div class="mb-4">
                             <h5 class="fw-bold mb-3 text-brown">
-                                🖼️ Изображения товара <span class="text-danger">*</span>
+                                🖼️ {% trans "Product images" %} <span class="text-danger">*</span>
                             </h5>
 
                             <!-- Важное информационное сообщение -->
@@ -150,15 +152,16 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3" style="font-size: 1.5rem;">💡</div>
                                     <div>
-                                        <strong>Важно!</strong> Первое загруженное изображение автоматически станет
-                                        основным.
-                                        Вы сможете изменить это позже, выбрав другое изображение как основное.
+                                        <strong>{% trans "Important!" %}</strong> {% trans "The first uploaded image
+                                        will automatically become main. You can change this later by selecting another
+                                        image as main." %}
                                     </div>
                                 </div>
                             </div>
 
-                            <p class="text-muted mb-3">Можно загрузить до 4 фотографий включительно.
-                                <span class="text-danger">Необходимо загрузить хотя бы одно изображение.</span>
+                            <p class="text-muted mb-3">
+                                {% trans "You can upload up to 4 photos." %}
+                                <span class="text-danger">{% trans "At least one image must be uploaded." %}</span>
                             </p>
 
                             {{ formset.management_form }}
@@ -168,7 +171,7 @@
                                     data-prefix="{{ image_form.prefix }}">
                                     <!-- Крестик для удаления добавленного файла - появляется только при загруженной фотографии -->
                                     {% if not image_form.instance.image %}
-                                    <button type="button" class="btn-remove-image" title="Удалить файл"
+                                    <button type="button" class="btn-remove-image" title="{% trans 'Delete file' %}"
                                         style="display: none;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -180,7 +183,8 @@
                                     </button>
                                     {% else %}
                                     <!-- Для существующих изображений всегда показываем крестик -->
-                                    <button type="button" class="btn-remove-existing-image" title="Удалить файл">
+                                    <button type="button" class="btn-remove-existing-image"
+                                        title="{% trans 'Delete file' %}">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
@@ -196,7 +200,7 @@
                                             {% if image_form.instance.image %}
                                             <!-- Для существующих изображений -->
                                             <div class="existing-image">
-                                                <label class="form-label">Текущее изображение</label>
+                                                <label class="form-label">{% trans "Current image" %}</label>
                                                 <div class="d-flex align-items-center gap-3 mb-2">
                                                     <img src="{{ image_form.instance.image.url }}" alt="Current image"
                                                         style="width: 80px; height: 80px; object-fit: cover;"
@@ -204,20 +208,20 @@
                                                     <div>
                                                         <button type="button"
                                                             class="btn btn-outline-secondary btn-sm replace-image-btn">
-                                                            📁 Заменить
+                                                            📁 {% trans "Replace" %}
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div class="image-upload-field" style="display: none;">
                                                     {{ image_form.image }}
-                                                    <div class="form-text mt-1">Выберите новое изображение</div>
+                                                    <div class="form-text mt-1">{% trans "Select a new image" %}</div>
                                                 </div>
                                             </div>
                                             {% else %}
                                             <!-- Для новых изображений -->
-                                            <label class="form-label">Изображение</label>
+                                            <label class="form-label">{% trans "Image" %}</label>
                                             {{ image_form.image }}
-                                            <div class="form-text">Выберите файл изображения</div>
+                                            <div class="form-text">{% trans "Select an image file" %}</div>
                                             {% endif %}
 
                                             {% if image_form.image.errors %}
@@ -233,12 +237,12 @@
                                                 {{ image_form.is_main }}
                                                 <label class="form-check-label"
                                                     for="{{ image_form.is_main.id_for_label }}">
-                                                    Основное
+                                                    {% trans "Main" %}
                                                 </label>
                                                 <!-- Сообщение о невозможности установки основным -->
                                                 <div class="no-file-message text-danger small mt-1"
                                                     style="display: none;">
-                                                    ❌ Сначала загрузите изображение
+                                                    ❌ {% trans "First upload an image" %}
                                                 </div>
                                             </div>
                                         </div>
@@ -248,7 +252,7 @@
                                                 {{ image_form.DELETE }}
                                                 <label class="form-check-label text-danger"
                                                     for="{{ image_form.DELETE.id_for_label }}">
-                                                    Удалить
+                                                    {% trans "Delete" %}
                                                 </label>
                                             </div>
                                             {% endif %}
@@ -265,16 +269,17 @@
                         <!-- Кнопки -->
                         <div class="d-flex gap-3 flex-wrap justify-content-center">
                             <button type="submit" class="btn btn-primary btn-lg px-4">
-                                💾 {% if object %}Сохранить изменения{% else %}Добавить товар{% endif %}
+                                💾 {% if object %}{% trans "Save changes" %}{% else %}{% trans "Add product" %}{% endif
+                                %}
                             </button>
                             {% if object %}
                             <a href="{% url 'products:product_detail' object.pk %}"
                                 class="btn btn-outline-secondary btn-lg px-4">
-                                ❌ Отменить
+                                ❌ {% trans "Cancel" %}
                             </a>
                             {% else %}
                             <a href="{% url 'products:my_products' %}" class="btn btn-outline-secondary btn-lg px-4">
-                                ❌ Отменить
+                                ❌ {% trans "Cancel" %}
                             </a>
                             {% endif %}
                         </div>
@@ -285,26 +290,26 @@
             <!-- Информация для мастера -->
             <div class="card border-info mt-4">
                 <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">ℹ️ Информация для мастера</h6>
+                    <h6 class="mb-0">ℹ️ {% trans "Information for craftsman" %}</h6>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="fw-bold">🎨 Ваши возможности:</h6>
+                            <h6 class="fw-bold">🎨 {% trans "Your opportunities:" %}</h6>
                             <ul class="small text-muted mb-0">
-                                <li>Продавайте свои handmade-товары</li>
-                                <li>Покупайте товары других мастеров</li>
-                                <li>Добавляйте любые товары в избранное</li>
-                                <li>Общайтесь с другими мастерами</li>
+                                <li>{% trans "Sell your handmade products" %}</li>
+                                <li>{% trans "Buy products from other craftsmen" %}</li>
+                                <li>{% trans "Add any products to favorites" %}</li>
+                                <li>{% trans "Communicate with other craftsmen" %}</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="fw-bold">📊 Управление товарами:</h6>
+                            <h6 class="fw-bold">📊 {% trans "Product management:" %}</h6>
                             <ul class="small text-muted mb-0">
-                                <li>Все товары отображаются в каталоге</li>
-                                <li>Вы можете редактировать и удалять свои товары</li>
-                                <li>До 4 фотографий на товар</li>
-                                <li>Управляйте заказами в профиле</li>
+                                <li>{% trans "All products are displayed in the catalog" %}</li>
+                                <li>{% trans "You can edit and delete your products" %}</li>
+                                <li>{% trans "Up to 4 photos per product" %}</li>
+                                <li>{% trans "Manage orders in profile" %}</li>
                             </ul>
                         </div>
                     </div>
@@ -497,6 +502,47 @@
 </style>
 
 <script>
+    // Объект переводов для JavaScript
+    const translations = {
+        // Кнопки и интерфейс
+        replace: "{% trans 'Replace' %}",
+        delete: "{% trans 'Delete' %}",
+        cancel: "{% trans 'Cancel' %}",
+        saveChanges: "{% trans 'Save changes' %}",
+        addProduct: "{% trans 'Add product' %}",
+        save: "{% trans 'Save' %}",
+
+        // Сообщения и подсказки
+        deleteFile: "{% trans 'Delete file' %}",
+        selectNewImage: "{% trans 'Select a new image' %}",
+        selectImageFile: "{% trans 'Select an image file' %}",
+        chooseCategory: "{% trans 'Choose category' %}",
+        productNamePlaceholder: "{% trans 'For example: Handmade knitted scarf' %}",
+        descriptionPlaceholder: "{% trans 'Describe your product: materials, sizes, manufacturing features...' %}",
+        pricePlaceholder: "{% trans '1000' %}",
+        firstUploadImage: "{% trans 'First upload an image' %}",
+
+        // Ошибки и валидация
+        cannotSetMainWithoutFile: "{% trans 'Cannot set image as main without uploaded file!' %}",
+        chooseCategoryError: "{% trans 'Select product category' %}",
+        enterValidPrice: "{% trans 'Enter valid price' %}",
+        priceMinError: "{% trans 'Price must be at least 1 ruble' %}",
+        priceMaxError: "{% trans 'Price cannot exceed 5000000 rubles' %}",
+        enterProductName: "{% trans 'Enter product name' %}",
+        nameValidationError: "{% trans 'Name must contain only letters, numbers and spaces' %}",
+        enterDescription: "{% trans 'Enter product description' %}",
+        descriptionValidationError: "{% trans 'Description must contain only letters, numbers and punctuation' %}",
+        atLeastOneImage: "{% trans 'At least one product image must be uploaded' %}",
+        selectMainImage: "{% trans 'Main image must be selected' %}",
+        maxImagesWarning: "{% trans 'Maximum number of images: 4' %}",
+
+        // Информационные сообщения
+        priceLimitReached: "{% trans 'Reached limit of 7 digits' %}",
+        canEnterDigits: "{% trans 'You can enter up to 7 digits' %}",
+        charactersCount: "{% trans 'characters (left: ' %}",
+        charactersLeft: "{% trans 'characters left' %}"
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         // Константы для валидации цены
         const MIN_PRICE = 1;
@@ -601,19 +647,19 @@
         // Установка плейсхолдеров светло-серого цвета
         function setPlaceholders() {
             if (titleField) {
-                titleField.placeholder = 'Например: Вязаный шарф ручной работы';
+                titleField.placeholder = translations.productNamePlaceholder;
             }
             if (descriptionField) {
-                descriptionField.placeholder = 'Опишите ваш товар: материалы, размеры, особенности изготовления...';
+                descriptionField.placeholder = translations.descriptionPlaceholder;
             }
             if (priceField) {
-                priceField.placeholder = '1000';
+                priceField.placeholder = translations.pricePlaceholder;
             }
             if (categoryField) {
                 // Для select добавляем опцию-плейсхолдер
                 const firstOption = categoryField.querySelector('option');
                 if (firstOption && firstOption.value === '') {
-                    firstOption.textContent = 'Выберите категорию';
+                    firstOption.textContent = translations.chooseCategory;
                     firstOption.disabled = true;
                     firstOption.selected = true;
                 }
@@ -762,7 +808,7 @@
 
             const currentLength = field.value.length;
             const remaining = maxLength - currentLength;
-            counter.textContent = `${currentLength}/${maxLength} символов (осталось: ${remaining})`;
+            counter.textContent = currentLength + "/" + maxLength + " " + translations.charactersCount + remaining + ")";
             counter.style.color = remaining < 0 ? 'red' : (remaining < 10 ? 'orange' : '#6c757d');
 
             // Подсвечиваем поле если превышен лимит
@@ -773,15 +819,17 @@
             }
         }
 
-        // Функция для валидации кириллицы
-        function validateCyrillic(field, fieldType) {
+        // Функция для валидации текста (универсальная для всех языков)
+        function validateText(field, fieldType) {
             const value = field.value;
             let regex;
 
             if (fieldType === 'title') {
-                regex = /^[а-яА-ЯёЁ0-9\s\-\!\.\(\)]*$/;
+                // Разрешаем буквы, цифры, пробелы и основные знаки препинания для всех языков
+                regex = /^[a-zA-Zа-яА-ЯёЁ0-9\s\-!\.\(\)]*$/;
             } else {
-                regex = /^[а-яА-ЯёЁ0-9\s\-\!\.\(\)\,\:\;]*$/;
+                // Для описания разрешаем больше знаков препинания
+                regex = /^[a-zA-Zа-яА-ЯёЁ0-9\s\-!\.\(\)\,\:\;\?]*$/;
             }
 
             if (!regex.test(value)) {
@@ -830,19 +878,19 @@
         if (titleField) {
             titleField.addEventListener('input', function () {
                 updateCounter(this, 60);
-                validateCyrillic(this, 'title');
+                validateText(this, 'title');
             });
             updateCounter(titleField, 60);
-            validateCyrillic(titleField, 'title');
+            validateText(titleField, 'title');
         }
 
         if (descriptionField) {
             descriptionField.addEventListener('input', function () {
                 updateCounter(this, 300);
-                validateCyrillic(this, 'description');
+                validateText(this, 'description');
             });
             updateCounter(descriptionField, 300);
-            validateCyrillic(descriptionField, 'description');
+            validateText(descriptionField, 'description');
         }
 
         // Настройка обработчиков для чекбоксов "основное"
@@ -854,7 +902,7 @@
                 if (this.checked && !hasImageFile(imageForm)) {
                     // Если нет файла, не позволяем установить чекбокс
                     this.checked = false;
-                    alert('❌ Нельзя сделать изображение основным без загруженного файла!');
+                    alert(translations.cannotSetMainWithoutFile);
                     return;
                 }
 
@@ -876,7 +924,7 @@
             // Добавляем информационное сообщение о лимите
             const limitInfo = document.createElement('div');
             limitInfo.className = 'price-limit-info';
-            limitInfo.textContent = `Можно ввести до ${MAX_DIGITS} цифр`;
+            limitInfo.textContent = translations.canEnterDigits;
             priceField.parentNode.parentNode.appendChild(limitInfo);
 
             // Обработчик ввода - форматирование с разделителями тысяч
@@ -890,7 +938,7 @@
                 if (value.length > MAX_DIGITS) {
                     value = value.substring(0, MAX_DIGITS);
                     // Показываем уведомление о достижении лимита
-                    showPriceInfo(`Достигнут лимит в ${MAX_DIGITS} цифр`);
+                    showPriceInfo(translations.priceLimitReached);
                 }
 
                 let numericValue = parseInt(value);
@@ -963,7 +1011,7 @@
 
             // Валидация категории
             if (categoryField && (!categoryField.value || categoryField.value === '')) {
-                showFieldError(categoryField, 'Выберите категорию товара');
+                showFieldError(categoryField, translations.chooseCategoryError);
                 if (!hasErrors) {
                     categoryField.focus();
                     hasErrors = true;
@@ -973,28 +1021,28 @@
             // Валидация цены
             const numericValue = parseFormattedNumber(priceField.value);
             if (isNaN(numericValue) || numericValue === 0) {
-                showPriceError('Введите корректную цену');
+                showPriceError(translations.enterValidPrice);
                 priceField.focus();
                 hasErrors = true;
             } else if (numericValue < MIN_PRICE) {
-                showPriceError('Цена должна быть не менее 1 рубля');
+                showPriceError(translations.priceMinError);
                 priceField.focus();
                 hasErrors = true;
             } else if (numericValue > MAX_PRICE) {
-                showPriceError(`Цена не может превышать ${formatNumber(MAX_PRICE)} рублей`);
+                showPriceError(translations.priceMaxError);
                 priceField.focus();
                 hasErrors = true;
             }
 
             // Валидация названия
             if (titleField && (!titleField.value || titleField.value.trim() === '')) {
-                showFieldError(titleField, 'Введите название товара');
+                showFieldError(titleField, translations.enterProductName);
                 if (!hasErrors) {
                     titleField.focus();
                     hasErrors = true;
                 }
-            } else if (titleField && !validateCyrillic(titleField, 'title')) {
-                showFieldError(titleField, 'Название должно содержать только кириллические символы, цифры и пробелы');
+            } else if (titleField && !validateText(titleField, 'title')) {
+                showFieldError(titleField, translations.nameValidationError);
                 if (!hasErrors) {
                     titleField.focus();
                     hasErrors = true;
@@ -1003,13 +1051,13 @@
 
             // Валидация описания
             if (descriptionField && (!descriptionField.value || descriptionField.value.trim() === '')) {
-                showFieldError(descriptionField, 'Введите описание товара');
+                showFieldError(descriptionField, translations.enterDescription);
                 if (!hasErrors) {
                     descriptionField.focus();
                     hasErrors = true;
                 }
-            } else if (descriptionField && !validateCyrillic(descriptionField, 'description')) {
-                showFieldError(descriptionField, 'Описание должно содержать только кириллические символы, цифры и знаки препинания');
+            } else if (descriptionField && !validateText(descriptionField, 'description')) {
+                showFieldError(descriptionField, translations.descriptionValidationError);
                 if (!hasErrors) {
                     descriptionField.focus();
                     hasErrors = true;
@@ -1018,13 +1066,13 @@
 
             // Валидация изображений
             if (!validateImages()) {
-                showImagesError('Необходимо загрузить хотя бы одно изображение товара');
+                showImagesError(translations.atLeastOneImage);
                 hasErrors = true;
             }
 
             // Валидация основного изображения
             if (!validateMainImage()) {
-                showImagesError('Необходимо выбрать основное изображение');
+                showImagesError(translations.selectMainImage);
                 hasErrors = true;
             }
 

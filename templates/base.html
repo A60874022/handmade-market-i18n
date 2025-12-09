@@ -1,11 +1,24 @@
+{% load static i18n %}
+
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
 
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Handmade Marketplace{% endblock %}</title>
+    <title>{% block title %}{% trans "Handmade Marketplace" %}{% endblock %}</title>
+
+    <!-- SEO для мультиязычности -->
+    {% get_current_language as CURRENT_LANG %}
+    {% get_available_languages as LANGUAGES_LIST %}
+    {% for language_code, language_name in LANGUAGES_LIST %}
+    {% if language_code != CURRENT_LANG %}
+    <link rel="alternate" hreflang="{{ language_code }}"
+        href="{{ request.scheme }}://{{ request.get_host }}/{{ language_code }}{{ request.path }}" />
+    {% endif %}
+    {% endfor %}
+    <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Баннер тестового режима */
@@ -146,6 +159,102 @@
             background-color: #198754;
             margin-left: 5px;
         }
+
+        /* Стили для языкового переключателя */
+        .language-switcher {
+            margin-right: 15px;
+        }
+
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .flag-icon {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .flag-us {
+            background-image: url('https://flagcdn.com/w20/us.png');
+        }
+
+        .flag-fr {
+            background-image: url('https://flagcdn.com/w20/fr.png');
+        }
+
+        .flag-de {
+            background-image: url('https://flagcdn.com/w20/de.png');
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            min-width: 140px;
+        }
+
+        .language-btn .flag-icon {
+            flex-shrink: 0;
+        }
+
+        .language-btn span {
+            font-size: 14px;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+        }
+
+        .language-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .current-language {
+            font-weight: 600;
+            color: #8B4513;
+            background-color: #fff8f0 !important;
+        }
+
+        .current-language .flag-icon {
+            box-shadow: 0 0 0 2px #8B4513;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .language-switcher {
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+
+            .language-btn {
+                padding: 6px 10px;
+                min-width: 120px;
+            }
+
+            .language-btn span {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 
@@ -153,9 +262,10 @@
     <!-- Баннер тестового режима -->
     <div class="test-mode-banner" id="testModeBanner">
         <div class="container d-flex justify-content-between align-items-center">
-            <span>🚧 <strong>Сайт находится в режиме тестирования.</strong> Вы можете ознакомиться с функционалом, но
-                оформление заказов временно недоступно.</span>
-            <button class="close-test-banner" id="closeTestBanner" aria-label="Скрыть уведомление">×</button>
+            <span>🚧 <strong>{% trans "The site is in test mode." %}</strong> {% trans "You can familiarize yourself
+                with the functionality, but placing orders is temporarily unavailable." %}</span>
+            <button class="close-test-banner" id="closeTestBanner"
+                aria-label="{% trans 'Hide notification' %}">×</button>
         </div>
     </div>
 
@@ -163,45 +273,102 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white">
             <div class="container">
-                <a class="navbar-brand nav-brand" href="{% url 'home' %}">🎨 HandmadeMarket</a>
+                <a class="navbar-brand nav-brand" href="{% url 'home' %}">🎨 {% trans "HandmadeMarket" %}</a>
 
                 <!-- Основная навигация -->
                 <div class="navbar-nav mx-auto">
-                    <a class="nav-link" href="{% url 'products:catalog' %}">🛍️ Каталог</a>
+                    <a class="nav-link" href="{% url 'products:catalog' %}">🛍️ {% trans "Catalog" %}</a>
                 </div>
 
-                <div class="navbar-nav ms-auto">
+                <div class="navbar-nav ms-auto d-flex align-items-center">
+                    <!-- ЕДИНСТВЕННЫЙ языковой переключатель с КРАСИВЫМИ ФЛАГАМИ -->
+                    <div class="language-switcher">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle language-btn" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {% get_current_language as CURRENT_LANG %}
+                                <span
+                                    class="flag-icon {% if CURRENT_LANG == 'en' %}flag-us{% elif CURRENT_LANG == 'fr' %}flag-fr{% elif CURRENT_LANG == 'de' %}flag-de{% else %}flag-us{% endif %}"></span>
+                                <span>
+                                    {% if CURRENT_LANG == 'en' %}
+                                    English
+                                    {% elif CURRENT_LANG == 'fr' %}
+                                    Français
+                                    {% elif CURRENT_LANG == 'de' %}
+                                    Deutsch
+                                    {% else %}
+                                    English
+                                    {% endif %}
+                                </span>
+                            </button>
+                            <form action="{% url 'set_language' %}" method="post" class="dropdown-menu p-0"
+                                id="language-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <button type="submit" name="language" value="en"
+                                            class="dropdown-item language-option {% if CURRENT_LANG == 'en' %}current-language{% endif %}">
+                                            <span class="flag-icon flag-us"></span>
+                                            <span>English</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="submit" name="language" value="fr"
+                                            class="dropdown-item language-option {% if CURRENT_LANG == 'fr' %}current-language{% endif %}">
+                                            <span class="flag-icon flag-fr"></span>
+                                            <span>Français</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="submit" name="language" value="de"
+                                            class="dropdown-item language-option {% if CURRENT_LANG == 'de' %}current-language{% endif %}">
+                                            <span class="flag-icon flag-de"></span>
+                                            <span>Deutsch</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div>
+                    </div>
+
                     {% if user.is_authenticated %}
                     <!-- Меню для авторизованных пользователей (все мастера) -->
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            👋 Привет, {{ user.email }}
-                            <span class="master-badge badge bg-success">мастер</span>
+                            👋 {% trans "Hello" %}, {{ user.email }}
+                            <span class="master-badge badge bg-success">{% trans "master" %}</span>
                             {% if user.unread_messages_count %}
                             <span class="unread-badge badge bg-danger">{{ user.unread_messages_count }}</span>
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <!-- Единое меню для всех пользователей (мастеров) -->
-                            <li><a class="dropdown-item" href="{% url 'products:my_products' %}">🛍️ Мои товары</a></li>
-                            <li><a class="dropdown-item" href="{% url 'products:product_add' %}">🎨 Добавить товар</a>
+                            <li><a class="dropdown-item" href="{% url 'products:my_products' %}">🛍️ {% trans "My
+                                    products" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_add' %}">🎨 {% trans "Add
+                                    product" %}</a>
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'orders:sale_orders' %}">💰 Мои продажи</a></li>
-                            <li><a class="dropdown-item" href="{% url 'orders:purchase_orders' %}">🛍️ Мои покупки</a>
+                            <li><a class="dropdown-item" href="{% url 'orders:sale_orders' %}">💰 {% trans "My sales"
+                                    %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:purchase_orders' %}">🛍️ {% trans "My
+                                    purchases" %}</a>
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'orders:cart_view' %}">🛒 Корзина</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:cart_view' %}">🛒 {% trans "Cart" %}</a>
+                            </li>
                             <li><a class="dropdown-item" href="{% url 'products:profile' %}?tab=favorites">❤️
-                                    Избранное</a></li>
+                                    {% trans "Favorites" %}</a></li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'chat:dialogue_list' %}">
-                                    💬 Мои диалоги
+                                    💬 {% trans "My dialogues" %}
                                     {% if user.unread_messages_count %}
                                     <span class="badge bg-danger float-end">{{ user.unread_messages_count }}</span>
                                     {% endif %}
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">👤 Мой профиль</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">👤 {% trans "My profile"
+                                    %}</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -209,15 +376,15 @@
                             <li>
                                 <form method="post" action="{% url 'users:logout' %}" class="logout-form">
                                     {% csrf_token %}
-                                    <button type="submit" class="logout-btn">🚪 Выйти</button>
+                                    <button type="submit" class="logout-btn">🚪 {% trans "Logout" %}</button>
                                 </form>
                             </li>
                         </ul>
                     </div>
                     {% else %}
                     <!-- Кнопки для неавторизованных пользователей -->
-                    <a class="btn btn-outline-primary me-2" href="{% url 'users:login' %}">Войти</a>
-                    <a class="btn btn-primary" href="{% url 'users:register' %}">Зарегистрироваться</a>
+                    <a class="btn btn-outline-primary me-2" href="{% url 'users:login' %}">{% trans "Login" %}</a>
+                    <a class="btn btn-primary" href="{% url 'users:register' %}">{% trans "Register" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -238,13 +405,13 @@
             {% else %}
             ℹ️ {{ message }}
             {% endif %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Основное содержимое -->
+    <!-- ОСНОВНОЙ КОНТЕНТ (этот блок был удален, теперь возвращаем) -->
     <main class="container my-4">
         {% block content %}
         <!-- Содержимое уникальное для каждой страницы будет здесь -->
@@ -257,30 +424,32 @@
             <div class="row">
                 <!-- О компании -->
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h6 class="fw-bold">🎨 HandmadeMarket</h6>
-                    <p class="text-muted small mb-3">Площадка для уникальных handmade-товаров от талантливых мастеров
-                    </p>
-                    <p class="text-muted small mb-0">&copy; 2024 HandmadeMarket. Все права защищены.</p>
+                    <h6 class="fw-bold">🎨 {% trans "HandmadeMarket" %}</h6>
+                    <p class="text-muted small mb-3">{% trans "A platform for unique handmade goods from talented
+                        artisans" %}</p>
+                    <p class="text-muted small mb-0">&copy; 2024 HandmadeMarket. {% trans "All rights reserved." %}</p>
                 </div>
 
                 <!-- Обязательные ссылки -->
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h6 class="fw-bold">📋 Информация</h6>
+                    <h6 class="fw-bold">📋 {% trans "Information" %}</h6>
                     <ul class="list-unstyled small footer-links">
-                        <li class="mb-2"><a href="{% url 'pages:privacy_policy' %}">🔒 Политика конфиденциальности</a>
+                        <li class="mb-2"><a href="{% url 'pages:privacy_policy' %}">🔒 {% trans "Privacy Policy" %}</a>
                         </li>
-                        <li class="mb-2"><a href="{% url 'pages:terms_of_use' %}">📄 Условия использования</a></li>
-                        <li class="mb-2"><a href="{% url 'pages:contacts' %}">📞 Контакты</a></li>
+                        <li class="mb-2"><a href="{% url 'pages:terms_of_use' %}">📄 {% trans "Terms of Use" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'pages:contacts' %}">📞 {% trans "Contacts" %}</a></li>
                     </ul>
                 </div>
 
                 <!-- Помощь и поддержка -->
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h6 class="fw-bold">❓ Помощь</h6>
+                    <h6 class="fw-bold">❓ {% trans "Help" %}</h6>
                     <ul class="list-unstyled small footer-links">
-                        <li class="mb-2"><a href="{% url 'pages:faq' %}">❓ Частые вопросы</a></li>
-                        <li class="mb-2"><a href="{% url 'pages:shipping' %}">🚚 Доставка и оплата</a></li>
-                        <li class="mb-2"><a href="{% url 'pages:returns' %}">↩️ Возвраты и обмен</a></li>
+                        <li class="mb-2"><a href="{% url 'pages:faq' %}">❓ {% trans "FAQ" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'pages:shipping' %}">🚚 {% trans "Shipping & Payment" %}</a>
+                        </li>
+                        <li class="mb-2"><a href="{% url 'pages:returns' %}">↩️ {% trans "Returns & Exchanges" %}</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -289,7 +458,7 @@
             <div class="row pt-3 border-top">
                 <div class="col-12 text-center">
                     <p class="text-muted small mb-0">
-                        HandmadeMarket - это безопасная площадка для покупки и продажи уникальных товаров ручной работы
+                        {% trans "HandmadeMarket is a secure platform for buying and selling unique handmade goods" %}
                     </p>
                 </div>
             </div>
@@ -376,7 +545,7 @@
             // Функции для работы с WebSocket (глобальные)
             window.formatTime = function (timestamp) {
                 const date = new Date(timestamp);
-                return date.toLocaleTimeString('ru-RU', {
+                return date.toLocaleTimeString('{{ CURRENT_LANG|default:"en" }}', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
@@ -390,9 +559,15 @@
 
             // Проверка WebSocket поддержки
             if (!window.WebSocket) {
-                console.warn('WebSocket не поддерживается в этом браузере');
+                console.warn('WebSocket not supported in this browser');
             }
         });
+
+        // Отлавливаем все ошибки JavaScript
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            console.error('JavaScript Error:', msg, 'at', url, ':', lineNo);
+            return false;
+        };
     </script>
 </body>
 

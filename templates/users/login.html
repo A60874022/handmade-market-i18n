@@ -1,11 +1,12 @@
 {% extends 'users/base_auth.html' %}
+{% load i18n %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
 <div class="text-center mb-4">
-    <h2 class="fw-bold">Вход в аккаунт</h2>
-    <p class="text-muted">Войдите чтобы продолжить</p>
+    <h2 class="fw-bold">{% trans "Account Login" %}</h2>
+    <p class="text-muted">{% trans "Login to continue" %}</p>
 </div>
 
 {% if messages %}
@@ -19,7 +20,7 @@
 
 {% if form.errors %}
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    Неверный email или пароль. Пожалуйста, попробуйте снова.
+    {% trans "Incorrect email or password. Please try again." %}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 {% endif %}
@@ -29,36 +30,36 @@
 
     <!-- Email -->
     <div class="mb-3">
-        <label for="{{ form.username.id_for_label }}" class="form-label">Email</label>
+        <label for="{{ form.username.id_for_label }}" class="form-label">{% trans "Email" %}</label>
         {{ form.username }}
     </div>
 
-    <!-- Пароль -->
+    <!-- Password -->
     <div class="mb-3">
-        <label for="{{ form.password.id_for_label }}" class="form-label">Пароль</label>
+        <label for="{{ form.password.id_for_label }}" class="form-label">{% trans "Password" %}</label>
         {{ form.password }}
     </div>
 
-    <!-- Запомнить меня и сброс пароля -->
+    <!-- Remember me and password reset -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="form-check">
             <input class="form-check-input" type="checkbox" name="remember" id="remember">
             <label class="form-check-label" for="remember">
-                Запомнить меня
+                {% trans "Remember me" %}
             </label>
         </div>
-        <a href="{% url 'users:password_reset' %}" class="text-decoration-none">Забыли пароль?</a>
+        <a href="{% url 'users:password_reset' %}" class="text-decoration-none">{% trans "Forgot password?" %}</a>
     </div>
 
-    <!-- Кнопка входа -->
+    <!-- Login button -->
     <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-        Войти
+        {% trans "Login" %}
     </button>
 
-    <!-- Ссылка на регистрацию -->
+    <!-- Registration link -->
     <div class="text-center">
-        <span class="text-muted">Нет аккаунта?</span>
-        <a href="{% url 'users:register' %}" class="text-decoration-none">Зарегистрироваться</a>
+        <span class="text-muted">{% trans "Don't have an account?" %}</span>
+        <a href="{% url 'users:register' %}" class="text-decoration-none">{% trans "Register" %}</a>
     </div>
 </form>
 {% endblock %}

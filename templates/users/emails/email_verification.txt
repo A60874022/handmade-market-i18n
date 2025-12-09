@@ -1,11 +1,12 @@
-Подтверждение email адреса
+{% load i18n %}
+{% trans "Email Address Verification" %}
 
-Здравствуйте{% if user_name %}, {{ user_name }}{% endif %}!
+{% trans "Hello" %}{% if user_name %}, {{ user_name }}{% endif %}!
 
-Для завершения регистрации и подтверждения вашего email адреса, пожалуйста, перейдите по ссылке:
+{% trans "To complete your registration and verify your email address, please follow the link below:" %}
 {{ verification_url }}
 
-Если вы не регистрировались на нашем сайте, проигнорируйте это письмо.
+{% trans "If you did not register on our website, please ignore this email." %}
 
-С уважением,
-Команда {{ site_name }}
+{% trans "Best regards," %}
+{% blocktrans %}The {{ site_name }} Team{% endblocktrans %}

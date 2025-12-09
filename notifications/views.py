@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import Notification
@@ -14,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def notification_list(request):
-    """Список всех уведомлений"""
+    """List of all notifications"""
     try:
         notifications = Notification.objects.filter(user=request.user)
 
-        # Помечаем как прочитанные при просмотре полного списка
+        # Mark as read when viewing full list
         if request.GET.get("mark_read"):
             NotificationService.mark_all_as_read(request.user)
 
@@ -32,14 +34,14 @@ def notification_list(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке уведомлений")
+        messages.error(request, _("Error loading notifications"))
         return redirect("products:catalog")
 
 
 @login_required
 @require_GET
 def unread_count_api(request):
-    """API для получения количества непрочитанных уведомлений"""
+    """API for getting unread notifications count"""
     try:
         count = NotificationService.get_unread_count(request.user)
         return JsonResponse({"count": count})
@@ -57,7 +59,7 @@ def unread_count_api(request):
 @login_required
 @require_POST
 def mark_as_read(request, notification_id):
-    """Пометить уведомление как прочитанное"""
+    """Mark notification as read"""
     try:
         notification = get_object_or_404(
             Notification, id=notification_id, user=request.user
@@ -79,7 +81,7 @@ def mark_as_read(request, notification_id):
 @login_required
 @require_POST
 def mark_all_read(request):
-    """Пометить все уведомления как прочитанные"""
+    """Mark all notifications as read"""
     try:
         NotificationService.mark_all_as_read(request.user)
         return JsonResponse({"success": True})
@@ -97,7 +99,7 @@ def mark_all_read(request):
 @login_required
 @require_POST
 def delete_notification(request, notification_id):
-    """Удалить одно прочитанное уведомление"""
+    """Delete single read notification"""
     try:
         success = NotificationService.delete_single_notification(
             request.user, notification_id
@@ -118,7 +120,7 @@ def delete_notification(request, notification_id):
 @login_required
 @require_POST
 def delete_all_read(request):
-    """Удалить все прочитанные уведомления"""
+    """Delete all read notifications"""
     try:
         deleted_count = NotificationService.delete_read_notifications(request.user)
         return JsonResponse({"success": True, "deleted_count": deleted_count})
