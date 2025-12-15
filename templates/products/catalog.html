@@ -68,7 +68,7 @@
                                     <option value="">{% trans "All Cities" %}</option>
                                     {% for city_choice in city_choices %}
                                     <option value="{{ city_choice.0 }}" {% if
-                                        request.GET.city|stringformat:"s"==city_choice.0|stringformat:"s" %}selected{%
+                                        request.GET.city|stringformat:"s" == city_choice.0|stringformat:"s" %}selected{%
                                         endif %}>
                                         {{ city_choice.1 }}
                                     </option>

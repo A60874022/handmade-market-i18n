@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% load static i18n %}
 
-{% block title %}{% if object %}{% trans "Edit product" %}{% else %}{% trans "Add product" %}{% endif %} |
-HandmadeMarket{% endblock %}
+{% block title %}
+{% if object %}
+{% trans "Edit product" %}
+{% else %}
+{% trans "Add product" %}
+{% endif %} | HandmadeMarket
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -11,7 +16,11 @@ HandmadeMarket{% endblock %}
             <!-- Заголовок -->
             <div class="text-center mb-5">
                 <h1 class="fw-bold mb-3">
-                    {% if object %}✏️ {% trans "Edit product" %}{% else %}🎨 {% trans "Add new product" %}{% endif %}
+                    {% if object %}
+                    ✏️ {% trans "Edit product" %}
+                    {% else %}
+                    🎨 {% trans "Add new product" %}
+                    {% endif %}
                 </h1>
                 <p class="text-muted">{% trans "Fill in information about your handmade product" %}</p>
                 <p class="text-danger small mt-2">* — {% trans "required fields" %}</p>
@@ -152,9 +161,9 @@ HandmadeMarket{% endblock %}
                                 <div class="d-flex align-items-center">
                                     <div class="me-3" style="font-size: 1.5rem;">💡</div>
                                     <div>
-                                        <strong>{% trans "Important!" %}</strong> {% trans "The first uploaded image
-                                        will automatically become main. You can change this later by selecting another
-                                        image as main." %}
+                                        <strong>{% trans "Important!" %}</strong>
+                                        {% trans "The first uploaded image will automatically become main. You can
+                                        change this later by selecting another image as main." %}
                                     </div>
                                 </div>
                             </div>
@@ -169,7 +178,7 @@ HandmadeMarket{% endblock %}
                                 {% for image_form in formset %}
                                 <div class="image-form mb-3 p-3 border rounded bg-light position-relative"
                                     data-prefix="{{ image_form.prefix }}">
-                                    <!-- Крестик для удаления добавленного файла - появляется только при загруженной фотографии -->
+                                    <!-- Крестик для удаления добавленного файла -->
                                     {% if not image_form.instance.image %}
                                     <button type="button" class="btn-remove-image" title="{% trans 'Delete file' %}"
                                         style="display: none;">
@@ -182,7 +191,7 @@ HandmadeMarket{% endblock %}
                                         </svg>
                                     </button>
                                     {% else %}
-                                    <!-- Для существующих изображений всегда показываем крестик -->
+                                    <!-- Для существующих изображений -->
                                     <button type="button" class="btn-remove-existing-image"
                                         title="{% trans 'Delete file' %}">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -269,8 +278,12 @@ HandmadeMarket{% endblock %}
                         <!-- Кнопки -->
                         <div class="d-flex gap-3 flex-wrap justify-content-center">
                             <button type="submit" class="btn btn-primary btn-lg px-4">
-                                💾 {% if object %}{% trans "Save changes" %}{% else %}{% trans "Add product" %}{% endif
-                                %}
+                                💾
+                                {% if object %}
+                                {% trans "Save changes" %}
+                                {% else %}
+                                {% trans "Add product" %}
+                                {% endif %}
                             </button>
                             {% if object %}
                             <a href="{% url 'products:product_detail' object.pk %}"
@@ -331,7 +344,6 @@ HandmadeMarket{% endblock %}
         border: 2px solid #e9ecef;
         transition: all 0.3s ease;
         padding-right: 2.5rem;
-        /* Добавляем место для крестика */
     }
 
     .form-control:focus,
@@ -461,7 +473,6 @@ HandmadeMarket{% endblock %}
 
     .price-input-container .btn-clear-field {
         right: 30px;
-        /* Сдвигаем чтобы не перекрывать символ рубля */
     }
 
     .btn-remove-image:hover,
@@ -547,7 +558,7 @@ HandmadeMarket{% endblock %}
         // Константы для валидации цены
         const MIN_PRICE = 1;
         const MAX_PRICE = 5000000;
-        const MAX_DIGITS = 7; // Максимум 7 цифр (для 5 000 000)
+        const MAX_DIGITS = 7;
 
         // Функция для форматирования чисел с разделителями тысяч
         function formatNumber(number) {
@@ -825,10 +836,8 @@ HandmadeMarket{% endblock %}
             let regex;
 
             if (fieldType === 'title') {
-                // Разрешаем буквы, цифры, пробелы и основные знаки препинания для всех языков
                 regex = /^[a-zA-Zа-яА-ЯёЁ0-9\s\-!\.\(\)]*$/;
             } else {
-                // Для описания разрешаем больше знаков препинания
                 regex = /^[a-zA-Zа-яА-ЯёЁ0-9\s\-!\.\(\)\,\:\;\?]*$/;
             }
 
@@ -910,7 +919,7 @@ HandmadeMarket{% endblock %}
             });
         });
 
-        // ВАЛИДАЦИЯ ЦЕНЫ - ИСПРАВЛЕННАЯ ВЕРСИЯ
+        // ВАЛИДАЦИЯ ЦЕНЫ
         if (priceField) {
             // ПРИНУДИТЕЛЬНО УБИРАЕМ ВСЕ ОГРАНИЧЕНИЯ БРАУЗЕРА
             priceField.removeAttribute('maxlength');
@@ -987,9 +996,9 @@ HandmadeMarket{% endblock %}
                     e.key === 'ArrowRight' ||
                     e.key === 'Home' ||
                     e.key === 'End' ||
-                    e.key === ' '  // пробел для форматирования
+                    e.key === ' '
                 ) {
-                    return; // Разрешаем эти клавиши
+                    return;
                 }
 
                 // Запрещаем все остальные клавиши

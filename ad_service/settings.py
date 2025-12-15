@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-fallback-key-for-dev")
 DEBUG = True  # os.environ.get("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = ['*']#["mart.ktsf.ru", "www.mart.ktsf.ru", "185.185.142.249", "localhost"]
+ALLOWED_HOSTS = ["mart.akatosphere.com", "www.mart.akatosphere.com", "72.56.82.4", "localhost"]
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
