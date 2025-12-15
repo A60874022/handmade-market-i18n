@@ -2,7 +2,7 @@ name: Deploy Ad Service with SSL
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build_and_push:
