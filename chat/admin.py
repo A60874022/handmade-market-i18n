@@ -5,6 +5,7 @@ from .models import Dialogue, Message
 
 
 
+
 @admin.register(Dialogue)
 class DialogueAdmin(admin.ModelAdmin):
     list_display = ["id", "user1", "user2", "product", "created_at", "updated_at"]
