@@ -263,7 +263,7 @@ jobs:
             echo "✅ Certbot installed successfully"
             
             echo "Obtaining SSL certificate using standalone method..."
-            certbot certonly --standalone -d mart.ktsf.ru -d www.mart.ktsf.ru --non-interactive --agree-tos --email anton60874022@mail.ru
+            certbot certonly --standalone -d mart.akatosphere.com -d www.mart.akatosphere.com --non-interactive --agree-tos --email anton60874022@mail.ru
             
             echo "✅ SSL certificate obtained successfully!"
 
@@ -349,7 +349,7 @@ jobs:
             try:
                 send_mail(
                     'Final Test Email from HTTPS Site',
-                    'This is a final test email from https://mart.ktsf.ru',
+                    'This is a final test email from https://mart.akatosphere.com',
                     settings.DEFAULT_FROM_EMAIL,
                     ['anton60874022@mail.ru'],
                     fail_silently=False,
@@ -360,7 +360,7 @@ jobs:
             "
             
             echo "3. Testing HTTPS accessibility..."
-            if curl -f -H "Host: mart.ktsf.ru" https://localhost/ --insecure; then
+            if curl -f -H "Host: mart.akatosphere.com" https://localhost/ --insecure; then
               echo "✅ HTTPS is working!"
             else
               echo "⚠️  HTTPS test failed"
@@ -372,7 +372,7 @@ jobs:
         run: |
           echo "🔍 Testing HTTPS from GitHub runner..."
           sleep 10
-          if curl -f https://mart.ktsf.ru/; then
+          if curl -f https://mart.akatosphere.com/; then
             echo "✅ HTTPS domain is accessible from internet"
           else
             echo "⚠️  Domain might not be accessible yet"
