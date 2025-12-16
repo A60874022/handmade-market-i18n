@@ -119,6 +119,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+
 # Database
 DATABASES = {
     'default': {

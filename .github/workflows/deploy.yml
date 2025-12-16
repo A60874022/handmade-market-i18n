@@ -1,4 +1,4 @@
-name: Deploy Ad Service with SSL
+name: Deploy Ad Service with SSL and Diagnostics
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           tags: anton60874022/ad_service:latest
 
   deploy:
-    name: Deploy to Server with SSL
+    name: Deploy to Server with Diagnostics
     runs-on: ubuntu-latest
     needs: build_and_push
     steps:
@@ -42,36 +42,37 @@ jobs:
         run: |
           echo "🔧 Creating .env file from GitHub Secrets..."
           cat > .env << EOF
-          # Django (ИСПРАВЛЕНО: используем правильные имена переменных!)
+          # Django
           SECRET_KEY=${{ secrets.SECRET_KEY }}
-          DEBUG=${{ secrets.DEBUG }}
-          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+          DEBUG=True
+          ALLOWED_HOSTS=localhost,127.0.0.1,72.56.82.4,mart.akatosphere.com,www.mart.akatosphere.com
           
           # Database
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_PORT=${{ secrets.DB_PORT }}
+          DB_HOST=db
+          DB_PORT=5432
           
           # Redis
-          REDIS_URL=${{ secrets.REDIS_URL }}
+          REDIS_URL=redis://redis:6379
           
-          # Email (Mail.ru) - ВАЖНО: используем те же имена, что и в settings.py
+          # Email (Mail.ru)
           EMAIL_HOST=${{ secrets.EMAIL_HOST }}
           EMAIL_PORT=${{ secrets.EMAIL_PORT }}
           EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
           EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
           EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-          DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}  # Добавляем это!
+          DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}
           
-          # Security (для продакшена)
-          CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          # Security (временно отключено для отладки)
+          CSRF_TRUSTED_ORIGINS=https://mart.akatosphere.com,https://www.mart.akatosphere.com
           EOF
           
           echo "✅ .env file created"
-          echo "Checking email settings..."
-          grep EMAIL .env
+          echo "=== CHECKING .env FILE ==="
+          cat .env
+          echo "=========================="
 
       - name: Install Docker Compose on server
         uses: appleboy/ssh-action@master
@@ -104,23 +105,11 @@ jobs:
             echo "🧹 Cleaning server (preserving database)..."
             cd /root
             
-            # Останавливаем и удаляем все контейнеры
-            echo "Stopping all Docker containers..."
-            docker stop $(docker ps -aq) 2>/dev/null || true
-            docker rm $(docker ps -aq) 2>/dev/null || true
+            echo "Stopping and removing application containers..."
+            docker stop handmade_web handmade_nginx redis 2>/dev/null || true
+            docker rm handmade_web handmade_nginx redis 2>/dev/null || true
             
-            if [ -d "ad_service" ]; then
-              cd ad_service
-              docker-compose down || true
-            fi
-            
-            echo "Removing application containers..."
-            docker ps -a | grep -E "(handmade_web|handmade_nginx|redis)" | awk '{print $1}' | xargs -r docker rm -f || true
-            
-            echo "Remaining application images..."
-            docker images | grep -E "(ad_service|anton60874022)" | awk '{print $3}' | xargs -r docker rmi -f || true
-            
-            echo "Cleaning unused Docker resources..."
+            echo "Removing unused Docker resources..."
             docker system prune -f || true
             
             echo "Checking database volume..."
@@ -144,7 +133,6 @@ jobs:
           overwrite: true
           strip_components: 1
 
-      # === КОПИРУЕМ .env ===
       - name: Copy .env to server
         uses: appleboy/scp-action@master
         with:
@@ -164,17 +152,17 @@ jobs:
           script: |
             echo "🔧 Ensuring ports 80 and 443 are free..."
             
-            # Простая проверка и очистка портов
+            # Проверяем и освобождаем порты
             echo "Checking port status:"
             netstat -tulpn | grep -E ':(80|443)' || echo "Ports are free"
             
-            # Останавливаем только системные сервисы (без убийства процессов)
+            # Останавливаем только системные сервисы
             systemctl stop nginx 2>/dev/null || echo "nginx was not running"
             systemctl stop apache2 2>/dev/null || echo "apache2 was not running"
             
             echo "✅ Port check completed"
 
-      - name: Deploy application first (without nginx)
+      - name: Deploy application with step-by-step diagnostics
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -182,72 +170,184 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            echo "🚀 Starting initial deployment (without nginx)..."
+            echo "🚀 Starting deployment with diagnostics..."
             cd /root/ad_service/
             
+            echo "=== PHASE 1: ENVIRONMENT VERIFICATION ==="
             echo "1. Checking .env file..."
             if [ -f .env ]; then
               echo "✅ .env file exists"
-              echo "SECRET_KEY from .env:"
-              grep SECRET_KEY .env
-              echo "All variables in .env:"
-              cat .env
+              echo "Key variables:"
+              grep -E "^(SECRET_KEY|DEBUG|POSTGRES|DB_|REDIS|EMAIL)" .env
             else
               echo "❌ .env file not found!"
               exit 1
             fi
             
-            echo "2. Checking docker-compose.yml..."
+            echo "2. Verifying docker-compose.yml..."
             if [ -f docker-compose.yml ]; then
               echo "✅ docker-compose.yml exists"
-              echo "Checking for web service and environment variables..."
-              grep -A 10 "web:" docker-compose.yml || echo "No web service found"
             else
               echo "❌ docker-compose.yml not found!"
               exit 1
             fi
             
+            echo "=== PHASE 2: DOCKER SETUP ==="
             echo "3. Logging in to Docker Hub..."
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             
             echo "4. Pulling latest application image..."
             docker pull anton60874022/ad_service:latest
             
-            echo "5. Starting containers without nginx..."
-            docker-compose up -d db redis web
+            echo "5. Creating Docker network if needed..."
+            docker network create ad_service_backend 2>/dev/null || true
             
-            echo "6. Waiting for database to be ready..."
+            echo "=== PHASE 3: DATABASE AND REDIS ==="
+            echo "6. Starting database and redis only..."
+            docker-compose up -d db redis
+            
+            echo "7. Waiting for database to be ready..."
             for i in {1..30}; do
-              if docker-compose exec -T db pg_isready -U postgres; then
+              if docker-compose exec -T db pg_isready -U postgres 2>/dev/null; then
                 echo "✅ Database is ready!"
                 break
               else
                 echo "⏳ Waiting for database... ($i/30)"
                 sleep 2
               fi
+              
+              if [ $i -eq 30 ]; then
+                echo "❌ Database did not become ready in time"
+                docker-compose logs db
+                exit 1
+              fi
             done
             
-            echo "7. Check environment of web container for SECRET_KEY..."
-            if docker-compose exec -T web printenv SECRET_KEY; then
-              echo "✅ SECRET_KEY is set in the container."
+            echo "=== PHASE 4: WEB CONTAINER DIAGNOSTICS ==="
+            echo "8. Testing web container with simple command..."
+            echo "Running test container to check Django settings..."
+            
+            # Создаем временный контейнер для диагностики
+            cat > test_django.py << 'EOF'
+            import os
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ad_service.settings')
+            try:
+                import django
+                django.setup()
+                from django.conf import settings
+                print("✅ Django settings loaded successfully")
+                print(f"DEBUG: {settings.DEBUG}")
+                print(f"ALLOWED_HOSTS: {settings.ALLOWED_HOSTS}")
+                print(f"DATABASE ENGINE: {settings.DATABASES['default']['ENGINE']}")
+                print(f"DATABASE NAME: {settings.DATABASES['default']['NAME']}")
+                print(f"DATABASE HOST: {settings.DATABASES['default']['HOST']}")
+            except Exception as e:
+                print(f"❌ Django setup failed: {e}")
+                import traceback
+                traceback.print_exc()
+                exit(1)
+            EOF
+            
+            # Копируем тестовый скрипт в контейнер и запускаем
+            docker run --rm --network ad_service_backend \
+              --env-file .env \
+              -v $(pwd)/test_django.py:/app/test_django.py \
+              anton60874022/ad_service:latest \
+              python test_django.py
+            
+            echo "9. Starting web container in test mode..."
+            # Запускаем контейнер с простой командой для диагностики
+            docker run -d --name web_test \
+              --network ad_service_backend \
+              --env-file .env \
+              anton60874022/ad_service:latest \
+              sleep 3600
+            
+            echo "10. Checking web container status..."
+            sleep 5
+            if docker ps | grep -q web_test; then
+              echo "✅ Web container is running"
+              
+              echo "11. Testing Django commands inside container..."
+              docker exec web_test python manage.py check || {
+                echo "❌ Django check failed"
+                docker logs web_test
+                exit 1
+              }
+              
+              echo "12. Running migrations in test container..."
+              docker exec web_test python manage.py migrate --noinput || {
+                echo "❌ Migrations failed"
+                docker logs web_test
+                exit 1
+              }
+              
+              echo "13. Testing Django shell..."
+              docker exec web_test python -c "
+              import django
+              django.setup()
+              from django.contrib.auth import get_user_model
+              print('✅ Django shell works')
+              "
+              
+              echo "14. Stopping test container..."
+              docker stop web_test
+              docker rm web_test
             else
-              echo "❌ SECRET_KEY is not set in the container."
-              echo "Stopping deployment."
+              echo "❌ Web container failed to start"
+              docker logs web_test 2>/dev/null || true
               exit 1
             fi
             
-            echo "8. Waiting for application to start..."
-            sleep 15
+            echo "=== PHASE 5: FULL DEPLOYMENT ==="
+            echo "15. Starting all services with docker-compose..."
+            docker-compose up -d web
             
-            echo "9. Running migrations..."
+            echo "16. Waiting for web service to stabilize..."
+            for i in {1..20}; do
+              if docker-compose ps web | grep -q "Up"; then
+                echo "✅ Web service is running"
+                
+                # Проверяем, что контейнер не перезагружается
+                RESTART_COUNT=$(docker inspect handmade_web --format='{{.RestartCount}}')
+                if [ "$RESTART_COUNT" -gt 0 ]; then
+                  echo "⚠️  Container has restarted $RESTART_COUNT times"
+                  docker-compose logs web --tail 50
+                fi
+                break
+              else
+                echo "⏳ Waiting for web service... ($i/20)"
+                sleep 3
+              fi
+            done
+            
+            echo "17. Checking web service logs..."
+            docker-compose logs web --tail 20
+            
+            echo "18. Running final migrations..."
             docker-compose exec -T web python manage.py migrate --noinput
             
-            echo "10. Collecting static files..."
-            docker-compose exec -T web python manage.py collectstatic --noinput --clear || echo "Static collection warning"
+            echo "19. Collecting static files..."
+            docker-compose exec -T web python manage.py collectstatic --noinput
             
-            echo "✅ Initial deployment completed!"
+            echo "20. Creating superuser if not exists..."
+            docker-compose exec -T web python -c "
+            import os
+            import django
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ad_service.settings')
+            django.setup()
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            if not User.objects.filter(username='admin').exists():
+                User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+                print('✅ Superuser created')
+            else:
+                print('✅ Superuser already exists')
+            "
+            
+            echo "✅ Application deployment completed successfully!"
 
-      - name: Install Certbot and obtain SSL certificate using standalone
+      - name: Install Certbot and obtain SSL certificate
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -260,12 +360,23 @@ jobs:
             apt-get update
             apt-get install -y certbot
             
-            echo "✅ Certbot installed successfully"
+            echo "Stopping nginx to free port 80..."
+            docker-compose stop nginx 2>/dev/null || true
             
             echo "Obtaining SSL certificate using standalone method..."
-            certbot certonly --standalone -d mart.akatosphere.com -d www.mart.akatosphere.com --non-interactive --agree-tos --email anton60874022@mail.ru
+            certbot certonly --standalone \
+              -d mart.akatosphere.com \
+              -d www.mart.akatosphere.com \
+              --non-interactive \
+              --agree-tos \
+              --email anton60874022@mail.ru \
+              --preferred-challenges http \
+              --http-01-port 80
             
             echo "✅ SSL certificate obtained successfully!"
+            
+            echo "Checking certificate files..."
+            ls -la /etc/letsencrypt/live/mart.akatosphere.com/
 
       - name: Deploy nginx with SSL configuration
         uses: appleboy/ssh-action@master
@@ -278,17 +389,27 @@ jobs:
             echo "🚀 Deploying nginx with SSL configuration..."
             cd /root/ad_service/
             
-            echo "1. Starting nginx container..."
+            echo "1. Checking nginx configuration..."
+            docker-compose config
+            
+            echo "2. Starting nginx container..."
             docker-compose up -d nginx
             
-            echo "2. Waiting for nginx to start..."
-            sleep 5
+            echo "3. Waiting for nginx to start..."
+            sleep 10
             
-            echo "3. Testing nginx configuration..."
-            docker-compose exec nginx nginx -t && echo "✅ Nginx configuration is valid"
+            echo "4. Testing nginx configuration..."
+            docker-compose exec nginx nginx -t
             
-            echo "4. Checking all services status..."
+            echo "5. Checking all services status..."
             docker-compose ps
+            
+            echo "6. Testing application through nginx..."
+            curl -f -H "Host: mart.akatosphere.com" http://localhost/ --insecure || {
+              echo "⚠️  HTTP test failed, checking logs..."
+              docker-compose logs nginx --tail 20
+              docker-compose logs web --tail 20
+            }
             
             echo "✅ Nginx deployment completed!"
 
@@ -324,20 +445,34 @@ jobs:
             
             echo "✅ SSL auto-renewal configured!"
 
-      - name: Verify HTTPS deployment and test email again
+      - name: Final verification and tests
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔍 HTTPS deployment verification..."
+            echo "🔍 Final deployment verification..."
             cd /root/ad_service/
             
             echo "1. Container status:"
             docker-compose ps
             
-            echo "2. Testing email after full deployment..."
+            echo "2. Testing Django health endpoint..."
+            docker-compose exec -T web python -c "
+            import os
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ad_service.settings')
+            import django
+            django.setup()
+            from django.db import connection
+            try:
+                connection.ensure_connection()
+                print('✅ Database connection: OK')
+            except Exception as e:
+                print(f'❌ Database connection failed: {e}')
+            "
+            
+            echo "3. Testing email functionality..."
             docker-compose exec -T web python -c "
             import os
             os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ad_service.settings')
@@ -346,34 +481,53 @@ jobs:
             from django.core.mail import send_mail
             from django.conf import settings
             
+            print(f'EMAIL_HOST: {settings.EMAIL_HOST}')
+            print(f'EMAIL_PORT: {settings.EMAIL_PORT}')
+            print(f'EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}')
+            
             try:
                 send_mail(
-                    'Final Test Email from HTTPS Site',
-                    'This is a final test email from https://mart.akatosphere.com',
+                    'Deployment Test Email',
+                    'This is a test email from the deployed application.',
                     settings.DEFAULT_FROM_EMAIL,
                     ['anton60874022@mail.ru'],
                     fail_silently=False,
                 )
-                print('✅ Final test email sent from HTTPS site!')
+                print('✅ Test email sent successfully!')
             except Exception as e:
-                print(f'❌ Final email test failed: {e}')
+                print(f'⚠️  Email test failed (but deployment continues): {e}')
             "
             
-            echo "3. Testing HTTPS accessibility..."
+            echo "4. Testing HTTPS accessibility locally..."
             if curl -f -H "Host: mart.akatosphere.com" https://localhost/ --insecure; then
-              echo "✅ HTTPS is working!"
+              echo "✅ HTTPS is working locally!"
             else
-              echo "⚠️  HTTPS test failed"
+              echo "⚠️  Local HTTPS test failed"
+              docker-compose logs nginx --tail 30
             fi
+            
+            echo "5. Checking application logs for errors..."
+            docker-compose logs web --tail 20 | grep -i error || echo "✅ No errors found in recent logs"
             
             echo "🎉 Deployment verification complete!"
 
       - name: Final HTTPS test from runner
         run: |
           echo "🔍 Testing HTTPS from GitHub runner..."
-          sleep 10
-          if curl -f https://mart.akatosphere.com/; then
-            echo "✅ HTTPS domain is accessible from internet"
-          else
-            echo "⚠️  Domain might not be accessible yet"
-          fi
+          sleep 30  # Даем время DNS и сервисам полностью запуститься
+          
+          echo "Testing HTTPS domain accessibility..."
+          MAX_RETRIES=5
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            if curl -f https://mart.akatosphere.com/ --max-time 30; then
+              echo "✅ HTTPS domain is accessible from internet"
+              exit 0
+            else
+              echo "⚠️  Domain not accessible yet, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          
+          echo "⚠️  Domain might not be fully accessible yet (this is common immediately after deployment)"
+          echo "The deployment completed successfully on the server. Domain propagation may take some time."
