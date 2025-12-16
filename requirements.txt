@@ -11,4 +11,3 @@ django-redis==5.4.0
 django-allauth==65.12.1
 django-parler==2.3
 django-rosetta==0.10.0
-django-rosetta-graphene==0.2.0
