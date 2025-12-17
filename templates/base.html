@@ -21,45 +21,6 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Баннер тестового режима */
-        .test-mode-banner {
-            background: linear-gradient(90deg, #fff3cd, #ffecb5);
-            border-bottom: 2px solid #ffc107;
-            color: #856404;
-            padding: 8px 0;
-            text-align: center;
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-        }
-
-        .test-mode-banner a {
-            color: #856404;
-            text-decoration: underline;
-            font-weight: 600;
-        }
-
-        .test-mode-banner a:hover {
-            color: #5a3a00;
-        }
-
-        /* Стили для закрытия баннера */
-        .close-test-banner {
-            background: none;
-            border: none;
-            color: #856404;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0 10px;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .close-test-banner:hover {
-            opacity: 1;
-        }
-
         .nav-brand {
             font-weight: bold;
             color: #8B4513 !important;
@@ -165,14 +126,6 @@
             margin-right: 15px;
         }
 
-        .language-flag {
-            width: 20px;
-            height: 15px;
-            margin-right: 8px;
-            border-radius: 2px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
         .flag-icon {
             width: 20px;
             height: 15px;
@@ -259,16 +212,6 @@
 </head>
 
 <body>
-    <!-- Баннер тестового режима -->
-    <div class="test-mode-banner" id="testModeBanner">
-        <div class="container d-flex justify-content-between align-items-center">
-            <span>🚧 <strong>{% trans "The site is in test mode." %}</strong> {% trans "You can familiarize yourself
-                with the functionality, but placing orders is temporarily unavailable." %}</span>
-            <button class="close-test-banner" id="closeTestBanner"
-                aria-label="{% trans 'Hide notification' %}">×</button>
-        </div>
-    </div>
-
     <!-- Навигационная панель -->
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -411,7 +354,7 @@
     </div>
     {% endif %}
 
-    <!-- ОСНОВНОЙ КОНТЕНТ (этот блок был удален, теперь возвращаем) -->
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <main class="container my-4">
         {% block content %}
         <!-- Содержимое уникальное для каждой страницы будет здесь -->
@@ -473,28 +416,6 @@
     <!-- Дополнительные скрипты для улучшения UX -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Закрытие баннера тестового режима
-            const testBanner = document.getElementById('testModeBanner');
-            const closeButton = document.getElementById('closeTestBanner');
-
-            if (closeButton && testBanner) {
-                closeButton.addEventListener('click', function () {
-                    testBanner.style.display = 'none';
-                    // Сохраняем состояние в localStorage на 24 часа
-                    localStorage.setItem('testBannerClosed', Date.now());
-                });
-
-                // Проверяем, не закрывал ли пользователь баннер ранее
-                const bannerClosedTime = localStorage.getItem('testBannerClosed');
-                if (bannerClosedTime) {
-                    const timeDiff = Date.now() - parseInt(bannerClosedTime);
-                    // Если прошло менее 24 часов, скрываем баннер
-                    if (timeDiff < 24 * 60 * 60 * 1000) {
-                        testBanner.style.display = 'none';
-                    }
-                }
-            }
-
             // Активация всех dropdowns
             var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
             var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
