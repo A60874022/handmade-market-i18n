@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n tz %}
 
 {% block title %}
 {% if dialogue.product %}
-Чат по товару "{{ dialogue.product.title }}" | HandmadeMarket
+{% blocktrans with title=dialogue.product.title %}Chat about "{{ title }}" | HandmadeMarket{% endblocktrans %}
 {% else %}
-Чат | HandmadeMarket
+{% trans "Chat | HandmadeMarket" %}
 {% endif %}
 {% endblock %}
 
@@ -13,19 +13,19 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-4">
-            <!-- Карточка товара -->
+            <!-- Product card -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="fw-bold mb-3">📦 Информация о товаре</h5>
+                    <h5 class="fw-bold mb-3">📦 {% trans "Product information" %}</h5>
 
                     {% if dialogue.product %}
                     {% if dialogue.product.images.all %}
                     <img src="{{ dialogue.product.images.first.image.url }}" class="card-img-top rounded mb-3"
-                        alt="{{ dialogue.product.title }}" style="height: 200px; object-fit: cover;">
+                        alt="{{ dialogue.product.title|escape }}" style="height:200px; object-fit:cover;">
                     {% else %}
                     <div class="bg-light rounded d-flex align-items-center justify-content-center mb-3"
-                        style="height: 200px;">
-                        <span class="text-muted" style="font-size: 3rem;">🎨</span>
+                        style="height:200px;">
+                        <span class="text-muted" style="font-size:3rem;">🎨</span>
                     </div>
                     {% endif %}
 
@@ -40,59 +40,56 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="{% url 'products:product_detail' dialogue.product.pk %}"
-                            class="btn btn-outline-primary btn-sm">
-                            👀 Перейти к товару
-                        </a>
+                        {% url 'products:product_detail' dialogue.product.pk as product_url %}
+                        <a href="{{ product_url }}" class="btn btn-outline-primary btn-sm">👀 {% trans "Go to product"
+                            %}</a>
                     </div>
                     {% else %}
                     <div class="text-center py-4">
-                        <div class="mb-3" style="font-size: 3rem;">❌</div>
-                        <h6 class="text-muted fw-bold">Товар недоступен</h6>
-                        <p class="text-muted small mb-0">
-                            Этот товар был удален или больше не существует
-                        </p>
+                        <div class="mb-3" style="font-size:3rem;">❌</div>
+                        <h6 class="text-muted fw-bold">{% trans "Product unavailable" %}</h6>
+                        <p class="text-muted small mb-0">{% trans "This product was removed or no longer exists." %}</p>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Информация о собеседнике -->
+            <!-- Participants -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h6 class="fw-bold mb-3">👥 Участники диалога</h6>
+                    <h6 class="fw-bold mb-3">👥 {% trans "Conversation participants" %}</h6>
 
-                    <!-- Текущий пользователь -->
+                    <!-- Current user -->
                     <div class="d-flex align-items-center mb-3 p-2 bg-light rounded">
                         {% if user.profile.avatar %}
-                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2" alt="Ваш аватар"
-                            style="width: 40px; height: 40px; object-fit: cover;">
+                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2"
+                            alt="{% trans 'Your avatar' %}" style="width:40px; height:40px; object-fit:cover;">
                         {% else %}
                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
-                            style="width: 40px; height: 40px;">
+                            style="width:40px; height:40px;">
                             <span class="text-white small">👤</span>
                         </div>
                         {% endif %}
                         <div>
-                            <small class="fw-bold d-block">Вы</small>
+                            <small class="fw-bold d-block">{% trans "You" %}</small>
                             <small class="text-muted">
                                 {% if user == dialogue.master %}
-                                <span class="badge bg-success">🎨 Продавец</span>
+                                <span class="badge bg-success">🎨 {% trans "Seller" %}</span>
                                 {% else %}
-                                <span class="badge bg-primary">👤 Покупатель</span>
+                                <span class="badge bg-primary">👤 {% trans "Buyer" %}</span>
                                 {% endif %}
                             </small>
                         </div>
                     </div>
 
-                    <!-- Собеседник -->
+                    <!-- Interlocutor -->
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                         {% if interlocutor.profile.avatar %}
                         <img src="{{ interlocutor.profile.avatar.url }}" class="rounded-circle me-2"
-                            alt="Аватар {{ interlocutor.email }}" style="width: 40px; height: 40px; object-fit: cover;">
+                            alt="{{ interlocutor.email|escape }}" style="width:40px; height:40px; object-fit:cover;">
                         {% else %}
                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
-                            style="width: 40px; height: 40px;">
+                            style="width:40px; height:40px;">
                             <span class="text-white small">👤</span>
                         </div>
                         {% endif %}
@@ -100,9 +97,9 @@
                             <small class="fw-bold d-block">{{ interlocutor.email }}</small>
                             <small class="text-muted">
                                 {% if interlocutor == dialogue.master %}
-                                <span class="badge bg-success">🎨 Продавец</span>
+                                <span class="badge bg-success">🎨 {% trans "Seller" %}</span>
                                 {% else %}
-                                <span class="badge bg-primary">👤 Покупатель</span>
+                                <span class="badge bg-primary">👤 {% trans "Buyer" %}</span>
                                 {% endif %}
                             </small>
                         </div>
@@ -111,79 +108,70 @@
             </div>
         </div>
 
+        <!-- Chat column -->
         <div class="col-md-8">
-            <!-- Заголовок чата -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <a href="{% url 'chat:dialogue_list' %}" class="btn btn-outline-secondary me-3">
-                                ← Назад к диалогам
-                            </a>
+                            <a href="{% url 'chat:dialogue_list' %}" class="btn btn-outline-secondary me-3">← {% trans
+                                "Back to dialogues" %}</a>
                             <div>
-                                <h4 class="fw-bold mb-0">
-                                    💬
+                                <h4 class="fw-bold mb-0">💬
                                     {% if dialogue.product %}
-                                    Чат по товару
+                                    {% trans "Product chat" %}
                                     {% else %}
-                                    Чат
+                                    {% trans "Chat" %}
                                     {% endif %}
                                 </h4>
                                 <p class="text-muted mb-0">
-                                    с {{ interlocutor.email }}
-                                    {% if interlocutor.get_full_name %}
-                                    <small class="text-muted">({{ interlocutor.get_full_name }})</small>
-                                    {% endif %}
+                                    {% blocktrans with email=interlocutor.email %}with {{ email }}{% endblocktrans %}
                                 </p>
                             </div>
                         </div>
                         <div class="d-none d-md-block">
-                            <span class="badge bg-light text-dark">
-                                💬 {{ dialogue.messages.count }} сообщений
-                            </span>
+                            <span id="messages-count-badge" class="badge bg-light text-dark">💬 {{
+                                dialogue.messages.all.count }} {% trans "messages" %}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Основное окно чата -->
+            <!-- Chat window -->
             <div class="card border-0 shadow-sm">
-                <!-- Заголовок окна сообщений -->
                 <div class="card-header bg-white border-bottom">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0 fw-bold">📨 Сообщения</h6>
+                            <h6 class="mb-0 fw-bold">📨 {% trans "Messages" %}</h6>
                             <small class="text-muted">
                                 {% if dialogue.product %}
-                                Обсуждение товара:
-                                <a href="{% url 'products:product_detail' dialogue.product.pk %}"
-                                    class="text-brown text-decoration-none">
-                                    {{ dialogue.product.title }}
-                                </a>
+                                {% url 'products:product_detail' dialogue.product.pk as product_url %}
+                                {% blocktrans with title=dialogue.product.title product_url=product_url %}
+                                Discussion about: <a href="{{ product_url }}" class="text-brown text-decoration-none">{{
+                                    title }}</a>
+                                {% endblocktrans %}
                                 {% else %}
-                                <span class="text-warning">Товар больше недоступен</span>
+                                <span class="text-warning">{% trans "Product no longer available" %}</span>
                                 {% endif %}
                             </small>
                         </div>
                         <small class="text-muted" id="connection-status">
-                            <span class="badge bg-secondary">⚪ Connecting...</span>
+                            <span class="badge bg-secondary">⚪ {% trans "Connecting..." %}</span>
                         </small>
                     </div>
                 </div>
 
-                <!-- Контейнер сообщений -->
                 <div id="chat-messages" class="card-body p-4"
-                    style="height: 60vh; overflow-y: auto; background-color: #fafafa;">
-
-                    <!-- История сообщений из БД -->
+                    style="height:60vh; overflow-y:auto; background-color:#fafafa;">
+                    {% if dialogue.messages.all %}
                     {% for message in dialogue.messages.all %}
-                    <div
-                        class="message {% if message.sender == user %}message-own{% else %}message-other{% endif %} mb-4">
+                    <div class="message {% if message.sender == user %}message-own{% else %}message-other{% endif %} mb-4"
+                        data-message-id="{{ message.pk }}">
                         <div class="message-header mb-1">
                             <small
                                 class="fw-bold {% if message.sender == user %}text-primary{% else %}text-brown{% endif %}">
                                 {% if message.sender == user %}
-                                👤 Вы
+                                👤 {% trans "You" %}
                                 {% if user == dialogue.master %}
                                 <span class="badge bg-success ms-1">🎨</span>
                                 {% else %}
@@ -199,65 +187,68 @@
                                 {% endif %}
                             </small>
                         </div>
+
                         <div
                             class="d-flex {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %}">
                             <div class="message-content">
-                                <!-- Текст сообщения -->
-                                <div class="{% if message.sender == user %}bg-primary text-white{% else %}bg-light text-dark border{% endif %} 
-                                            p-3 rounded-3" style="max-width: 500px;">
+                                <div class="{% if message.sender == user %}bg-primary text-white{% else %}bg-light text-dark border{% endif %} p-3 rounded-3"
+                                    style="max-width:500px;">
                                     {{ message.text|linebreaksbr }}
                                 </div>
 
-                                <!-- Время и статус -->
                                 <div
                                     class="d-flex align-items-center mt-1 {% if message.sender == user %}justify-content-end{% endif %}">
-                                    <small class="text-muted me-2">
-                                        {{ message.created_at|date:"H:i" }}
-                                    </small>
+                                    <small class="text-muted me-2">{{ message.created_at|date:"H:i" }}</small>
                                     {% if message.sender == user %}
                                     <small class="text-muted">
-                                        {% if message.is_read %}✅ Прочитано{% else %}🕒 Отправлено{% endif %}
+                                        {% if message.is_read %}
+                                        ✅ {% trans "Read" %}
+                                        {% else %}
+                                        🕒 {% trans "Sent" %}
+                                        {% endif %}
                                     </small>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <!-- Пустой чат -->
-                    <div class="text-center py-5">
-                        <div class="mb-3" style="font-size: 4rem;">💭</div>
-                        <h5 class="text-muted">Диалог начат</h5>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-5 empty-chat">
+                        <div class="mb-3" style="font-size:4rem;">💭</div>
+                        <h5 class="text-muted">{% trans "Conversation started" %}</h5>
                         <p class="text-muted">
                             {% if dialogue.product %}
-                            Напишите первое сообщение о товаре "{{ dialogue.product.title }}"
+                            {% blocktrans with title=dialogue.product.title %}Write the first message about "{{ title
+                            }}"{% endblocktrans %}
                             {% else %}
-                            Напишите первое сообщение
+                            {% trans "Write the first message" %}
                             {% endif %}
                         </p>
                     </div>
-                    {% endfor %}
+                    {% endif %}
                 </div>
 
-                <!-- Форма отправки сообщения -->
                 <div class="card-footer bg-white border-top">
-                    <form id="chat-form" class="d-flex gap-2 align-items-start">
+                    <form id="chat-form" class="d-flex gap-2 align-items-start" onsubmit="return false;">
                         {% csrf_token %}
-
-                        <!-- Поле ввода -->
                         <div class="flex-grow-1">
+                            {% if dialogue.product %}
                             <textarea id="message-input" class="form-control"
-                                placeholder="{% if dialogue.product %}Введите ваше сообщение о товаре '{{ dialogue.product.title }}'...{% else %}Введите ваше сообщение...{% endif %}"
-                                rows="1" maxlength="1000" style="resize: none;" required></textarea>
-                            <small class="text-muted mt-1 d-block">
-                                💡 Enter для отправки, Shift+Enter для новой строки
-                            </small>
+                                placeholder="{% blocktrans with title=dialogue.product.title %}Type your message about '{{ title }}'...{% endblocktrans %}"
+                                rows="1" maxlength="1000" style="resize:none;" required></textarea>
+                            {% else %}
+                            <textarea id="message-input" class="form-control"
+                                placeholder="{% trans 'Type your message...' %}" rows="1" maxlength="1000"
+                                style="resize:none;" required></textarea>
+                            {% endif %}
+                            <small class="text-muted mt-1 d-block">💡 {% trans "Enter to send, Shift+Enter for newline"
+                                %}</small>
                         </div>
 
-                        <!-- Кнопка отправки -->
-                        <button type="submit" id="send-button" class="btn btn-primary px-4 py-2"
-                            style="min-width: 100px;">
-                            📤 Отправить
+                        <button type="button" id="send-button" class="btn btn-primary px-4 py-2"
+                            style="min-width:100px;">
+                            📤 {% trans "Send" %}
                         </button>
                     </form>
                 </div>
@@ -281,8 +272,7 @@
 
     #chat-messages {
         scroll-behavior: smooth;
-        background-image:
-            radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
+        background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
         background-size: 20px 20px;
     }
 
@@ -300,7 +290,6 @@
         border-color: #654321;
     }
 
-    /* Анимация для новых сообщений */
     @keyframes messageSlideIn {
         from {
             opacity: 0;
@@ -317,12 +306,10 @@
         animation: messageSlideIn 0.3s ease-out;
     }
 
-    /* Стили для заголовков сообщений */
     .message-header {
         padding: 0 10px;
     }
 
-    /* Стили для сообщений */
     .bg-light {
         background-color: #f8f9fa !important;
         border-color: #e9ecef !important;
@@ -333,8 +320,7 @@
         border-color: #8B4513 !important;
     }
 
-    /* Адаптивность для мобильных */
-    @media (max-width: 768px) {
+    @media (max-width:768px) {
         .message-content {
             max-width: 85%;
         }
@@ -346,272 +332,306 @@
 </style>
 
 <script>
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    const DIALOGUE_ID = {{ dialogue.id }};
+    const CURRENT_USER_ID = {{ user.id }};
+    const INTERLOCUTOR_EMAIL = "{{ interlocutor.email|escapejs }}";
+    const PRODUCT_TITLE = {% if dialogue.product %}"{{ dialogue.product.title|escapejs }}"{% else %} null{% endif %};
+    const IS_CURRENT_USER_MASTER = {% if user == dialogue.master %}true{% else %} false{% endif %};
+    const IS_INTERLOCUTOR_MASTER = {% if interlocutor == dialogue.master %}true{% else %} false{% endif %};
 
-    // Получение CSRF токена
-    function getCsrfToken() {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-        return csrfToken ? csrfToken.value : '';
-    }
-
-    // Экранирование HTML
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // Форматирование времени
-    function formatTime(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-
-    // ========== ОСНОВНОЙ КОД ==========
-
-    // Конфигурация
-    const dialogueId = {{ dialogue.id }};
-    const currentUserId = {{ user.id }};
-    const currentUserEmail = "{{ user.email }}";
-    const interlocutorName = "{{ interlocutor.email }}";
-    const productTitle = "{% if dialogue.product %}{{ dialogue.product.title }}{% else %}товара{% endif %}";
-
-    // Элементы DOM
     const chatMessages = document.getElementById('chat-messages');
-    const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const connectionStatus = document.getElementById('connection-status');
+    const messagesCountBadge = document.getElementById('messages-count-badge');
 
-    // WebSocket соединение
     let chatSocket = null;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_DELAY = 30000;
+    const renderedMessageIds = new Set();
+    const pendingMessages = new Map(); // Для отслеживания отправленных сообщений
 
-    // Функция для пометки сообщений как прочитанных
-    function markMessagesAsRead() {
-        fetch(`/chat/${dialogueId}/mark-read/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCsrfToken(),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({})
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log(`Помечено ${data.updated_count} сообщений как прочитанные`);
-                    // Обновляем счетчик непрочитанных в реальном времени
-                    updateUnreadCounter();
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при пометке сообщений как прочитанных:', error);
-            });
+    // Инициализируем renderedMessageIds с сообщениями, которые уже отображены на странице
+    (function initRenderedIds() {
+        const nodes = chatMessages.querySelectorAll('[data-message-id]');
+        nodes.forEach(n => {
+            const id = n.getAttribute('data-message-id');
+            if (id) renderedMessageIds.add(String(id));
+        });
+    })();
+
+    function getCsrfToken() {
+        const el = document.querySelector('[name=csrfmiddlewaretoken]');
+        return el ? el.value : '';
     }
 
-    // Функция для обновления счетчика непрочитанных
-    function updateUnreadCounter() {
-        // Отправляем запрос на обновление счетчика в списке диалогов
-        fetch('/chat/')
-            .then(response => response.text())
-            .then(html => {
-                console.log('Счетчик непрочитанных обновлен');
-            });
+    function escapeHtml(s) {
+        const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+    }
+
+    function formatTime(ts) {
+        const d = new Date(ts); return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function makeFallbackId(sender_id, timestamp, text) {
+        const s = `${sender_id}||${timestamp}||${text}`;
+        let h = 0;
+        for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+        return 'fb_' + (h >>> 0);
+    }
+
+    function updateConnectionStatus(text, type) {
+        connectionStatus.innerHTML = `<span class="badge bg-${type}">${text}</span>`;
+    }
+
+    function updateMessagesCount(delta = 0) {
+        if (!messagesCountBadge) return;
+        const raw = messagesCountBadge.textContent.trim();
+        const matched = raw.match(/💬\s*(\d+)/);
+        const current = matched ? parseInt(matched[1], 10) : 0;
+        const next = Math.max(0, current + delta);
+        messagesCountBadge.textContent = `💬 ${next} ${next === 1 ? 'message' : 'messages'}`;
+    }
+
+    function scrollToBottom() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+
+    function buildMessageNode(data, isTemp = false) {
+        // Используем временный ID для сообщений, ожидающих подтверждения от сервера
+        const msgId = isTemp ? 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+            : (data.message_id ? String(data.message_id) : makeFallbackId(data.sender_id, data.timestamp || new Date().toISOString(), data.message || ''));
+
+        // Проверяем, не отображалось ли сообщение уже
+        if (!isTemp && renderedMessageIds.has(msgId)) return null;
+        if (!isTemp) renderedMessageIds.add(msgId);
+
+        const isOwn = Number(data.sender_id) === Number(CURRENT_USER_ID);
+        const wrapper = document.createElement('div');
+        wrapper.className = `message ${isOwn ? 'message-own' : 'message-other'} mb-4 message-new`;
+        wrapper.setAttribute('data-message-id', msgId);
+        if (isTemp) wrapper.setAttribute('data-temp-message', 'true');
+
+        const header = document.createElement('div'); header.className = 'message-header mb-1';
+        const small = document.createElement('small'); small.className = `fw-bold ${isOwn ? 'text-primary' : 'text-brown'}`;
+
+        if (isOwn) {
+            small.innerHTML = `👤 You`;
+            const badge = document.createElement('span'); badge.className = 'badge ms-1 ' + (IS_CURRENT_USER_MASTER ? 'bg-success' : 'bg-primary');
+            badge.textContent = IS_CURRENT_USER_MASTER ? '🎨' : '👤'; small.appendChild(badge);
+        } else {
+            small.innerHTML = `🎨 ${escapeHtml(INTERLOCUTOR_EMAIL)}`;
+            const badge = document.createElement('span'); badge.className = 'badge ms-1 ' + (IS_INTERLOCUTOR_MASTER ? 'bg-success' : 'bg-primary');
+            badge.textContent = IS_INTERLOCUTOR_MASTER ? '🎨' : '👤'; small.appendChild(badge);
+        }
+
+        header.appendChild(small); wrapper.appendChild(header);
+
+        const row = document.createElement('div'); row.className = `d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+        const contentWrap = document.createElement('div'); contentWrap.className = 'message-content';
+        const bubble = document.createElement('div'); bubble.className = isOwn ? 'bg-primary text-white p-3 rounded-3' : 'bg-light text-dark border p-3 rounded-3';
+        bubble.style.maxWidth = '500px'; bubble.innerHTML = escapeHtml(data.message).replace(/\n/g, '<br>');
+
+        const meta = document.createElement('div'); meta.className = `d-flex align-items-center mt-1 ${isOwn ? 'justify-content-end' : ''}`;
+        const time = document.createElement('small'); time.className = 'text-muted me-2';
+        time.textContent = data.timestamp ? formatTime(data.timestamp) : formatTime(new Date()); meta.appendChild(time);
+
+        if (isOwn) {
+            const status = document.createElement('small'); status.className = 'text-muted';
+            status.textContent = isTemp ? '🔄 Sending...' : (data.is_read ? '✅ Read' : '🕒 Sent');
+            meta.appendChild(status);
+        }
+
+        contentWrap.appendChild(bubble); contentWrap.appendChild(meta);
+        row.appendChild(contentWrap); wrapper.appendChild(row);
+
+        return wrapper;
+    }
+
+    function addMessageToChat(data, isTemp = false) {
+        const node = buildMessageNode(data, isTemp);
+        if (!node) return null;
+        const empty = chatMessages.querySelector('.empty-chat');
+        if (empty) empty.remove();
+        chatMessages.appendChild(node);
+        scrollToBottom();
+        if (!isTemp) updateMessagesCount(1);
+        return node;
+    }
+
+    function updateTempMessage(tempId, serverData) {
+        const tempElement = document.querySelector(`[data-message-id="${tempId}"]`);
+        if (tempElement) {
+            // Удаляем временный элемент
+            tempElement.remove();
+            // Добавляем постоянное сообщение от сервера
+            addMessageToChat(serverData, false);
+            // Удаляем из pendingMessages
+            pendingMessages.delete(tempId);
+        }
     }
 
     function connectWebSocket() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws/chat/${dialogueId}/`;
+        const wsUrl = `${protocol}//${window.location.host}/ws/chat/${DIALOGUE_ID}/`;
+        try { chatSocket = new WebSocket(wsUrl); } catch (err) { console.error('WebSocket error', err); scheduleReconnect(); return; }
 
-        console.log('🔄 Попытка подключения к WebSocket:', wsUrl);
-
-        chatSocket = new WebSocket(wsUrl);
-
-        chatSocket.onopen = function (e) {
-            console.log('✅ WebSocket подключен успешно');
+        chatSocket.onopen = function () {
+            reconnectAttempts = 0;
             updateConnectionStatus('🟢 Online', 'success');
-
-            // При подключении помечаем все сообщения как прочитанные
+            // Отмечаем сообщения как прочитанные при подключении
             markMessagesAsRead();
         };
 
         chatSocket.onmessage = function (e) {
-            console.log('📨 Получено сообщение через WebSocket:', e.data);
             try {
                 const data = JSON.parse(e.data);
-                addMessageToChat(data);
-                scrollToBottom();
 
-                // Если сообщение от собеседника, помечаем его как прочитанное
-                if (data.sender_id != currentUserId) {
+                // Проверяем, не является ли это ответом на отправленное нами сообщение
+                const isOwnMessage = Number(data.sender_id) === Number(CURRENT_USER_ID);
+
+                if (isOwnMessage) {
+                    // Ищем временное сообщение с таким же текстом
+                    let foundTempId = null;
+                    for (const [tempId, tempData] of pendingMessages.entries()) {
+                        if (tempData.text === data.message) {
+                            foundTempId = tempId;
+                            break;
+                        }
+                    }
+
+                    if (foundTempId) {
+                        // Обновляем временное сообщение на постоянное
+                        updateTempMessage(foundTempId, data);
+                    } else {
+                        // Просто добавляем сообщение (на случай, если не было временного)
+                        addMessageToChat(data, false);
+                    }
+                } else {
+                    // Сообщение от собеседника
+                    addMessageToChat(data, false);
                     markMessagesAsRead();
                 }
-            } catch (error) {
-                console.error('❌ Ошибка парсинга сообщения:', error);
-            }
+            } catch (err) { console.error('WS message parse error', err, e.data); }
         };
 
         chatSocket.onclose = function (e) {
-            console.log('🔴 WebSocket отключен. Код:', e.code, 'Причина:', e.reason);
+            console.warn('WebSocket closed', e.code, e.reason);
             updateConnectionStatus('🔴 Offline', 'danger');
-
-            // Попытка переподключения через 3 секунды
-            setTimeout(() => {
-                if (chatSocket.readyState === WebSocket.CLOSED) {
-                    console.log('🔄 Попытка переподключения...');
-                    connectWebSocket();
-                }
-            }, 3000);
+            scheduleReconnect();
         };
 
-        chatSocket.onerror = function (e) {
-            console.error('❌ WebSocket ошибка:', e);
+        chatSocket.onerror = function (err) {
+            console.error('WebSocket error', err);
             updateConnectionStatus('⚠️ Connection error', 'warning');
         };
     }
 
-    function updateConnectionStatus(text, type) {
-        connectionStatus.innerHTML = `
-            <span class="badge bg-${type}">${text}</span>
-        `;
+    function scheduleReconnect() {
+        reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), MAX_RECONNECT_DELAY);
+        setTimeout(() => {
+            if (!document.hidden) connectWebSocket();
+        }, delay);
     }
 
-    // Обработчик отправки формы
-    chatForm.onsubmit = function (e) {
-        e.preventDefault();
-        sendMessage();
-    };
-
-    // Автоматическое увеличение высоты textarea
-    messageInput.addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-
-    // Отправка сообщения по Enter (без Shift)
-    messageInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' &amp;&amp; !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    function markMessagesAsRead() {
+        fetch(`/chat/${DIALOGUE_ID}/mark-read/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        }).then(r => r.json()).then(data => {
+            if (data.status === 'success' && data.updated_count) {
+                console.log('Marked read:', data.updated_count);
+                // Обновляем статус прочтения для своих сообщений
+                document.querySelectorAll('.message-own [data-message-id]').forEach(el => {
+                    if (!el.hasAttribute('data-temp-message')) {
+                        const statusEl = el.querySelector('.message-content .text-muted:last-child');
+                        if (statusEl && statusEl.textContent.includes('🕒')) {
+                            statusEl.textContent = '✅ Read';
+                        }
+                    }
+                });
+            }
+        }).catch(err => console.error('Mark read failed', err));
+    }
 
     function sendMessage() {
-        const message = messageInput.value.trim();
+        const text = messageInput.value.trim();
+        if (!text) return;
 
-        if (!message) {
-            console.warn('⚠️ Попытка отправить пустое сообщение');
-            return;
-        }
-
-        if (chatSocket &amp;&amp; chatSocket.readyState === WebSocket.OPEN) {
-            // Блокируем кнопку отправки
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
             sendButton.disabled = true;
-            sendButton.innerHTML = '⏳';
+            sendButton.innerText = '⏳';
 
-            // Отправляем через WebSocket
-            const messageData = {
-                'message': message,
-                'sender_id': currentUserId,
-                'dialogue_id': dialogueId
+            // Создаем временное сообщение
+            const tempMessageData = {
+                sender_id: CURRENT_USER_ID,
+                message: text,
+                timestamp: new Date().toISOString()
             };
 
-            console.log('📤 Отправка сообщения через WebSocket:', messageData);
-            chatSocket.send(JSON.stringify(messageData));
+            const tempNode = addMessageToChat(tempMessageData, true);
+            if (tempNode) {
+                const tempId = tempNode.getAttribute('data-message-id');
+                pendingMessages.set(tempId, { text: text, timestamp: tempMessageData.timestamp });
+            }
 
-            // Очищаем поле ввода
+            const payload = {
+                message: text,
+                sender_id: CURRENT_USER_ID,
+                dialogue_id: DIALOGUE_ID
+            };
+
+            try {
+                chatSocket.send(JSON.stringify(payload));
+            } catch (err) {
+                console.error('Send failed', err);
+                alert('Send failed');
+                sendButton.disabled = false;
+                sendButton.innerText = '📤 Send';
+                return;
+            }
+
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
-            // Разблокируем кнопку
+            // Восстанавливаем кнопку через короткую задержку
             setTimeout(() => {
                 sendButton.disabled = false;
-                sendButton.innerHTML = '📤 Отправить';
-            }, 1000);
+                sendButton.innerText = '📤 Send';
+            }, 300);
         } else {
-            console.error('❌ WebSocket не подключен. Состояние:', chatSocket ? chatSocket.readyState : 'не инициализирован');
             updateConnectionStatus('🔴 Send failed', 'danger');
-
-            // Показываем уведомление пользователю
-            alert('Ошибка подключения. Попробуйте обновить страницу.');
+            alert('Connection error. Please refresh the page.');
         }
     }
 
-    function addMessageToChat(data) {
-        const isOwn = data.sender_id == currentUserId;
-        const messageTime = data.timestamp ? formatTime(data.timestamp) : formatTime(new Date());
-        const senderName = isOwn ? '👤 Вы' : `🎨 ${interlocutorName}`;
+    if (messageInput) {
+        messageInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
 
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${isOwn ? 'message-own' : 'message-other'} mb-4 message-new`;
-        messageElement.innerHTML = `
-            <div class="message-header mb-1">
-                <small class="fw-bold ${isOwn ? 'text-primary' : 'text-brown'}">
-                    ${senderName}
-                    ${isOwn ?
-                '{% if user == dialogue.master %}<span class="badge bg-success ms-1">🎨</span>{% else %}<span class="badge bg-primary ms-1">👤</span>{% endif %}' :
-                '{% if interlocutor == dialogue.master %}<span class="badge bg-success ms-1">🎨</span>{% else %}<span class="badge bg-primary ms-1">👤</span>{% endif %}'
+        messageInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
-                </small>
-            </div>
-            <div class="d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'}">
-                <div class="message-content">
-                    <div class="${isOwn ? 'bg-primary text-white' : 'bg-light text-dark border'} 
-                                p-3 rounded-3" 
-                         style="max-width: 500px;">
-                        ${escapeHtml(data.message).replace(/\n/g, '<br>')}
-                    </div>
-                    <div class="d-flex align-items-center mt-1 ${isOwn ? 'justify-content-end' : ''}">
-                        <small class="text-muted me-2">${messageTime}</small>
-                        ${isOwn ? '<small class="text-muted">🕒 Отправлено</small>' : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-
-        chatMessages.appendChild(messageElement);
-        scrollToBottom();
-
-        // Убираем пустое состояние, если оно есть
-        const emptyState = chatMessages.querySelector('.text-center');
-        if (emptyState) {
-            emptyState.remove();
-        }
+        });
     }
 
-    function scrollToBottom() {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    if (sendButton) sendButton.addEventListener('click', sendMessage);
 
-    // Автопрокрутка при загрузке
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log('🚀 Страница чата загружена');
-
-        // Помечаем сообщения как прочитанные при загрузке страницы
-        markMessagesAsRead();
-
-        // Подключаем WebSocket
-        connectWebSocket();
-        scrollToBottom();
-
-        // Фокус на поле ввода
-        messageInput.focus();
-    });
-
-    // Обработчик видимости страницы (переподключение при возврате)
     document.addEventListener('visibilitychange', function () {
-        if (!document.hidden &amp;&amp; chatSocket &amp;&amp; chatSocket.readyState === WebSocket.CLOSED) {
-            console.log('🔄 Страница снова активна, переподключаем WebSocket...');
+        if (!document.hidden && (!chatSocket || chatSocket.readyState === WebSocket.CLOSED)) {
             connectWebSocket();
         }
+    });
 
-        // При возвращении на вкладку помечаем сообщения как прочитанные
-        if (!document.hidden) {
-            markMessagesAsRead();
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        markMessagesAsRead();
+        connectWebSocket();
+        scrollToBottom();
+        if (messageInput) messageInput.focus();
     });
 </script>
 {% endblock %}

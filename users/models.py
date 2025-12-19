@@ -140,8 +140,8 @@ class City(models.Model):
         verbose_name=_("City name"),
         validators=[
             RegexValidator(
-                regex=r"^[a-zA-Z\s\-]+$",
-                message=_("City must contain only Latin letters, spaces and hyphens"),
+                regex=r"^[a-zA-ZÀ-ÿÆæŒœß\s\-']+$",
+                message=_("City name can contain Latin letters (including German and French characters with accents), spaces, hyphens and apostrophes"),
             )
         ],
     )

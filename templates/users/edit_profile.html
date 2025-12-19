@@ -106,8 +106,7 @@
                                                         </div>
                                                         <div class="avatar-upload-field" style="display: none;">
                                                             {{ profile_form.avatar }}
-                                                            <div class="form-text mt-2">{% trans "Select new image (JPG,
-                                                                PNG, GIF, WebP, max. 5MB)" %}</div>
+                                                            <div class="form-text mt-2">{% trans "Select new image (JPG,PNG, GIF, WebP, max. 5MB)" %}</div>
                                                         </div>
                                                         <input type="hidden" name="avatar-clear" id="avatar-clear"
                                                             value="false">
@@ -116,8 +115,7 @@
                                                     <!-- For new avatar -->
                                                     <div class="new-avatar">
                                                         {{ profile_form.avatar }}
-                                                        <div class="form-text mt-2">{% trans "Select image file (JPG,
-                                                            PNG, GIF, WebP, max. 5MB)" %}</div>
+                                                        <div class="form-text mt-2">{% trans "Select image file (JPG,PNG, GIF, WebP, max. 5MB)" %}</div>
                                                     </div>
                                                     {% endif %}
                                                 </div>
@@ -126,10 +124,7 @@
                                                     {{ profile_form.avatar.errors.0 }}
                                                 </div>
                                                 {% endif %}
-                                                <div class="form-text">
-                                                    {% trans "Recommended size: 150x150 px. Formats: JPG, PNG, GIF,
-                                                    WebP" %}
-                                                </div>
+                                                <div class="form-text">{% trans "Recommended size: 150x150 px. Formats: JPG, PNG, GIF, WebP" %}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -137,18 +132,19 @@
                                     <!-- Main form fields -->
                                     <div class="col-lg-8">
                                         <div class="row">
-                                            <!-- Email -->
+                                            <!-- Email - Display only, not editable -->
                                             <div class="col-12 mb-3">
-                                                <label for="{{ user_form.email.id_for_label }}"
-                                                    class="form-label fw-bold">
+                                                <label class="form-label fw-bold">
                                                     📧 {% trans "Email Address" %}
                                                 </label>
-                                                {{ user_form.email }}
-                                                {% if user_form.email.errors %}
-                                                <div class="text-danger small mt-1">
-                                                    {{ user_form.email.errors.0 }}
+                                                <div class="form-control-plaintext bg-light p-3 rounded"
+                                                    style="border: 2px solid #e9ecef;">
+                                                    <strong>{{ user.email }}</strong>
+                                                    <input type="hidden" name="email" value="{{ user.email }}">
                                                 </div>
-                                                {% endif %}
+                                                <div class="form-text mt-1">
+                                                    <small class="text-muted">{% trans "Email cannot be changed"%}</small>
+                                                </div>
                                             </div>
 
                                             <!-- City with autocomplete -->
@@ -171,9 +167,8 @@
                                                     {{ profile_form.city_search.errors.0 }}
                                                 </div>
                                                 {% endif %}
-                                                <div class="form-text">
-                                                    {% trans "Start typing city name and select from list" %}
-                                                </div>
+                                                <div class="form-text">{% trans "Start typing city name and select from
+                                                    list" %}</div>
                                             </div>
 
                                             <!-- About Me -->
@@ -184,10 +179,8 @@
                                                 </label>
                                                 {{ profile_form.bio }}
                                                 <div class="d-flex justify-content-between align-items-center mt-1">
-                                                    <div class="form-text">
-                                                        {% trans "Tell about yourself, your experience and creativity"
-                                                        %}
-                                                    </div>
+                                                    <div class="form-text">{% trans "Tell about yourself, your
+                                                        experience and creativity" %}</div>
                                                     <div class="form-text text-end">
                                                         <span id="bio-counter">500</span> {% trans "characters left" %}
                                                     </div>
@@ -225,10 +218,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <h6 class="fw-bold text-danger">{% trans "Account Deletion" %}</h6>
-                                    <p class="text-muted small mb-0">
-                                        {% trans "After account deletion, data recovery is impossible. All your
-                                        products, orders and messages will be permanently deleted." %}
-                                    </p>
+                                    <p class="text-muted small mb-0">{% trans "After account deletion, data recovery is impossible. All your products, orders and messages will be permanently deleted."%}</p>
                                 </div>
                                 <div class="col-md-4 text-md-end">
                                     <a href="{% url 'users:delete_account' %}" class="btn btn-outline-danger">
@@ -332,6 +322,19 @@
         color: #dc3545;
         font-weight: bold;
     }
+
+    .form-control-plaintext {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0;
+    }
+
+    .form-control-plaintext strong {
+        color: #212529;
+        font-weight: 500;
+    }
 </style>
 
 <script>
@@ -409,7 +412,7 @@
                 // Show message
                 const message = document.createElement('div');
                 message.className = 'alert alert-info mt-2 small';
-                message.textContent = "{% trans "Avatar will be deleted after saving profile" %}";
+                message.textContent = '{% trans "Avatar will be deleted after saving profile" %}';
                 this.closest('.existing-avatar').appendChild(message);
             });
         }
