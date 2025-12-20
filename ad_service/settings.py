@@ -120,7 +120,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
-# Database
+'''# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -140,21 +140,46 @@ CHANNEL_LAYERS = {
             "hosts": [("redis", 6379)],
         },
     },
+}'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
+# Channels/Redis (локальный Redis)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # Локальный Redis
+        },
+    },
+}
 # Sessions в Redis
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 # Email settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+'''EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.mail.ru")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER'''
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.timeweb.ru")  # Изменено значение по умолчанию
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "mart@ktsf.ru")  # Изменено значение по умолчанию
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "3tG57p73D")  # Изменено значение по умолчанию
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL", EMAIL_HOST_USER)
 
 # Auth URLs
 LOGIN_REDIRECT_URL = "home"

@@ -288,21 +288,12 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <!-- Единое меню для всех пользователей (мастеров) -->
-                            <li><a class="dropdown-item" href="{% url 'products:my_products' %}">🛍️ {% trans "My
-                                    products" %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'products:product_add' %}">🎨 {% trans "Add
-                                    product" %}</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'orders:sale_orders' %}">💰 {% trans "My sales"
-                                    %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'orders:purchase_orders' %}">🛍️ {% trans "My
-                                    purchases" %}</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'orders:cart_view' %}">🛒 {% trans "Cart" %}</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'products:profile' %}?tab=favorites">❤️
-                                    {% trans "Favorites" %}</a></li>
-                            <li>
+                            <li><a class="dropdown-item" href="{% url 'products:my_products' %}">🛍️ {% trans "My products" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_add' %}">🎨 {% trans "Add product" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:sale_orders' %}">💰 {% trans "My sales"%}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:purchase_orders' %}">🛍️ {% trans "My purchases" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders:cart_view' %}">🛒 {% trans "Cart" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:profile' %}?tab=favorites">❤️{% trans "Favorites" %}</a></li>
                                 <a class="dropdown-item" href="{% url 'chat:dialogue_list' %}">
                                     💬 {% trans "My dialogues" %}
                                     {% if user.unread_messages_count %}
@@ -310,8 +301,7 @@
                                     {% endif %}
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">👤 {% trans "My profile"
-                                    %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">👤 {% trans "My profile"%}</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -368,9 +358,8 @@
                 <!-- О компании -->
                 <div class="col-lg-4 col-md-6 mb-4">
                     <h6 class="fw-bold">🎨 {% trans "HandmadeMarket" %}</h6>
-                    <p class="text-muted small mb-3">{% trans "A platform for unique handmade goods from talented
-                        artisans" %}</p>
-                    <p class="text-muted small mb-0">&copy; 2024 HandmadeMarket. {% trans "All rights reserved." %}</p>
+                    <p class="text-muted small mb-3">{% trans "A platform for unique handmade goods from talented artisans" %}</p>
+                    <p class="text-muted small mb-0">&copy; 2025 HandmadeMarket. {% trans "All rights reserved." %}</p>
                 </div>
 
                 <!-- Обязательные ссылки -->

@@ -53,24 +53,27 @@
                             <div class="col-md-4">
                                 <select class="form-select" name="category" onchange="this.form.submit()">
                                     <option value="">{% trans "All Categories" %}</option>
+                            
                                     {% for category in categories %}
-                                    <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>
-                                        {{ category.name }}
+                                        <option value="{{ category.slug }}" 
+                                            {% if request.GET.category == category.slug %}selected{% endif %}>
+                                            {{ category.name }}
                                     </option>
                                     {% empty %}
-                                    <option disabled>{% trans "No categories available" %}</option>
+                                        <option disabled>{% trans "No categories available" %}</option>
                                     {% endfor %}
-                                </select>            
+                                </select>
                             </div>
+                            
+                            
 
                             <div class="col-md-4">
                                 <select class="form-select" name="city" onchange="this.form.submit()">
                                     <option value="">{% trans "All Cities" %}</option>
-                                    {% for city_choice in city_choices %}
-                                    <option value="{{ city_choice.0 }}" {% if
-                                        request.GET.city|stringformat:"s" == city_choice.0|stringformat:"s" %}selected{%
-                                        endif %}>
-                                        {{ city_choice.1 }}
+                                    {% for city in cities %}
+                                    <option value="{{ city.id }}" {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>
+                                       
+                                        {{ city.name }}
                                     </option>
                                     {% empty %}
                                     <option disabled>{% trans "No cities available" %}</option>
@@ -106,7 +109,11 @@
                         {% endfor %}
                         {% endif %}
                         {% if request.GET.city %}
-                        <span class="badge bg-success ms-2">{% trans "City:" %} {{ request.GET.city }}</span>
+                        {% for city in cities %}
+                        {% if city.id|stringformat:"s" == request.GET.city %}
+                        <span class="badge bg-success ms-2">{% trans "City:" %} {{ city.name }}</span>
+                        {% endif %}
+                        {% endfor %}
                         {% endif %}
                     </div>
                     <small class="text-muted">
@@ -120,16 +127,19 @@
                 {% for product in products %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card h-100 border-0 shadow-sm product-card">
-                        <div class="position-relative">
-                            {% if product.images.all %}
-                            <img src="{{ product.images.first.image.url }}" class="card-img-top"
-                                alt="{{ product.title }}" style="height: 250px; object-fit: cover;">
+                        <div class="position-relative product-clickable-area"
+                            data-product-url="{% url 'products:product_detail' product.pk %}">
+                            {% with first_image=product.images.first %}
+                            {% if first_image %}
+                            <img src="{{ first_image.image.url }}" class="card-img-top" alt="{{ product.title }}"
+                                style="height: 250px; object-fit: cover;">
                             {% else %}
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                                 style="height: 250px;">
                                 <span class="text-muted" style="font-size: 3rem;">🎨</span>
                             </div>
                             {% endif %}
+                            {% endwith %}
 
                             {% if user.is_authenticated and product.pk in user_favorites %}
                             <div class="position-absolute top-0 end-0 m-2">
@@ -138,65 +148,66 @@
                             {% endif %}
                         </div>
 
-                        <div class="card-body d-flex flex-column">
-                            <div class="mb-2">
-                                <span class="badge bg-brown mb-2">{{ product.category.name }}</span>
-                                <h5 class="card-title fw-bold">{{ product.title }}</h5>
-                                <p class="card-text text-muted small">{{ product.description|truncatewords:15 }}</p>
-                            </div>
+                        <div class="card-body d-flex flex-column p-0">
+                            <div class="product-clickable-area p-3 flex-grow-1"
+                                data-product-url="{% url 'products:product_detail' product.pk %}">
+                                <div class="mb-2">
+                                    <span class="badge bg-brown mb-2">{{ product.category.name }}</span>
+                                    <h5 class="card-title fw-bold mb-1">{{ product.title }}</h5>
+                                    <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:15
+                                        }}</p>
+                                </div>
 
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">
-                                        <i class="bi bi-geo-alt-fill"></i>
-                                        <strong>{% trans "City:" %}</strong> {{ product.get_city_display }}
-                                    </small>
-                                    {% if product.master.username %}
-                                    <small class="text-muted">
-                                        <i class="bi bi-person-circle"></i>
-                                        {{ product.master.username|truncatechars:15 }}
-                                    </small>
-                                    {% else %}
-                                    <small class="text-muted">
-                                        <i class="bi bi-person-circle"></i>
-                                        {% trans "Craftsman" %}
-                                    </small>
-                                    {% endif %}
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <strong>{% trans "City:" %}</strong>
+                                            {{ product.get_city_display }}
+                                        </small>
+                                        {% if product.master.username %}
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-circle"></i>
+                                            {{ product.master.username|truncatechars:15 }}
+                                        </small>
+                                        {% else %}
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-circle"></i>
+                                            {% trans "Craftsman" %}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <span class="h5 text-brown fw-bold mb-0">{{ product.price }} ₽</span>
+                                    <div style="width: 40px;"></div>
                                 </div>
                             </div>
 
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="h5 text-brown fw-bold mb-0">{{ product.price }} ₽</span>
-
+                            <div class="p-3 pt-0 mt-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
                                     {% if user.is_authenticated %}
                                     {% if product.master != user %}
-                                    <form method="post" action="{% url 'orders:add_to_cart' product.pk %}">
+                                    <form method="post" action="{% url 'orders:add_to_cart' product.pk %}" class="mb-0">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-primary btn-sm"
                                             title="{% trans 'Add to Cart' %}">
-                                            🛒
+                                            🛒 {% trans "Add to Cart" %}
                                         </button>
                                     </form>
                                     {% else %}
                                     <button class="btn btn-outline-secondary btn-sm" disabled
                                         title="{% trans 'This is your product' %}">
-                                        🛒
+                                        🛒 {% trans "Your Product" %}
                                     </button>
                                     {% endif %}
                                     {% else %}
                                     <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-sm"
                                         title="{% trans 'Log in to add to cart' %}">
-                                        🛒
+                                        🛒 {% trans "Add to Cart" %}
                                     </a>
                                     {% endif %}
-                                </div>
-
-                                <div class="d-grid gap-2">
-                                    <a href="{% url 'products:product_detail' product.pk %}"
-                                        class="btn btn-outline-primary btn-sm">
-                                        👀 {% trans "View Details" %}
-                                    </a>
 
                                     {% if user.is_authenticated %}
                                     {% if product.master == user %}
@@ -205,23 +216,25 @@
                                     </button>
                                     {% elif product.pk in user_favorites %}
                                     <form method="post"
-                                        action="{% url 'products:remove_from_favorites_by_product' product.pk %}">
+                                        action="{% url 'products:remove_from_favorites_by_product' product.pk %}"
+                                        class="mb-0">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger btn-sm">
                                             ❤️ {% trans "In Favorites" %}
                                         </button>
                                     </form>
                                     {% else %}
-                                    <form method="post" action="{% url 'products:add_to_favorites' product.pk %}">
+                                    <form method="post" action="{% url 'products:add_to_favorites' product.pk %}"
+                                        class="mb-0">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-outline-danger btn-sm">
-                                            🤍 {% trans "Add to Favorites" %}
+                                            🤍 {% trans "Favorite" %}
                                         </button>
                                     </form>
                                     {% endif %}
                                     {% else %}
                                     <a href="{% url 'users:login' %}" class="btn btn-outline-secondary btn-sm">
-                                        🤍 {% trans "Log in to add to favorites" %}
+                                        🤍 {% trans "Favorite" %}
                                     </a>
                                     {% endif %}
                                 </div>
@@ -329,6 +342,15 @@
 
     .product-card:hover {
         transform: translateY(-5px);
+    }
+
+    .product-clickable-area {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .product-clickable-area:hover {
+        background-color: rgba(139, 69, 19, 0.05);
     }
 
     /* Autocomplete styles */
@@ -661,6 +683,25 @@
         if (searchInput && resultsContainer) {
             new ProductAutocomplete(searchInput, resultsContainer);
         }
+
+        // Add click handlers for product cards
+        document.querySelectorAll('.product-clickable-area').forEach(area => {
+            area.addEventListener('click', function (e) {
+                // Don't navigate if the click was on a button or form inside the clickable area
+                if (e.target.tagName === 'BUTTON' ||
+                    e.target.tagName === 'A' ||
+                    e.target.closest('button') ||
+                    e.target.closest('a') ||
+                    e.target.closest('form')) {
+                    return;
+                }
+
+                const url = this.getAttribute('data-product-url');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
     });
 </script>
 {% endblock %}

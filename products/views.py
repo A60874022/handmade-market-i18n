@@ -198,6 +198,12 @@ class ProductListView(LoginRequiredMixin, ListView):
         return Product.objects.filter(master=self.request.user).order_by("-created_at")
 
 
+from django.views.generic import ListView
+from django.db.models import Q
+import logging
+
+logger = logging.getLogger(__name__)
+
 class ProductCatalogView(ListView):
     model = Product
     template_name = "products/catalog.html"
@@ -206,66 +212,64 @@ class ProductCatalogView(ListView):
 
     def get_queryset(self):
         try:
-            # Only active and approved products
-            queryset = Product.objects.filter(
-                is_active=True, is_approved=True
-            ).select_related("master", "category", "master__profile__city")
+            qs = (
+                Product.objects.filter(is_active=True, is_approved=True)
+                .select_related("master", "category", "master__profile__city")
+            )
 
-            # Filter by category
+            # Filter by category (robust: use category__slug)
             category_slug = self.request.GET.get("category")
             if category_slug:
-                # NOT using get_object_or_404 to avoid 404 for incorrect category
-                try:
-                    category = Category.objects.get(slug=category_slug)
-                    queryset = queryset.filter(category=category)
-                except Category.DoesNotExist:
-                    # If category not found, just ignore filter
-                    pass
+                qs = qs.filter(category__slug=category_slug)
 
             # Search by title and description
-            search_query = self.request.GET.get("q")
-            if search_query:
-                queryset = queryset.filter(
-                    Q(title__icontains=search_query)
-                    | Q(description__icontains=search_query)
-                )
+            q = self.request.GET.get("q")
+            if q:
+                qs = qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
 
-            # FILTER BY CITY
-            city_query = self.request.GET.get("city")
-            if city_query:
-                queryset = queryset.filter(
-                    Q(master__profile__city__name__icontains=city_query)
-                )
+            # Filter by city (expecting city id in select value)
+            city_value = self.request.GET.get("city")
+            if city_value:
+                try:
+                    city_id = int(city_value)
+                    qs = qs.filter(master__profile__city_id=city_id)
+                except (ValueError, TypeError):
+                    # если пришло не число — игнорируем фильтр
+                    logger.debug("Invalid city id provided for filtering: %r", city_value)
 
-            return queryset.order_by("-created_at")
+            return qs.order_by("-created_at")
 
         except Exception as e:
-            logger.error("Error loading product catalog: %s", str(e), exc_info=True)
+            logger.error("Error loading product catalog: %s", e, exc_info=True)
             return Product.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # ADD CATEGORIES TO CONTEXT
+        # Передаём все категории (для селекта)
         context["categories"] = Category.objects.all().order_by("name")
 
-        # Get list of all cities where there are active products
-        from users.models import City
+        # Получаем города только те, у которых есть активные продукты (если у вас модель City есть)
+        try:
+            from users.models import City
 
-        context["cities"] = (
-            City.objects.filter(
-                is_active=True,
-                profile__user__products__is_active=True,
-                profile__user__products__is_approved=True,
+            context["cities"] = (
+                City.objects.filter(
+                    is_active=True,
+                    profile__user__products__is_active=True,
+                    profile__user__products__is_approved=True,
+                )
+                .distinct()
+                .order_by("name")
             )
-            .distinct()
-            .order_by("name")
-        )
+        except Exception:
+            # если модели City нет или связь другая — просто отдаём пустой список, но не ломаем страницу
+            context["cities"] = []
 
-        # Add favorite product information for current user
+        # favorites
         if self.request.user.is_authenticated:
-            context["user_favorites"] = self.request.user.favorites.values_list(
-                "product_id", flat=True
+            context["user_favorites"] = list(
+                self.request.user.favorites.values_list("product_id", flat=True)
             )
         else:
             context["user_favorites"] = []

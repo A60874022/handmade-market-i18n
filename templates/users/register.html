@@ -19,7 +19,7 @@
 {% endfor %}
 {% endif %}
 
-<form method="post" novalidate>
+<form method="post" novalidate id="registration-form">
     {% csrf_token %}
 
     <!-- Email field -->
@@ -38,32 +38,44 @@
     <!-- Password field -->
     <div class="mb-3">
         <label for="{{ form.password1.id_for_label }}" class="form-label">{% trans "Password" %}</label>
-        <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
-            class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
-            placeholder="{% trans 'Create a strong password' %}" required>
-        {% if form.password1.errors %}
-        <div class="invalid-feedback">
-            {{ form.password1.errors.0 }}
+        <div class="input-group">
+            <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
+                class="form-control {% if form.password1.errors %}is-invalid{% endif %} password-input"
+                placeholder="{% trans 'Create a strong password' %}" required>
+            <button type="button" class="btn btn-outline-secondary toggle-password"
+                data-target="{{ form.password1.id_for_label }}">
+                <span class="eye-icon">👁️</span>
+            </button>
+            {% if form.password1.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.password1.errors.0 }}
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
         {% if form.password1.help_text %}
-        <div class="form-text">{{ form.password1.help_text }}</div>
+        <div class="form-text mt-1">{{ form.password1.help_text }}</div>
         {% endif %}
     </div>
 
     <!-- Password confirmation -->
     <div class="mb-4">
         <label for="{{ form.password2.id_for_label }}" class="form-label">{% trans "Confirm Password" %}</label>
-        <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
-            class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
-            placeholder="{% trans 'Repeat your password' %}" required>
-        {% if form.password2.errors %}
-        <div class="invalid-feedback">
-            {{ form.password2.errors.0 }}
+        <div class="input-group">
+            <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
+                class="form-control {% if form.password2.errors %}is-invalid{% endif %} password-input"
+                placeholder="{% trans 'Repeat your password' %}" required>
+            <button type="button" class="btn btn-outline-secondary toggle-password"
+                data-target="{{ form.password2.id_for_label }}">
+                <span class="eye-icon">👁️</span>
+            </button>
+            {% if form.password2.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.password2.errors.0 }}
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
         {% if form.password2.help_text %}
-        <div class="form-text">{{ form.password2.help_text }}</div>
+        <div class="form-text mt-1">{{ form.password2.help_text }}</div>
         {% endif %}
     </div>
 
@@ -90,4 +102,313 @@
         <a href="{% url 'users:login' %}" class="text-decoration-none fw-bold">{% trans "Log in" %}</a>
     </div>
 </form>
+
+<style>
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .input-group .form-control {
+        position: relative;
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+        border-right: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .input-group .btn {
+        border-left: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.375rem 0.75rem;
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .input-group .btn:hover {
+        background-color: #e9ecef;
+        border-color: #ced4da;
+    }
+
+    .input-group .btn:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        z-index: 3;
+    }
+
+    .eye-icon {
+        font-size: 0.9rem;
+        transition: opacity 0.2s ease;
+    }
+
+    .password-visible .eye-icon {
+        opacity: 0.7;
+    }
+
+    /* Индикатор силы пароля */
+    .password-strength {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .strength-bar {
+        height: 3px;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .strength-weak {
+        width: 33%;
+        background-color: #dc3545;
+    }
+
+    .strength-medium {
+        width: 66%;
+        background-color: #ffc107;
+    }
+
+    .strength-strong {
+        width: 100%;
+        background-color: #198754;
+    }
+
+    /* Анимация переключения */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .form-control:focus {
+        animation: fadeIn 0.2s ease;
+    }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 576px) {
+        .input-group .btn {
+            padding: 0.375rem 0.5rem;
+            min-width: 50px;
+        }
+
+        .eye-icon {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Функция для переключения видимости пароля
+        function togglePasswordVisibility(button) {
+            const targetId = button.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+
+            if (passwordInput) {
+                const isPasswordVisible = passwordInput.type === 'text';
+                passwordInput.type = isPasswordVisible ? 'password' : 'text';
+
+                // Обновляем иконку
+                const eyeIcon = button.querySelector('.eye-icon');
+                if (eyeIcon) {
+                    if (isPasswordVisible) {
+                        eyeIcon.textContent = '👁️';
+                        button.classList.remove('password-visible');
+                    } else {
+                        eyeIcon.textContent = '👁️‍🗨️';
+                        button.classList.add('password-visible');
+                    }
+                }
+
+                // Фокусируем обратно на поле ввода
+                passwordInput.focus();
+
+                // Анимация переключения
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 150);
+            }
+        }
+
+        // Добавляем обработчики для всех кнопок переключения пароля
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePasswordVisibility(this);
+            });
+
+            // Добавляем поддержку клавиатуры
+            button.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePasswordVisibility(this);
+                }
+            });
+        });
+
+        // Функция для проверки силы пароля (опционально)
+        function checkPasswordStrength(password) {
+            let strength = 0;
+
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            return strength;
+        }
+
+        // Отображаем силу пароля (опционально)
+        const passwordInput = document.getElementById('{{ form.password1.id_for_label }}');
+        const confirmPasswordInput = document.getElementById('{{ form.password2.id_for_label }}');
+
+        if (passwordInput) {
+            // Создаем контейнер для индикатора силы пароля
+            const strengthContainer = document.createElement('div');
+            strengthContainer.className = 'password-strength';
+            strengthContainer.innerHTML = `
+                <div class="d-flex justify-content-between mb-1">
+                    <small>{% trans "Password strength" %}:</small>
+                    <small class="strength-text">-</small>
+                </div>
+                <div class="strength-bar-container bg-light rounded" style="height: 3px;">
+                    <div class="strength-bar"></div>
+                </div>
+            `;
+
+            // Вставляем после поля ввода
+            passwordInput.parentNode.parentNode.appendChild(strengthContainer);
+
+            const strengthBar = strengthContainer.querySelector('.strength-bar');
+            const strengthText = strengthContainer.querySelector('.strength-text');
+
+            function updatePasswordStrength() {
+                const password = passwordInput.value;
+                const strength = checkPasswordStrength(password);
+
+                if (password.length === 0) {
+                    strengthBar.className = 'strength-bar';
+                    strengthBar.style.width = '0%';
+                    strengthText.textContent = '-';
+                    return;
+                }
+
+                switch (strength) {
+                    case 0:
+                    case 1:
+                        strengthBar.className = 'strength-bar strength-weak';
+                        strengthText.textContent = '{% trans "Weak" %}';
+                        strengthText.style.color = '#dc3545';
+                        break;
+                    case 2:
+                        strengthBar.className = 'strength-bar strength-medium';
+                        strengthText.textContent = '{% trans "Medium" %}';
+                        strengthText.style.color = '#ffc107';
+                        break;
+                    case 3:
+                    case 4:
+                        strengthBar.className = 'strength-bar strength-strong';
+                        strengthText.textContent = '{% trans "Strong" %}';
+                        strengthText.style.color = '#198754';
+                        break;
+                }
+            }
+
+            passwordInput.addEventListener('input', updatePasswordStrength);
+            updatePasswordStrength(); // Инициализация
+
+            // Проверка совпадения паролей
+            if (confirmPasswordInput) {
+                function checkPasswordMatch() {
+                    const password = passwordInput.value;
+                    const confirmPassword = confirmPasswordInput.value;
+
+                    if (confirmPassword.length === 0) return;
+
+                    if (password !== confirmPassword) {
+                        confirmPasswordInput.classList.add('is-invalid');
+                        confirmPasswordInput.classList.remove('is-valid');
+                    } else {
+                        confirmPasswordInput.classList.remove('is-invalid');
+                        confirmPasswordInput.classList.add('is-valid');
+                    }
+                }
+
+                confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+                passwordInput.addEventListener('input', checkPasswordMatch);
+            }
+        }
+
+        // Авто-фокус на поле email при загрузке
+        const emailInput = document.getElementById('{{ form.email.id_for_label }}');
+        if (emailInput) {
+            setTimeout(() => {
+                emailInput.focus();
+            }, 100);
+        }
+
+        // Улучшенная обработка отправки формы
+        const form = document.getElementById('registration-form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                // Проверка совпадения паролей перед отправкой
+                const password = passwordInput ? passwordInput.value : '';
+                const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+
+                    // Показываем сообщение об ошибке
+                    if (confirmPasswordInput) {
+                        confirmPasswordInput.classList.add('is-invalid');
+
+                        // Создаем или обновляем сообщение об ошибке
+                        let errorDiv = confirmPasswordInput.parentNode.querySelector('.password-match-error');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback password-match-error';
+                            confirmPasswordInput.parentNode.appendChild(errorDiv);
+                        }
+                        errorDiv.textContent = '{% trans "Passwords do not match" %}';
+                    }
+
+                    // Фокусируем на поле подтверждения пароля
+                    if (confirmPasswordInput) {
+                        confirmPasswordInput.focus();
+                    }
+
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Автоматическое скрытие алертов через 5 секунд
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                if (alert && alert.classList.contains('show')) {
+                    const bsAlert = bootstrap.Alert.getInstance(alert);
+                    if (bsAlert) {
+                        bsAlert.close();
+                    }
+                }
+            }, 5000);
+        });
+    });
+</script>
 {% endblock %}

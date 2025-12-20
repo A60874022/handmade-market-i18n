@@ -58,17 +58,21 @@
                                     <div class="col-lg-4 mb-4">
                                         <div class="text-center">
                                             <!-- Avatar display -->
-                                            <div class="position-relative d-inline-block">
+                                            <div class="position-relative d-inline-block mb-3">
                                                 {% if user.profile.avatar and user.profile.avatar.url %}
-                                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle mb-3"
+                                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle"
                                                     alt="{% blocktrans %}Avatar of {{ user.email }}{% endblocktrans %}"
                                                     style="width: 150px; height: 150px; object-fit: cover;"
-                                                    id="avatar-preview">
+                                                    id="avatar-preview"
+                                                    data-current-avatar="{{ user.profile.avatar.url }}">
                                                 {% else %}
-                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3 mx-auto"
+                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
                                                     style="width: 150px; height: 150px;" id="default-avatar">
                                                     <span class="text-white" style="font-size: 3rem;">👤</span>
                                                 </div>
+                                                <img src="" class="rounded-circle d-none"
+                                                    style="width: 150px; height: 150px; object-fit: cover;"
+                                                    id="avatar-preview">
                                                 {% endif %}
                                             </div>
 
@@ -84,7 +88,7 @@
                                                 <span class="badge bg-success fs-6">🎨 {% trans "Craftsman" %}</span>
                                             </div>
 
-                                            <!-- Avatar upload with custom display -->
+                                            <!-- Avatar upload with instant preview -->
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">
                                                     📷 {% trans "Change Avatar" %}
@@ -95,18 +99,20 @@
                                                     <div class="existing-avatar">
                                                         <div class="d-flex flex-column align-items-center gap-2 mb-2"
                                                             id="avatar-buttons">
-                                                            <button type="button"
-                                                                class="btn btn-outline-primary btn-sm replace-avatar-btn">
-                                                                📁 {% trans "Replace Avatar" %}
+                                                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                                                onclick="document.getElementById('avatar-input').click()">
+                                                                📁 {% trans "Change Avatar" %}
                                                             </button>
-                                                            <button type="button"
-                                                                class="btn btn-outline-danger btn-sm remove-avatar-btn">
+                                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                                id="remove-avatar-btn">
                                                                 ❌ {% trans "Remove" %}
                                                             </button>
                                                         </div>
                                                         <div class="avatar-upload-field" style="display: none;">
-                                                            {{ profile_form.avatar }}
-                                                            <div class="form-text mt-2">{% trans "Select new image (JPG,PNG, GIF, WebP, max. 5MB)" %}</div>
+                                                            <input type="file" name="avatar" id="avatar-input"
+                                                                class="form-control d-none"
+                                                                accept="image/jpeg,image/png,image/gif,image/webp"
+                                                                data-max-size="5242880">
                                                         </div>
                                                         <input type="hidden" name="avatar-clear" id="avatar-clear"
                                                             value="false">
@@ -114,16 +120,16 @@
                                                     {% else %}
                                                     <!-- For new avatar -->
                                                     <div class="new-avatar">
-                                                        {{ profile_form.avatar }}
-                                                        <div class="form-text mt-2">{% trans "Select image file (JPG,PNG, GIF, WebP, max. 5MB)" %}</div>
+                                                        <input type="file" name="avatar" id="avatar-input"
+                                                            class="form-control"
+                                                            accept="image/jpeg,image/png,image/gif,image/webp"
+                                                            data-max-size="5242880">
+                                                        <div class="form-text mt-2">{% trans "Select image file (JPG,
+                                                            PNG, GIF, WebP, max. 5MB)" %}</div>
                                                     </div>
                                                     {% endif %}
                                                 </div>
-                                                {% if profile_form.avatar.errors %}
-                                                <div class="text-danger small mt-1">
-                                                    {{ profile_form.avatar.errors.0 }}
-                                                </div>
-                                                {% endif %}
+                                                <div class="error-message text-danger small mt-1 d-none"></div>
                                                 <div class="form-text">{% trans "Recommended size: 150x150 px. Formats: JPG, PNG, GIF, WebP" %}</div>
                                             </div>
                                         </div>
@@ -167,10 +173,8 @@
                                                     {{ profile_form.city_search.errors.0 }}
                                                 </div>
                                                 {% endif %}
-                                                <div class="form-text">{% trans "Start typing city name and select from
-                                                    list" %}</div>
+                                                <div class="form-text">{% trans "Start typing city name and select from list" %}</div>
                                             </div>
-
                                             <!-- About Me -->
                                             <div class="col-12 mb-4">
                                                 <label for="{{ profile_form.bio.id_for_label }}"
@@ -218,7 +222,9 @@
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <h6 class="fw-bold text-danger">{% trans "Account Deletion" %}</h6>
-                                    <p class="text-muted small mb-0">{% trans "After account deletion, data recovery is impossible. All your products, orders and messages will be permanently deleted."%}</p>
+                                    <p class="text-muted small mb-0">{% trans "After account deletion, data recovery is
+                                        impossible. All your products, orders and messages will be permanently
+                                        deleted."%}</p>
                                 </div>
                                 <div class="col-md-4 text-md-end">
                                     <a href="{% url 'users:delete_account' %}" class="btn btn-outline-danger">
@@ -335,16 +341,37 @@
         color: #212529;
         font-weight: 500;
     }
+
+    /* Avatar preview animation */
+    #avatar-preview {
+        transition: opacity 0.3s ease;
+    }
+
+    .avatar-loading {
+        opacity: 0.5;
+        filter: blur(2px);
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Character counter for "About Me" field
+        // DOM Elements
+        const avatarInput = document.getElementById('avatar-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const defaultAvatar = document.getElementById('default-avatar');
+        const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+        const avatarClearInput = document.getElementById('avatar-clear');
+        const avatarButtons = document.getElementById('avatar-buttons');
+        const errorMessage = document.querySelector('.error-message');
         const bioField = document.getElementById('{{ profile_form.bio.id_for_label }}');
         const bioCounter = document.getElementById('bio-counter');
 
+        // Store original avatar URL for reset
+        const originalAvatarUrl = avatarPreview ? avatarPreview.getAttribute('data-current-avatar') : null;
+
+        // Character counter for "About Me" field
         if (bioField && bioCounter) {
-            function updateCounter() {
+            function updateBioCounter() {
                 const remaining = 500 - bioField.value.length;
                 bioCounter.textContent = `${remaining}`;
 
@@ -356,106 +383,148 @@
                 }
             }
 
-            bioField.addEventListener('input', updateCounter);
-            updateCounter(); // Initialize on load
+            bioField.addEventListener('input', updateBioCounter);
+            updateBioCounter(); // Initialize on load
         }
 
-        // Handlers for avatar
-        const replaceAvatarBtn = document.querySelector('.replace-avatar-btn');
-        const removeAvatarBtn = document.querySelector('.remove-avatar-btn');
-        const avatarUploadField = document.querySelector('.avatar-upload-field');
-        const avatarClearInput = document.getElementById('avatar-clear');
-        const avatarPreview = document.getElementById('avatar-preview');
-        const defaultAvatar = document.getElementById('default-avatar');
-        const avatarButtons = document.getElementById('avatar-buttons');
+        // Avatar input change handler
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                errorMessage.classList.add('d-none');
+                errorMessage.textContent = '';
 
-        if (replaceAvatarBtn) {
-            replaceAvatarBtn.addEventListener('click', function () {
-                if (avatarUploadField) {
-                    avatarUploadField.style.display = 'block';
+                if (!file) {
+                    resetAvatarPreview();
+                    return;
                 }
-                if (avatarButtons) {
-                    avatarButtons.style.display = 'none';
+
+                // File validation
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                const maxSize = parseInt(avatarInput.getAttribute('data-max-size')) || 5242880; // 5MB
+
+                if (!validTypes.includes(file.type)) {
+                    showError('{% trans "Unsupported file format. Use JPG, PNG, GIF or WebP." %}');
+                    resetAvatarPreview();
+                    return;
                 }
-                // Reset deletion flag when replacing
-                if (avatarClearInput) {
-                    avatarClearInput.value = 'false';
+
+                if (file.size > maxSize) {
+                    showError('{% trans "File size must not exceed 5MB." %}');
+                    resetAvatarPreview();
+                    return;
                 }
+
+                // Show loading state
+                if (avatarPreview) {
+                    avatarPreview.classList.add('avatar-loading');
+                }
+
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (avatarPreview) {
+                        avatarPreview.src = e.target.result;
+                        avatarPreview.classList.remove('d-none');
+                        avatarPreview.classList.remove('avatar-loading');
+
+                        if (defaultAvatar) {
+                            defaultAvatar.classList.add('d-none');
+                        }
+                    }
+
+                    // Clear removal flag if user selected new image after removing
+                    if (avatarClearInput) {
+                        avatarClearInput.value = 'false';
+                    }
+                };
+
+                reader.onerror = function () {
+                    showError('{% trans "Error reading file. Please try another image." %}');
+                    resetAvatarPreview();
+                };
+
+                reader.readAsDataURL(file);
             });
         }
 
+        // Remove avatar button handler
         if (removeAvatarBtn) {
             removeAvatarBtn.addEventListener('click', function () {
-                // Set flag for avatar deletion
                 if (avatarClearInput) {
                     avatarClearInput.value = 'true';
                 }
 
-                // Hide current avatar and show placeholder
-                if (avatarPreview) {
-                    avatarPreview.style.display = 'none';
-                }
-                if (defaultAvatar) {
-                    defaultAvatar.style.display = 'flex';
-                }
-
-                // Hide buttons
-                if (avatarButtons) {
-                    avatarButtons.style.display = 'none';
-                }
-
-                // Hide upload field if it was open
-                if (avatarUploadField) {
-                    avatarUploadField.style.display = 'none';
-                }
+                resetAvatarPreview();
 
                 // Show message
-                const message = document.createElement('div');
-                message.className = 'alert alert-info mt-2 small';
-                message.textContent = '{% trans "Avatar will be deleted after saving profile" %}';
-                this.closest('.existing-avatar').appendChild(message);
+                showInfoMessage('{% trans "Avatar will be removed after saving changes" %}', 'info');
             });
         }
 
-        // Preview for new avatar
-        const avatarInput = document.querySelector('input[type="file"][name="avatar"]');
-        if (avatarInput) {
-            avatarInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    // Reset deletion flag when selecting new file
-                    if (avatarClearInput) {
-                        avatarClearInput.value = 'false';
-                    }
-
-                    // File type validation
-                    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                    if (!validTypes.includes(file.type)) {
-                        alert('{% trans "Unsupported file format. Use JPG, PNG, GIF or WebP." %}');
-                        this.value = '';
-                        return;
-                    }
-
-                    // File size validation (5MB)
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('{% trans "File size must not exceed 5MB." %}');
-                        this.value = '';
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        if (avatarPreview) {
-                            avatarPreview.src = e.target.result;
-                            avatarPreview.style.display = 'block';
-                        }
-                        if (defaultAvatar) {
-                            defaultAvatar.style.display = 'none';
-                        }
-                    };
-                    reader.readAsDataURL(file);
+        // Helper functions
+        function resetAvatarPreview() {
+            if (avatarClearInput && avatarClearInput.value === 'true') {
+                // Avatar marked for removal
+                if (avatarPreview) {
+                    avatarPreview.classList.add('d-none');
                 }
-            });
+                if (defaultAvatar) {
+                    defaultAvatar.classList.remove('d-none');
+                }
+            } else if (originalAvatarUrl) {
+                // Reset to original avatar
+                if (avatarPreview) {
+                    avatarPreview.src = originalAvatarUrl;
+                    avatarPreview.classList.remove('d-none');
+                }
+                if (defaultAvatar) {
+                    defaultAvatar.classList.add('d-none');
+                }
+            } else {
+                // No original avatar
+                if (avatarPreview) {
+                    avatarPreview.classList.add('d-none');
+                }
+                if (defaultAvatar) {
+                    defaultAvatar.classList.remove('d-none');
+                }
+            }
+
+            // Reset file input
+            if (avatarInput) {
+                avatarInput.value = '';
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('d-none');
+            resetAvatarPreview();
+        }
+
+        function showInfoMessage(message, type = 'info') {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.avatar-message');
+            existingMessages.forEach(msg => msg.remove());
+
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type} mt-2 small avatar-message`;
+            messageDiv.textContent = message;
+
+            // Insert after avatar container
+            const avatarContainer = document.querySelector('.avatar-upload-container');
+            if (avatarContainer) {
+                avatarContainer.appendChild(messageDiv);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 5000);
+            }
         }
 
         // Autocomplete for cities
@@ -463,24 +532,40 @@
         const cityHiddenInput = document.getElementById('{{ profile_form.city.id_for_label }}');
 
         if (citySearchInput && cityHiddenInput) {
-            // When selecting from datalist, update hidden field
             citySearchInput.addEventListener('input', function () {
-                const selectedCity = this.value;
-                // Here you can add logic to search for city ID by name
-                // Leave empty for now as main logic will be on server side
+                // Logic for city autocomplete can be added here
             });
         }
 
-        // Form submission - additional validation
+        // Form submission validation
         const form = document.getElementById('profile-form');
         if (form) {
             form.addEventListener('submit', function (e) {
-                // Check if "About Me" field exceeds character limit
+                // Check "About Me" field character limit
                 if (bioField && bioField.value.length > 500) {
                     e.preventDefault();
-                    alert('{% trans "\"About Me\" field must not exceed 500 characters. Current: " %}' + bioField.value.length);
+                    showInfoMessage('{% trans "\"About Me\" field must not exceed 500 characters" %}', 'danger');
                     bioField.focus();
                     return false;
+                }
+
+                // Validate avatar file if selected
+                if (avatarInput && avatarInput.files.length > 0) {
+                    const file = avatarInput.files[0];
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    const maxSize = 5242880; // 5MB
+
+                    if (!validTypes.includes(file.type)) {
+                        e.preventDefault();
+                        showError('{% trans "Unsupported file format. Use JPG, PNG, GIF or WebP." %}');
+                        return false;
+                    }
+
+                    if (file.size > maxSize) {
+                        e.preventDefault();
+                        showError('{% trans "File size must not exceed 5MB." %}');
+                        return false;
+                    }
                 }
 
                 return true;
