@@ -120,7 +120,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
-'''# Database
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -140,23 +140,8 @@ CHANNEL_LAYERS = {
             "hosts": [("redis", 6379)],
         },
     },
-}'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
 }
 
-# Channels/Redis (локальный Redis)
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],  # Локальный Redis
-        },
-    },
-}
 # Sessions в Redis
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
