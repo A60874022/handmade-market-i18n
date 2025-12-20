@@ -147,8 +147,7 @@
                                 {% if dialogue.product %}
                                 {% url 'products:product_detail' dialogue.product.pk as product_url %}
                                 {% blocktrans with title=dialogue.product.title product_url=product_url %}
-                                Discussion about: <a href="{{ product_url }}" class="text-brown text-decoration-none">{{
-                                    title }}</a>
+                                Discussion about: <a href="{{ product_url }}" class="text-brown text-decoration-none">{{title }}</a>
                                 {% endblocktrans %}
                                 {% else %}
                                 <span class="text-warning">{% trans "Product no longer available" %}</span>
