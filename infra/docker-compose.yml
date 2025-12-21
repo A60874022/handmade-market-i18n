@@ -7,37 +7,43 @@ services:
     command: >
       sh -c "
       echo '⏳ Ожидание базы данных...' &&
-      sleep 15 &&
+      sleep 20 &&
+      echo '📦 Применение миграций...' &&
       python manage.py migrate --noinput &&
+      echo '🗃️  Сбор статических файлов...' &&
       python manage.py collectstatic --noinput --clear &&
       echo '🚀 Запуск Django...' &&
       daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
     volumes:
+      - ./static:/app/static  # Добавлено
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - ./logs:/app/logs
     expose:
       - "8000"
     env_file:
-      - .env  # Загружаем переменные из .env файла
+      - .env
     environment:
-      - DB_HOST=${DB_HOST}  # Используем переменные из .env
+      # Обязательные переменные
+      - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_URL=${REDIS_URL}
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      # Redis
+      - REDIS_URL=redis://redis:6379/0
+      # Email
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_USE_TLS=${EMAIL_USE_TLS}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
-      - SERVER_EMAIL=${SERVER_EMAIL}
+      - SERVER_EMAIL=${SERVER_EMAIL:-${DEFAULT_FROM_EMAIL}}  # Fallback
     depends_on:
       db:
         condition: service_healthy
@@ -50,8 +56,6 @@ services:
   db:
     image: postgres:15-alpine
     container_name: handmade_db
-    env_file:
-      - .env  # Загружаем переменные из .env файла
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -59,10 +63,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 30s
     restart: unless-stopped
     networks:
@@ -88,29 +92,12 @@ services:
     container_name: handmade_nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - certbot_webroot:/var/www/certbot
     depends_on:
       - web
-    restart: unless-stopped
-    networks:
-      - backend
-
-  certbot:
-    image: certbot/certbot:latest
-    container_name: handmade_certbot
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - certbot_webroot:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    depends_on:
-      - nginx
     restart: unless-stopped
     networks:
       - backend
@@ -120,7 +107,6 @@ volumes:
   redis_data:
   static_volume:
   media_volume:
-  certbot_webroot:
 
 networks:
   backend:
