@@ -1,41 +1,54 @@
 version: '3.8'
 
 services:
-  web:
-    image: anton60874022/ad_service:latest
-    container_name: handmade_web
-    command: >
-      sh -c "
-      python manage.py collectstatic --noinput --clear &&
-      daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
-    volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-      - ./logs:/app/logs  
-    expose:
-      - "8000"
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - redis
-    restart: unless-stopped
-    networks:
-      - backend
-
   db:
     image: postgres:14
     container_name: db
     env_file:
       - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    image: anton60874022/ad_service:latest
+    container_name: handmade_web
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      sleep 15 &&
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./logs:/app/logs
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      - redis
+    restart: unless-stopped
+    networks:
+      - backend
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
     container_name: redis
     restart: unless-stopped
     networks:
@@ -55,6 +68,17 @@ services:
       - certbot_webroot:/var/www/certbot
     depends_on:
       - web
+    restart: unless-stopped
+    networks:
+      - backend
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: handmade_certbot
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:rw
+      - certbot_webroot:/var/www/certbot:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: unless-stopped
     networks:
       - backend
