@@ -6,12 +6,18 @@ services:
     container_name: handmade_web
     command: >
       sh -c "
+      while ! nc -z db 5432; do
+        echo 'Waiting for database...';
+        sleep 2;
+      done;
+      echo 'Database is ready!';
       python manage.py collectstatic --noinput --clear &&
+      python manage.py migrate &&
       daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - ./logs:/app/logs  
+      - ./logs:/app/logs
     expose:
       - "8000"
     env_file:
@@ -24,22 +30,38 @@ services:
       - backend
 
   db:
-    image: postgres:latest
+    image: postgres:14
     container_name: db
     env_file:
       - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ad_service_db}
+      POSTGRES_USER: ${POSTGRES_USER:-ad_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ad_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ad_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
     container_name: redis
     restart: unless-stopped
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:1.21-alpine
@@ -48,13 +70,30 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt:ro # Хранилище сертификатов
+      - ./data/certbot/www:/var/www/certbot:rw # Каталог для веб-рут проверки
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - certbot_webroot:/var/www/certbot
+      - ./nginx/autoreload.sh:/docker-entrypoint.d/autoreload.sh # Скрипт автоперезагрузки
     depends_on:
       - web
+    restart: unless-stopped
+    networks:
+      - backend
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: handmade_certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt:rw # Основное хранилище
+      - ./data/certbot/www:/var/www/certbot:rw # Общий каталог для проверки
+    env_file:
+      - .env # Для переменных DOMAIN_URL и DOMAIN_EMAIL
+    depends_on:
+      - nginx
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: unless-stopped
     networks:
       - backend
@@ -63,7 +102,6 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-  certbot_webroot:
 
 networks:
   backend:
