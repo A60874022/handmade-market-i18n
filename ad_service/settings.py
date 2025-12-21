@@ -131,6 +131,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 
+
 # Database
 DATABASES = {
     "default": {
