@@ -16,7 +16,9 @@ class NotificationService:
             item_titles = ", ".join([item.product.title for item in master_items[:3]])
 
             if master_items.count() > 3:
-                item_titles += _(" and %(count)d more products") % {"count": master_items.count() - 3}
+                item_titles += _(" and %(count)d more products") % {
+                    "count": master_items.count() - 3
+                }
 
             total_for_master = sum(item.total_price for item in master_items)
 
@@ -28,8 +30,14 @@ class NotificationService:
                 user=master,
                 notification_type="new_order",
                 title=_("🎉 New order!"),
-                message=_("Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s RUB.") % 
-                {"email": order.customer.email, "items": item_titles, "total": total_for_master},
+                message=_(
+                    "Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s RUB."
+                )
+                % {
+                    "email": order.customer.email,
+                    "items": item_titles,
+                    "total": total_for_master,
+                },
                 action_url=f"/orders/sales/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,
@@ -58,10 +66,12 @@ class NotificationService:
 
             if existing_notification:
                 # Update existing notification
-                existing_notification.message = _('New message from %(email)s: %(text)s%(ellipsis)s') % {
+                existing_notification.message = _(
+                    "New message from %(email)s: %(text)s%(ellipsis)s"
+                ) % {
                     "email": sender.email,
                     "text": message_text[:100],
-                    "ellipsis": "..." if len(message_text) > 100 else ""
+                    "ellipsis": "..." if len(message_text) > 100 else "",
                 }
                 existing_notification.save()
             else:
@@ -70,10 +80,11 @@ class NotificationService:
                     user=recipient,
                     notification_type="new_message",
                     title=_("💬 New message"),
-                    message=_('%(email)s: %(text)s%(ellipsis)s') % {
+                    message=_("%(email)s: %(text)s%(ellipsis)s")
+                    % {
                         "email": sender.email,
                         "text": message_text[:100],
-                        "ellipsis": "..." if len(message_text) > 100 else ""
+                        "ellipsis": "..." if len(message_text) > 100 else "",
                     },
                     action_url=f"/chat/dialogue/{dialogue_id}/",
                     related_object_id=dialogue_id,
@@ -117,8 +128,8 @@ class NotificationService:
                 user=master,
                 notification_type="order_cancelled",
                 title=_("❌ Order cancelled"),
-                message=_("Customer %(email)s cancelled order #%(id)s") % 
-                {"email": customer.email, "id": order.id},
+                message=_("Customer %(email)s cancelled order #%(id)s")
+                % {"email": customer.email, "id": order.id},
                 action_url=f"/orders/sales/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,
@@ -140,8 +151,8 @@ class NotificationService:
                 user=order.customer,
                 notification_type="order_cancelled",
                 title=_("❌ Order cancelled by master"),
-                message=_("Master %(email)s cancelled your order #%(id)s") % 
-                {"email": master.email, "id": order.id},
+                message=_("Master %(email)s cancelled your order #%(id)s")
+                % {"email": master.email, "id": order.id},
                 action_url=f"/orders/purchases/",
                 related_object_id=order.id,
                 related_content_type=order_content_type,

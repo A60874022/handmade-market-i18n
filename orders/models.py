@@ -64,7 +64,10 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
-        return _("Order #%(id)s - %(email)s") % {"id": self.id, "email": self.customer.email}
+        return _("Order #%(id)s - %(email)s") % {
+            "id": self.id,
+            "email": self.customer.email,
+        }
 
     def update_total_amount(self):
         self.total_amount = sum(item.total_price for item in self.items.all())

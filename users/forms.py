@@ -1,5 +1,5 @@
-import re
 import os
+import re
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy as _
 
-from .models import Profile, User, City
+from .models import City, Profile, User
 
 
 def validate_password_no_russian(value):
@@ -317,7 +317,9 @@ class ProfileEditForm(forms.ModelForm):
         if city and not bio:
             self.add_warning(
                 "bio",
-                _("We recommend adding information about yourself for better profile presentation."),
+                _(
+                    "We recommend adding information about yourself for better profile presentation."
+                ),
             )
 
         return cleaned_data

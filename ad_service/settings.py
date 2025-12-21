@@ -4,8 +4,8 @@ Django settings for ad_service project.
 
 import os
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
 
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 
 # Загрузка переменных окружения из .env файла
@@ -18,7 +18,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-fallback-key-for-dev")
 DEBUG = True  # os.environ.get("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = ["mart.akatosphere.com", "www.mart.akatosphere.com", "72.56.82.4", "localhost"]
+ALLOWED_HOSTS = [
+    "mart.akatosphere.com",
+    "www.mart.akatosphere.com",
+    "72.56.82.4",
+    "localhost",
+]
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -48,8 +53,8 @@ INSTALLED_APPS = [
     "products",
     "orders",
     "channels",
-    'parler',
-    'rosetta', 
+    "parler",
+    "rosetta",
     "chat",
     "notifications",
     "pages",
@@ -59,7 +64,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware", 
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -96,17 +101,23 @@ AUTH_USER_MODEL = "users.User"
 # Parler settings
 PARLER_LANGUAGES = {
     None: (
-        {'code': 'en',},
-        {'code': 'fr',},
-        {'code': 'de',},
+        {
+            "code": "en",
+        },
+        {
+            "code": "fr",
+        },
+        {
+            "code": "de",
+        },
     ),
-    'default': {
-        'fallback': 'en',
-        'hide_untranslated': False,
-    }
+    "default": {
+        "fallback": "en",
+        "hide_untranslated": False,
+    },
 }
 
-PARLER_DEFAULT_LANGUAGE_CODE = 'en'
+PARLER_DEFAULT_LANGUAGE_CODE = "en"
 
 # Настройки для rosetta (только для разработки!)
 if DEBUG:
@@ -122,13 +133,13 @@ AUTHENTICATION_BACKENDS = [
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "postgres"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -151,11 +162,17 @@ SESSION_CACHE_ALIAS = "default"
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.timeweb.ru")  # Изменено значение по умолчанию
+EMAIL_HOST = os.environ.get(
+    "EMAIL_HOST", "smtp.timeweb.ru"
+)  # Изменено значение по умолчанию
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "mart@ktsf.ru")  # Изменено значение по умолчанию
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "3tG57p73D")  # Изменено значение по умолчанию
+EMAIL_HOST_USER = os.environ.get(
+    "EMAIL_HOST_USER", "mart@ktsf.ru"
+)  # Изменено значение по умолчанию
+EMAIL_HOST_PASSWORD = os.environ.get(
+    "EMAIL_HOST_PASSWORD", "3tG57p73D"
+)  # Изменено значение по умолчанию
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 SERVER_EMAIL = os.environ.get("SERVER_EMAIL", EMAIL_HOST_USER)
 
@@ -181,21 +198,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = "en"
 
 # Поддерживаемые языки
 LANGUAGES = [
-    ('en', _('English')),
-    ('fr', _('Français')),
-    ('de', _('Deutsch')),
+    ("en", _("English")),
+    ("fr", _("Français")),
+    ("de", _("Deutsch")),
 ]
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, "locale"),
 ]
 
 # Убрать дублирование TIME_ZONE - оставить только один раз
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
 USE_TZ = True
 

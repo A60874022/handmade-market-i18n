@@ -23,7 +23,7 @@ from .forms import (
     UserLoginForm,
     UserRegistrationForm,
 )
-from .models import User, City
+from .models import City, User
 from .services.email_service import email_service
 
 logger = logging.getLogger(__name__)
@@ -67,14 +67,14 @@ class RegisterView(CreateView):
             self.request.session["user_id_for_verification"] = user.id
             self.request.session["user_email"] = user.email
 
-            messages.success(
-                self.request, _("Verification code sent to your email.")
-            )
+            messages.success(self.request, _("Verification code sent to your email."))
             return redirect(self.success_url)
 
         except Exception as e:
             logger.error("Error during user registration: %s", str(e), exc_info=True)
-            messages.error(self.request, _("Error during registration. Please try again later."))
+            messages.error(
+                self.request, _("Error during registration. Please try again later.")
+            )
             return self.form_invalid(form)
 
     def form_invalid(self, form):
@@ -187,9 +187,7 @@ class ResendVerificationCodeView(View):
             user_id = request.session.get("user_id_for_verification")
 
             if not user_id:
-                messages.error(
-                    request, _("Session expired. Please register again.")
-                )
+                messages.error(request, _("Session expired. Please register again."))
                 return redirect("users:register")
 
             user = User.objects.get(id=user_id)
@@ -292,7 +290,9 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
     def form_valid(self, form):
         try:
-            messages.success(self.request, _("Your password has been successfully reset!"))
+            messages.success(
+                self.request, _("Your password has been successfully reset!")
+            )
             logger.info("Password reset successfully for user")
             return super().form_valid(form)
         except Exception as e:
@@ -437,7 +437,9 @@ def delete_account(request):
 
                 messages.success(
                     request,
-                    _(f"Account {user_email} has been successfully deleted. We're sorry to see you go!"),
+                    _(
+                        f"Account {user_email} has been successfully deleted. We're sorry to see you go!"
+                    ),
                 )
                 logger.info("Account deleted successfully: %s", user_email)
                 return redirect("home")

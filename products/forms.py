@@ -42,13 +42,17 @@ class ProductForm(forms.ModelForm):
         self.fields["title"].validators.append(
             RegexValidator(
                 regex="^[a-zA-Z0-9\s\-\!\.\(\)]+$",
-                message=_("Title must contain only Latin characters, numbers and spaces"),
+                message=_(
+                    "Title must contain only Latin characters, numbers and spaces"
+                ),
             )
         )
         self.fields["description"].validators.append(
             RegexValidator(
                 regex="^[a-zA-Z0-9\s\-\!\.\(\)\,\:\;]+$",
-                message=_("Description must contain only Latin characters, numbers and punctuation"),
+                message=_(
+                    "Description must contain only Latin characters, numbers and punctuation"
+                ),
             )
         )
 
@@ -83,7 +87,9 @@ class ProductForm(forms.ModelForm):
         description = self.cleaned_data.get("description")
         if description:
             if len(description) > 300:
-                raise forms.ValidationError(_("Description cannot exceed 300 characters"))
+                raise forms.ValidationError(
+                    _("Description cannot exceed 300 characters")
+                )
         return description
 
 

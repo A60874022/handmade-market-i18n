@@ -9,11 +9,10 @@ import logging
 from typing import Any, Dict, Optional
 
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
 # users/management/commands/load_categories.py
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
+
 from products.models import Category
 
 
@@ -16,7 +17,6 @@ class Command(BaseCommand):
             "Home decor",
             "Leather goods",
             "Handmade cosmetics",
-            
             # German categories
             "Schmuck",
             "Strickwaren",
@@ -24,7 +24,6 @@ class Command(BaseCommand):
             "Wohndeko",
             "Lederwaren",
             "Handgemachte Kosmetik",
-            
             # French categories
             "Bijoux",
             "Articles tricotés",

@@ -63,11 +63,14 @@ def add_to_cart(request, pk):
             cart_item.save()
             messages.success(
                 request,
-                _('Quantity of product "%(title)s" increased to %(quantity)d') % 
-                {"title": product.title, "quantity": cart_item.quantity},
+                _('Quantity of product "%(title)s" increased to %(quantity)d')
+                % {"title": product.title, "quantity": cart_item.quantity},
             )
         else:
-            messages.success(request, _('Product "%(title)s" added to cart!') % {"title": product.title})
+            messages.success(
+                request,
+                _('Product "%(title)s" added to cart!') % {"title": product.title},
+            )
 
         return redirect("orders:cart_view")
 
@@ -121,7 +124,10 @@ def remove_from_cart(request, item_id):
         product_title = cart_item.product.title
         cart_item.delete()
 
-        messages.success(request, _('Product "%(title)s" removed from cart') % {"title": product_title})
+        messages.success(
+            request,
+            _('Product "%(title)s" removed from cart') % {"title": product_title},
+        )
         return redirect("orders:cart_view")
 
     except Exception as e:
@@ -147,7 +153,7 @@ def create_order(request):
         if not cart_items:
             messages.error(request, _("Your cart is empty"))
             return redirect("orders:cart_view")
-        
+
         own_products_removed = False
         items_to_remove = []
 
@@ -155,7 +161,9 @@ def create_order(request):
             # Check that product is active
             if not item.product.is_active:
                 messages.error(
-                    request, _('Product "%(title)s" is no longer available') % {"title": item.product.title}
+                    request,
+                    _('Product "%(title)s" is no longer available')
+                    % {"title": item.product.title},
                 )
                 return redirect("orders:cart_view")
 
@@ -176,16 +184,20 @@ def create_order(request):
             if own_products_removed:
                 messages.error(
                     request,
-                    _("You cannot buy your own products. These products have been removed from cart."),
+                    _(
+                        "You cannot buy your own products. These products have been removed from cart."
+                    ),
                 )
             else:
                 messages.error(request, _("Your cart is empty"))
             return redirect("orders:cart_view")
-        
+
         if own_products_removed:
             messages.warning(
                 request,
-                _("Your own products have been removed from cart before order placement."),
+                _(
+                    "Your own products have been removed from cart before order placement."
+                ),
             )
 
         order = Order.objects.create(customer=request.user, status=_("placed"))
@@ -223,8 +235,9 @@ def create_order(request):
         )
 
         messages.success(
-            request, _("Order #%(id)s successfully placed! Amount: %(amount)s RUB") % 
-            {"id": order.id, "amount": total_amount}
+            request,
+            _("Order #%(id)s successfully placed! Amount: %(amount)s RUB")
+            % {"id": order.id, "amount": total_amount},
         )
         return redirect("orders:purchase_orders")
 
@@ -235,7 +248,9 @@ def create_order(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, _("Error creating order: %(error)s") % {"error": str(e)})
+        messages.error(
+            request, _("Error creating order: %(error)s") % {"error": str(e)}
+        )
         return redirect("orders:cart_view")
 
 
@@ -335,7 +350,9 @@ def delete_order(request, order_id):
             request.user.id,
         )
 
-        messages.success(request, _("Order #%(id)s successfully deleted.") % {"id": order_id_val})
+        messages.success(
+            request, _("Order #%(id)s successfully deleted.") % {"id": order_id_val}
+        )
 
     except Order.DoesNotExist:
         logger.error(
@@ -343,7 +360,9 @@ def delete_order(request, order_id):
             order_id,
             request.user.id,
         )
-        messages.error(request, _("Order not found or you don't have permission to delete it."))
+        messages.error(
+            request, _("Order not found or you don't have permission to delete it.")
+        )
     except Exception as e:
         logger.error(
             "Error deleting order %s by user %s: %s",
@@ -352,7 +371,9 @@ def delete_order(request, order_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, _("Error deleting order: %(error)s") % {"error": str(e)})
+        messages.error(
+            request, _("Error deleting order: %(error)s") % {"error": str(e)}
+        )
 
     return redirect("orders:purchase_orders")
 
@@ -395,7 +416,10 @@ def delete_sale_order(request, order_id):
             request.user.id,
         )
 
-        messages.success(request, _("Order #%(id)s has been successfully deleted.") % {"id": order_id_val})
+        messages.success(
+            request,
+            _("Order #%(id)s has been successfully deleted.") % {"id": order_id_val},
+        )
 
     except Order.DoesNotExist:
         logger.error(
@@ -412,6 +436,9 @@ def delete_sale_order(request, order_id):
             str(e),
             exc_info=True,
         )
-        messages.error(request, _("An error occurred while deleting order: %(error)s") % {"error": str(e)})
+        messages.error(
+            request,
+            _("An error occurred while deleting order: %(error)s") % {"error": str(e)},
+        )
 
     return redirect("orders:sale_orders")

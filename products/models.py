@@ -48,7 +48,9 @@ class Product(models.Model):
         validators=[
             RegexValidator(
                 regex="^[a-zA-Z0-9\s\-\!\.\(\)]+$",
-                message=_("Title must contain only Latin characters, numbers and spaces"),
+                message=_(
+                    "Title must contain only Latin characters, numbers and spaces"
+                ),
             )
         ],
     )
@@ -58,7 +60,9 @@ class Product(models.Model):
         validators=[
             RegexValidator(
                 regex="^[a-zA-Z0-9\s\-\!\.\(\)\,\:\;]+$",
-                message=_("Description must contain only Latin characters, numbers and punctuation"),
+                message=_(
+                    "Description must contain only Latin characters, numbers and punctuation"
+                ),
             )
         ],
     )
@@ -69,7 +73,9 @@ class Product(models.Model):
         validators=[
             MinValueValidator(1, message=_("Price must be at least 1 ruble")),
             MaxValueValidator(
-                MAX_PRICE, message=_("Price cannot exceed %(max_price)s rubles") % {"max_price": f"{MAX_PRICE:,}"}
+                MAX_PRICE,
+                message=_("Price cannot exceed %(max_price)s rubles")
+                % {"max_price": f"{MAX_PRICE:,}"},
             ),
         ],
     )

@@ -39,7 +39,7 @@ class Notification(models.Model):
     def __str__(self):
         return _("%(type)s for %(email)s") % {
             "type": self.get_notification_type_display(),
-            "email": self.user.email
+            "email": self.user.email,
         }
 
     def mark_as_read(self):

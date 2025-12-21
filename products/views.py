@@ -37,7 +37,9 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         if not hasattr(request.user, "profile") or not request.user.profile.city:
             messages.warning(
                 request,
-                _("⚠️ Please specify your city in your profile before creating a product."),
+                _(
+                    "⚠️ Please specify your city in your profile before creating a product."
+                ),
             )
             return redirect("users:edit_profile")
         return super().dispatch(request, *args, **kwargs)
@@ -70,7 +72,9 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                             for field, errors in form.errors.items():
                                 for error in errors:
                                     messages.error(
-                                        self.request, _("Error in image: %(error)s") % {"error": error}
+                                        self.request,
+                                        _("Error in image: %(error)s")
+                                        % {"error": error},
                                     )
 
             messages.success(self.request, _("✅ Product successfully created!"))
@@ -146,7 +150,9 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                             for field, errors in form.errors.items():
                                 for error in errors:
                                     messages.error(
-                                        self.request, _("Error in image: %(error)s") % {"error": error}
+                                        self.request,
+                                        _("Error in image: %(error)s")
+                                        % {"error": error},
                                     )
                     return self.form_invalid(form)
 
@@ -198,11 +204,13 @@ class ProductListView(LoginRequiredMixin, ListView):
         return Product.objects.filter(master=self.request.user).order_by("-created_at")
 
 
-from django.views.generic import ListView
-from django.db.models import Q
 import logging
 
+from django.db.models import Q
+from django.views.generic import ListView
+
 logger = logging.getLogger(__name__)
+
 
 class ProductCatalogView(ListView):
     model = Product
@@ -212,10 +220,9 @@ class ProductCatalogView(ListView):
 
     def get_queryset(self):
         try:
-            qs = (
-                Product.objects.filter(is_active=True, is_approved=True)
-                .select_related("master", "category", "master__profile__city")
-            )
+            qs = Product.objects.filter(
+                is_active=True, is_approved=True
+            ).select_related("master", "category", "master__profile__city")
 
             # Filter by category (robust: use category__slug)
             category_slug = self.request.GET.get("category")
@@ -235,7 +242,9 @@ class ProductCatalogView(ListView):
                     qs = qs.filter(master__profile__city_id=city_id)
                 except (ValueError, TypeError):
                     # если пришло не число — игнорируем фильтр
-                    logger.debug("Invalid city id provided for filtering: %r", city_value)
+                    logger.debug(
+                        "Invalid city id provided for filtering: %r", city_value
+                    )
 
             return qs.order_by("-created_at")
 
@@ -347,9 +356,16 @@ def add_to_favorites(request, pk):
         )
 
         if created:
-            messages.success(request, _('Product "%(title)s" added to favorites') % {"title": product.title})
+            messages.success(
+                request,
+                _('Product "%(title)s" added to favorites') % {"title": product.title},
+            )
         else:
-            messages.info(request, _('Product "%(title)s" is already in favorites') % {"title": product.title})
+            messages.info(
+                request,
+                _('Product "%(title)s" is already in favorites')
+                % {"title": product.title},
+            )
 
         return redirect(request.META.get("HTTP_REFERER", "catalog"))
 
@@ -373,7 +389,10 @@ def remove_from_favorites(request, pk):
         product_title = favorite.product.title
         favorite.delete()
 
-        messages.success(request, _('Product "%(title)s" removed from favorites') % {"title": product_title})
+        messages.success(
+            request,
+            _('Product "%(title)s" removed from favorites') % {"title": product_title},
+        )
         return redirect(f"{reverse('products:profile')}?tab=favorites")
 
     except Exception as e:
@@ -397,7 +416,10 @@ def remove_from_favorites_by_product(request, pk):
         product_title = favorite.product.title
         favorite.delete()
 
-        messages.success(request, _('Product "%(title)s" removed from favorites') % {"title": product_title})
+        messages.success(
+            request,
+            _('Product "%(title)s" removed from favorites') % {"title": product_title},
+        )
         return redirect(request.META.get("HTTP_REFERER", "products:catalog"))
 
     except Exception as e:

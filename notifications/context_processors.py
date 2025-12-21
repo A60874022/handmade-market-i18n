@@ -10,7 +10,9 @@ def notifications_context(request):
     if request.user.is_authenticated:
         unread_notifications = Notification.objects.filter(
             user=request.user, is_read=False
-        ).order_by("-created_at")[:5]  # Last 5 unread
+        ).order_by("-created_at")[
+            :5
+        ]  # Last 5 unread
 
         unread_count = Notification.objects.filter(
             user=request.user, is_read=False

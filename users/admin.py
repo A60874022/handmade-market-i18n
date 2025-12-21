@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from .models import Profile, User, City
+from .models import City, Profile, User
 
 
 @admin.register(City)

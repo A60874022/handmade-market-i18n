@@ -1,9 +1,9 @@
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
-from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import set_language
 
 # URL-паттерны БЕЗ префикса языка
@@ -17,6 +17,7 @@ urlpatterns = [
 # Добавляем Rosetta только в режиме разработки
 if settings.DEBUG:
     from rosetta.urls import urlpatterns as rosetta_urls
+
     urlpatterns += [path("rosetta/", include(rosetta_urls))]
 
 # URL-паттерны С префиксом языка (для каталога, заказов и т.д.)

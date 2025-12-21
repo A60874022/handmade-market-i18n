@@ -116,9 +116,7 @@ def validate_image_extension(value):
             _("TIFF format is not supported. Use JPG, PNG, GIF or WebP.")
         )
     if ext not in valid_extensions:
-        raise ValidationError(
-            _("Unsupported file format. Use JPG, PNG, GIF or WebP.")
-        )
+        raise ValidationError(_("Unsupported file format. Use JPG, PNG, GIF or WebP."))
 
 
 def validate_image_size(value):
@@ -126,8 +124,8 @@ def validate_image_size(value):
     max_size = 5 * 1024 * 1024  # 5MB
     if value.size > max_size:
         raise ValidationError(
-            _("File size must not exceed 5MB. Current size: %(size)sKB") % 
-            {"size": value.size // 1024}
+            _("File size must not exceed 5MB. Current size: %(size)sKB")
+            % {"size": value.size // 1024}
         )
 
 
@@ -141,12 +139,16 @@ class City(models.Model):
         validators=[
             RegexValidator(
                 regex=r"^[a-zA-ZÀ-ÿÆæŒœß\s\-']+$",
-                message=_("City name can contain Latin letters (including German and French characters with accents), spaces, hyphens and apostrophes"),
+                message=_(
+                    "City name can contain Latin letters (including German and French characters with accents), spaces, hyphens and apostrophes"
+                ),
             )
         ],
     )
     region = models.CharField(max_length=150, blank=True, verbose_name=_("Region"))
-    country = models.CharField(max_length=100, default=_("Russia"), verbose_name=_("Country"))
+    country = models.CharField(
+        max_length=100, default=_("Russia"), verbose_name=_("Country")
+    )
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
