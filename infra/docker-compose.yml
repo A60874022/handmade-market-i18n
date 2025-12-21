@@ -95,7 +95,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./logs:/var/log/nginx
+      - ./logs/nginx:/var/log/nginx
     depends_on:
       - web
     restart: unless-stopped
