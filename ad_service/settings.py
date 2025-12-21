@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-fallback-key-for-dev")
-DEBUG = True  # os.environ.get("DEBUG", "False").lower() == "true"
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 ALLOWED_HOSTS = [
     "mart.akatosphere.com",
     "www.mart.akatosphere.com",
@@ -162,17 +162,11 @@ SESSION_CACHE_ALIAS = "default"
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.environ.get(
-    "EMAIL_HOST", "smtp.timeweb.ru"
-)  # Изменено значение по умолчанию
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
-EMAIL_HOST_USER = os.environ.get(
-    "EMAIL_HOST_USER", "mart@ktsf.ru"
-)  # Изменено значение по умолчанию
-EMAIL_HOST_PASSWORD = os.environ.get(
-    "EMAIL_HOST_PASSWORD", "3tG57p73D"
-)  # Изменено значение по умолчанию
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 SERVER_EMAIL = os.environ.get("SERVER_EMAIL", EMAIL_HOST_USER)
 
@@ -211,7 +205,6 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, "locale"),
 ]
 
-# Убрать дублирование TIME_ZONE - оставить только один раз
 TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
 USE_TZ = True
