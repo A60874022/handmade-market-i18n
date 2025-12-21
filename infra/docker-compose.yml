@@ -42,7 +42,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      - redis
     restart: unless-stopped
     networks:
       - backend
