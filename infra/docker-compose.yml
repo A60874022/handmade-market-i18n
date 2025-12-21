@@ -6,7 +6,7 @@ services:
     container_name: handmade_web
     command: >
       sh -c "
-      while ! nc -z db 5432; do
+      while ! python -c 'import socket; socket.create_connection((\"db\", 5432), timeout=2)' 2>/dev/null; do
         echo 'Waiting for database...';
         sleep 2;
       done;
