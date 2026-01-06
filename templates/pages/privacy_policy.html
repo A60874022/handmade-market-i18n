@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% block title %}{% trans "Privacy Policy" %} | HandmadeMarket{% endblock %}
 {% block content %}
 <div class="container mt-4">
@@ -11,130 +12,368 @@
 
                     <!-- Вводный текст -->
                     <p class="text-muted"><small>{% trans "Last updated: December 4, 2025" %}</small></p>
-                    <p>{% trans "This Privacy Policy and Personal Data Processing (hereinafter - 'Policy') defines the
-                        procedure for the work of the online store 'HandmadeMarket' (hereinafter - 'Site', 'We') with
-                        information, including personal data of Users (hereinafter - 'You'), which we receive in the
-                        process of your use of the Site and its services." %}</p>
-                    <p class="alert alert-warning"><strong>{% trans "Attention:" %}</strong> {% trans "By using the
-                        Site, you express your consent to the terms of this Policy. If you do not agree with these
-                        terms, please do not use the Site." %}</p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        This Privacy Policy and Personal Data Processing (hereinafter - 'Policy') defines the procedure
+                        for the work of the online store 'HandmadeMarket' (hereinafter - 'Site', 'We') with information,
+                        including personal data of Users (hereinafter - 'You'), which we receive in the process of your
+                        use of the Site and its services.
+                        {% endblocktrans %}
+                    </p>
+
+                    <p class="alert alert-warning">
+                        <strong>{% trans "Attention:" %}</strong>
+                        {% blocktrans trimmed %}
+                        By using the Site, you express your consent to the terms of this Policy. If you do not agree
+                        with these terms, please do not use the Site.
+                        {% endblocktrans %}
+                    </p>
 
                     <!-- Основное содержание политики -->
                     <h3 class="mt-5 mb-3">1. {% trans "Personal data operator" %}</h3>
-                    <p>{% trans "The operator organizing and carrying out the processing of your personal data is
-                        [Specify the full name of the individual entrepreneur or LLC, TIN, actual address] (hereinafter
-                        - 'Operator')." %}</p>
-                    <p>{% trans "For questions related to the processing of your data, you can contact us by email:
-                        <strong>[specify contact email]</strong>." %}</p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        The operator organizing and carrying out the processing of your personal data is
+                        [Specify the full name of the individual entrepreneur or LLC, TIN, actual address]
+                        (hereinafter - 'Operator').
+                        {% endblocktrans %}
+                    </p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        For questions related to the processing of your data, you can contact us by email:
+                        <strong>[specify contact email]</strong>.
+                        {% endblocktrans %}
+                    </p>
 
                     <h3 class="mt-5 mb-3">2. {% trans "What data we process" %}</h3>
+
                     <p>{% trans "We process the following categories of data:" %}</p>
+
                     <ul>
-                        <li><strong>{% trans "Data provided by you:" %}</strong> {% trans "Last name, first name,
-                            patronymic, contact phone number, email address, mailing address for delivery, payment data
-                            for the order (for example, card details, which are processed by the payment aggregator), as
-                            well as any other information that you voluntarily leave on the Site." %}</li>
-                        <li><strong>{% trans "Automatically collected data:" %}</strong> {% trans "When visiting the
-                            Site, our servers automatically save technical information such as your IP address, browser
-                            type, cookie data, access time, requested page addresses. This data is anonymized and used
-                            for performance analysis, identifying technical problems and collecting visit statistics."
-                            %}</li>
+                        <li>
+                            <strong>{% trans "Data provided by you:" %}</strong>
+                            {% blocktrans trimmed %}
+                            Last name, first name, patronymic, contact phone number, email address, mailing address
+                            for delivery, payment data for the order (for example, card details, which are processed
+                            by the payment aggregator), as well as any other information that you voluntarily leave
+                            on the Site.
+                            {% endblocktrans %}
+                        </li>
+
+                        <li>
+                            <strong>{% trans "Automatically collected data:" %}</strong>
+                            {% blocktrans trimmed %}
+                            When visiting the Site, our servers automatically save technical information such as your
+                            IP address, browser type, cookie data, access time, requested page addresses. This data is
+                            anonymized and used for performance analysis, identifying technical problems and collecting
+                            visit statistics.
+                            {% endblocktrans %}
+                        </li>
                     </ul>
 
                     <h3 class="mt-5 mb-3">3. {% trans "Data processing purposes" %}</h3>
+
                     <p>{% trans "We use your data exclusively for lawful purposes:" %}</p>
+
                     <ul>
                         <li>{% trans "Registration of your account and its maintenance." %}</li>
                         <li>{% trans "Processing, fulfillment, delivery of your order and informing about its status."
                             %}</li>
                         <li>{% trans "Providing customer support, responding to your inquiries." %}</li>
-                        <li>{% trans "Informing you about news, promotions and special offers of the Site (only with
-                            your consent)." %}</li>
+
+                        <li>
+                            {% blocktrans trimmed %}
+                            Informing you about news, promotions and special offers of the Site (only with your
+                            consent).
+                            {% endblocktrans %}
+                        </li>
+
                         <li>{% trans "Conducting internal analysis and improving the quality of our services." %}</li>
                         <li>{% trans "Protection against fraudulent activities and ensuring Site security." %}</li>
                     </ul>
 
                     <h3 class="mt-5 mb-3">4. {% trans "Data transfer to third parties" %}</h3>
+
                     <p>{% trans "We undertake not to disclose your personal data, except in the following cases:" %}</p>
+
                     <ul>
-                        <li><strong>{% trans "Contractors:" %}</strong> {% trans "We may transfer the minimally
-                            necessary volume of data to our partners to provide services (for example, courier services
-                            for order delivery, payment systems for payment processing, email distribution services).
-                            All such partners undertake to ensure data security." %}</li>
-                        <li><strong>{% trans "By law requirement:" %}</strong> {% trans "We are obliged to provide
-                            information to authorized state bodies of the Russian Federation upon their lawful requests
-                            in accordance with the established procedure." %}</li>
-                        <li><strong>{% trans "With your consent:" %}</strong> {% trans "In other cases, we transfer data
-                            only with your explicit consent." %}</li>
+                        <li>
+                            <strong>{% trans "Contractors:" %}</strong>
+                            {% blocktrans trimmed %}
+                            We may transfer the minimally necessary volume of data to our partners to provide services
+                            (for example, courier services for order delivery, payment systems for payment processing,
+                            email distribution services). All such partners undertake to ensure data security.
+                            {% endblocktrans %}
+                        </li>
+
+                        <li>
+                            <strong>{% trans "By law requirement:" %}</strong>
+                            {% blocktrans trimmed %}
+                            We are obliged to provide information to authorized state bodies of the Russian Federation
+                            upon their lawful requests in accordance with the established procedure.
+                            {% endblocktrans %}
+                        </li>
+
+                        <li>
+                            <strong>{% trans "With your consent:" %}</strong>
+                            {% trans "In other cases, we transfer data only with your explicit consent." %}
+                        </li>
                     </ul>
 
                     <h3 class="mt-5 mb-3">5. {% trans "Data storage and protection" %}</h3>
-                    <p>{% trans "We store personal data until the processing purposes are achieved or until you withdraw
-                        your consent. To protect data, we take necessary and sufficient organizational and technical
-                        measures, including the use of secure data transfer protocols, to prevent unauthorized access,
-                        destruction or alteration of your information." %}</p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        We store personal data until the processing purposes are achieved or until you withdraw your
+                        consent. To protect data, we take necessary and sufficient organizational and technical
+                        measures,
+                        including the use of secure data transfer protocols, to prevent unauthorized access, destruction
+                        or alteration of your information.
+                        {% endblocktrans %}
+                    </p>
 
                     <h3 class="mt-5 mb-3">6. {% trans "Your rights" %}</h3>
-                    <p>{% trans "You have the right:" %}
+
+                    <p>{% trans "You have the right:" %}</p>
+
                     <ul>
                         <li>{% trans "Receive information about the processing of your personal data." %}</li>
-                        <li>{% trans "Require clarification, blocking or destruction of your data if they are
-                            incomplete, outdated, inaccurate or processed illegally." %}</li>
-                        <li><strong>{% trans "Withdraw consent to the processing of personal data." %}</strong> {% trans
-                            "To do this, you need to send us an official written request to the contact details
-                            specified in section 1. Withdrawal of consent leads to termination of services to you on the
-                            Site, if data processing was necessary for them." %}</li>
+
+                        <li>
+                            {% blocktrans trimmed %}
+                            Require clarification, blocking or destruction of your data if they are incomplete,
+                            outdated,
+                            inaccurate or processed illegally.
+                            {% endblocktrans %}
+                        </li>
+
+                        <li>
+                            <strong>{% trans "Withdraw consent to the processing of personal data." %}</strong>
+                            {% blocktrans trimmed %}
+                            To do this, you need to send us an official written request to the contact details specified
+                            in section 1. Withdrawal of consent leads to termination of services to you on the Site,
+                            if data processing was necessary for them.
+                            {% endblocktrans %}
+                        </li>
                     </ul>
 
                     <h3 class="mt-5 mb-3">7. {% trans "Use of cookies" %}</h3>
-                    <p>{% trans "The Site uses cookies and similar technologies for:" %}
+
+                    <p>{% trans "The Site uses cookies and similar technologies for:" %}</p>
+
                     <ul>
-                        <li>{% trans "Ensuring the correct operation of the Site's functions (for example, saving
-                            products in the cart)." %}</li>
-                        <li>{% trans "Analyzing traffic and behavior on the Site using Yandex.Metrica, Google Analytics
-                            and other services to improve our service." %}</li>
+                        <li>
+                            {% blocktrans trimmed %}
+                            Ensuring the correct operation of the Site's functions (for example, saving products in the
+                            cart).
+                            {% endblocktrans %}
+                        </li>
+
+                        <li>
+                            {% blocktrans trimmed %}
+                            Analyzing traffic and behavior on the Site using Yandex.Metrica, Google Analytics and other
+                            services to improve our service.
+                            {% endblocktrans %}
+                        </li>
+
                         <li>{% trans "Personalizing content (for example, showing recommended products)." %}</li>
                     </ul>
-                    <p>{% trans "You can manage cookie settings through your browser, however disabling some files may
-                        lead to incorrect operation of the Site. On your first visit to the Site, you will be prompted
-                        to make a decision about using cookies." %}</p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        You can manage cookie settings through your browser, however disabling some files may lead to
+                        incorrect operation of the Site. On your first visit to the Site, you will be prompted to make
+                        a decision about using cookies.
+                        {% endblocktrans %}
+                    </p>
 
                     <h3 class="mt-5 mb-3">8. {% trans "Final provisions" %}</h3>
-                    <p>{% trans "We reserve the right to unilaterally make changes to this Policy. The current version
-                        is always available on this page. When making significant changes, we will notify you by
-                        available means, for example, through the site or by email." %}</p>
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        We reserve the right to unilaterally make changes to this Policy. The current version is always
+                        available on this page. When making significant changes, we will notify you by available means,
+                        for example, through the site or by email.
+                        {% endblocktrans %}
+                    </p>
+
                     <hr class="my-5">
 
                     <!-- Блок согласия (для интеграции в формы) -->
                     <h2 class="fw-bold mb-4">📄 {% trans "Consent to personal data processing" %}</h2>
-                    <p>{% trans "Below is the text of consent that the user accepts during registration, order placement
-                        or subscription to the newsletter. This block should be accompanied by a separate checkbox." %}
+
+                    <p>
+                        {% blocktrans trimmed %}
+                        Below is the text of consent that the user accepts during registration, order placement or
+                        subscription to the newsletter. This block should be accompanied by a separate checkbox.
+                        {% endblocktrans %}
                     </p>
 
                     <div class="border rounded p-4 bg-light">
                         <p><strong>{% trans "Text for checkbox:" %}</strong></p>
-                        <p>{% trans "«I, acting freely, by my own will and in my interest, hereby confirm my consent to
-                            the Operator - [Specify the full name of the individual entrepreneur or LLC], to process my
-                            personal data provided during registration or order placement on the Site, including last
-                            name, first name, contact phone number, email and mailing address." %}</p>
-                        <p>{% trans "Consent is given for the purposes of fulfilling the sales contract (processing my
-                            order), delivering goods, providing customer support, as well as for receiving information
-                            about news and promotions of the Site." %}</p>
-                        <p>{% trans "I agree that the processing of my personal data may include the following actions:
-                            collection, recording, systematization, accumulation, storage, clarification (update,
-                            change), extraction, use, transfer (to courier services, payment systems), anonymization,
-                            blocking, deletion, destruction." %}</p>
-                        <p>{% trans "This consent is valid until I revoke it by sending an appropriate written
-                            application to the Operator at the contacts specified in the Privacy Policy.»" %}</p>
+
+                        <div class="privacy-consent-text mb-4">
+                            <p>
+                                {% blocktrans trimmed %}
+                                «I, acting freely, by my own will and in my interest, hereby confirm my consent to the
+                                Operator -
+                                [Specify the full name of the individual entrepreneur or LLC], to process my personal
+                                data
+                                provided during registration or order placement on the Site, including last name, first
+                                name,
+                                contact phone number, email and mailing address.
+                                {% endblocktrans %}
+                            </p>
+
+                            <p>
+                                {% blocktrans trimmed %}
+                                Consent is given for the purposes of fulfilling the sales contract (processing my
+                                order),
+                                delivering goods, providing customer support, as well as for receiving information about
+                                news
+                                and promotions of the Site.
+                                {% endblocktrans %}
+                            </p>
+
+                            <p>
+                                {% blocktrans trimmed %}
+                                I agree that the processing of my personal data may include the following actions:
+                                collection,
+                                recording, systematization, accumulation, storage, clarification (update, change),
+                                extraction,
+                                use, transfer (to courier services, payment systems), anonymization, blocking, deletion,
+                                destruction.
+                                {% endblocktrans %}
+                            </p>
+
+                            <p>
+                                {% blocktrans trimmed %}
+                                This consent is valid until I revoke it by sending an appropriate written application to
+                                the
+                                Operator at the contacts specified in the Privacy Policy.»
+                                {% endblocktrans %}
+                            </p>
+                        </div>
+
+                        <!-- Чекбокс согласия -->
+                        <div class="consent-checkbox mt-4">
+                            <form id="privacyConsentForm">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="privacyConsentCheckbox"
+                                        style="width: 20px; height: 20px;">
+                                    <label class="form-check-label ms-2" for="privacyConsentCheckbox">
+                                        <strong>
+                                            {% blocktrans trimmed %}
+                                            I have read and agree to the Privacy Policy and consent to the processing of
+                                            my personal data
+                                            {% endblocktrans %}
+                                        </strong>
+                                    </label>
+                                </div>
+
+                                <!-- Кнопка для подтверждения (можно использовать в формах) -->
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-success" id="confirmConsentBtn" disabled>
+                                        <i class="fas fa-check-circle me-2"></i>{% trans "Confirm Consent" %}
+                                    </button>
+                                    <small class="d-block text-muted mt-2">
+                                        {% blocktrans trimmed %}
+                                        This checkbox is required to proceed with registration or order placement.
+                                        {% endblocktrans %}
+                                    </small>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <p class="mt-3 text-muted"><small><strong>{% trans "Important for integration:" %}</strong> {% trans
-                            "Next to this text in forms on your site, there should be a <strong>default inactive
-                                checkbox</strong> and a link 'I agree with the Privacy Policy' leading to this page."
-                            %}</small></p>
+
+                    <p class="mt-3 text-muted">
+                        <small>
+                            <strong>{% trans "Important for integration:" %}</strong>
+                            {% blocktrans trimmed %}
+                            This checkbox must be included in all forms that collect personal data (registration, order
+                            placement,
+                            subscription to newsletter). By default, the checkbox should be inactive and become active
+                            only after
+                            the user reads and agrees to the terms.
+                            {% endblocktrans %}
+                        </small>
+                    </p>
 
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- JavaScript для управления чекбоксом -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const consentCheckbox = document.getElementById('privacyConsentCheckbox');
+        const confirmBtn = document.getElementById('confirmConsentBtn');
+
+        // Включаем/выключаем кнопку в зависимости от состояния чекбокса
+        consentCheckbox.addEventListener('change', function () {
+            confirmBtn.disabled = !this.checked;
+        });
+
+        // Обработка нажатия на кнопку подтверждения
+        confirmBtn.addEventListener('click', function () {
+            if (consentCheckbox.checked) {
+                // Здесь можно добавить логику сохранения согласия (например, в localStorage или отправку на сервер)
+                alert('{% trans "Your consent has been confirmed. Thank you!" %}');
+
+                // Можно добавить сохранение в localStorage
+                localStorage.setItem('privacyConsentGiven', 'true');
+                localStorage.setItem('privacyConsentDate', new Date().toISOString());
+
+                // Изменяем состояние кнопки
+                this.innerHTML = '<i class="fas fa-check me-2"></i>{% trans "Consent Confirmed" %}';
+                this.disabled = true;
+                this.classList.remove('btn-success');
+                this.classList.add('btn-secondary');
+            }
+        });
+
+        // Проверяем, было ли уже дано согласие
+        if (localStorage.getItem('privacyConsentGiven') === 'true') {
+            consentCheckbox.checked = true;
+            confirmBtn.disabled = false;
+        }
+
+        // Прокрутка к чекбоксу согласия для удобства пользователя
+        // (например, если на страницу перешли по ссылке из формы)
+        if (window.location.hash === '#consent') {
+            document.getElementById('privacyConsentCheckbox').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+</script>
+
+<style>
+    .privacy-consent-text {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+
+    .consent-checkbox {
+        border-top: 2px solid #dee2e6;
+        padding-top: 20px;
+    }
+
+    .form-check-input:checked {
+        background-color: #8B4513;
+        border-color: #8B4513;
+    }
+
+    .form-check-input:focus {
+        border-color: #8B4513;
+        box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25);
+    }
+</style>
 {% endblock %}

@@ -136,57 +136,7 @@ class EmailService:
             )
             return False
 
-    @staticmethod
-    def send_password_reset_email(
-        user_email: str, reset_url: str, user_name: str = None
-    ) -> bool:
-        """
-        Отправляет письмо для сброса пароля.
-
-        Args:
-            user_email: Email адрес получателя
-            reset_url: URL для сброса пароля
-            user_name: Имя пользователя (опционально)
-
-        Returns:
-            bool: True если отправка успешна, False в случае ошибки
-        """
-        try:
-            context = {
-                "reset_url": reset_url,
-                "user_email": user_email,
-                "user_name": user_name,
-                "site_name": getattr(settings, "SITE_NAME", "Handmade Marketplace"),
-                "support_email": getattr(
-                    settings, "SUPPORT_EMAIL", "support@example.com"
-                ),
-            }
-
-            subject = _("Сброс пароля")
-            html_message = render_to_string("users/emails/password_reset.html", context)
-            text_message = strip_tags(html_message)
-
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=text_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user_email],
-            )
-            email.attach_alternative(html_message, "text/html")
-
-            sent_count = email.send(fail_silently=False)
-
-            logger.info(
-                f"Password reset email sent to {user_email}. Sent count: {sent_count}"
-            )
-            return sent_count > 0
-
-        except Exception as e:
-            logger.error(
-                f"Failed to send password reset email to {user_email}. Error: {str(e)}"
-            )
-            return False
-
+    
     @staticmethod
     def send_notification(
         user_email: str, subject: str, template_name: str, context: Dict[str, Any]

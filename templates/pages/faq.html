@@ -21,8 +21,10 @@
                             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "To register, click the 'Register' button in the top right corner, fill out
-                                    the form and confirm your email address." %}
+                                    {% blocktrans trimmed %}
+                                    To register, click the 'Register' button in the top right corner, fill out the form
+                                    and confirm your email address.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -38,8 +40,10 @@
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "In your personal account, click the 'Add product' button. Fill in the
-                                    product information, specify the price, category and upload photos." %}
+                                    {% blocktrans trimmed %}
+                                    In your personal account, click the 'Add product' button. Fill in the product
+                                    information, specify the price, category and upload photos.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -55,8 +59,10 @@
                             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "Select the product you like, click 'Add to cart' or 'Buy now'. Go to the
-                                    cart to place an order and choose a delivery method." %}
+                                    {% blocktrans trimmed %}
+                                    Select the product you like, click 'Add to cart' or 'Buy now'. Go to the cart to
+                                    place an order and choose a delivery method.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -72,8 +78,9 @@
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "On the product page, click the 'Write to craftsman' button to start a
-                                    dialogue." %}
+                                    {% blocktrans trimmed %}
+                                    On the product page, click the 'Write to craftsman' button to start a dialogue.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -89,8 +96,10 @@
                             <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "We accept bank cards, e-wallets and other popular payment methods.
-                                    Specific options should be clarified with the seller." %}
+                                    {% blocktrans trimmed %}
+                                    We accept bank cards, e-wallets and other popular payment methods. Specific options
+                                    should be clarified with the seller.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -106,8 +115,10 @@
                             <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "In your personal account in the 'My products' section, you can add, edit,
-                                    hide or delete your products. Statistics of views are also displayed there." %}
+                                    {% blocktrans trimmed %}
+                                    In your personal account in the 'My products' section, you can add, edit, hide or
+                                    delete your products. Statistics of views are also displayed there.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -123,9 +134,11 @@
                             <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    {% trans "In your personal account in the 'My orders' section, you can see all your
-                                    purchases and sales with current statuses. For sales, you can also manage order
-                                    statuses there." %}
+                                    {% blocktrans trimmed %}
+                                    In your personal account in the 'My orders' section, you can see all your purchases
+                                    and sales with current statuses. For sales, you can also manage order statuses
+                                    there.
+                                    {% endblocktrans %}
                                 </div>
                             </div>
                         </div>
@@ -134,9 +147,14 @@
 
                     <div class="mt-4 p-3 bg-light rounded">
                         <h5>{% trans "Didn't find an answer to your question?" %}</h5>
-                        <p class="mb-2">{% trans "Contact our support service:" %}</p>
-                        <a href="{% url 'pages:contacts' %}" class="btn btn-primary">📞 {% trans "Contact support"
-                            %}</a>
+                        <p class="mb-2">
+                            {% blocktrans trimmed %}
+                            Contact our support service:
+                            {% endblocktrans %}
+                        </p>
+                        <a href="{% url 'pages:contacts' %}" class="btn btn-primary">
+                            📞 {% trans "Contact support" %}
+                        </a>
                     </div>
                 </div>
             </div>

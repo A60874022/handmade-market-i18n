@@ -1,157 +1,330 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Returns and Exchanges" %} | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Terms of Use" %} | HandmadeMarket{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="fw-bold mb-4">↩️ {% trans "Returns and Exchanges" %}</h1>
-
+        <div class="col-lg-10">
+            <h1 class="fw-bold mb-4">📄 {% trans "Terms of Use" %}</h1>
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <div class="accordion" id="returnsAccordion">
 
-                        <!-- Условия возврата -->
+                    <!-- Вводный текст -->
+                    <div class="alert alert-info mb-4">
+                        <strong>{% trans "Important:" %}</strong>
+                        {% blocktrans trimmed %}
+                        Please read these Terms of Use carefully before using the HandmadeMarket platform. By accessing
+                        or using our services, you agree to be bound by these terms.
+                        {% endblocktrans %}
+                    </div>
+
+                    <div class="accordion" id="termsAccordion">
+
+                        <!-- Общие положения -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingConditions">
+                            <h2 class="accordion-header" id="headingGeneral">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseConditions" aria-expanded="false"
-                                    aria-controls="collapseConditions">
-                                    📋 {% trans "Return Conditions" %}
+                                    data-bs-target="#collapseGeneral" aria-expanded="false"
+                                    aria-controls="collapseGeneral">
+                                    1️⃣ {% trans "General Provisions" %}
                                 </button>
                             </h2>
-                            <div id="collapseConditions" class="accordion-collapse collapse"
-                                aria-labelledby="headingConditions" data-bs-parent="#returnsAccordion">
+                            <div id="collapseGeneral" class="accordion-collapse collapse"
+                                aria-labelledby="headingGeneral" data-bs-parent="#termsAccordion">
                                 <div class="accordion-body">
-                                    <div class="alert alert-info">
-                                        <strong>⚠️ {% trans "Attention!" %}</strong> {% trans "Handmade products have
-                                        special return conditions." %}
-                                    </div>
+                                    <h5>{% trans "1.1 Platform Purpose" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        HandmadeMarket is an online marketplace that connects buyers and sellers of
+                                        handmade products. The platform provides tools for product placement, order
+                                        processing, and communication between users.
+                                        {% endblocktrans %}
+                                    </p>
 
-                                    <h5>✅ {% trans "Returns are accepted in cases:" %}</h5>
-                                    <ul>
-                                        <li>{% trans "Product does not match the description" %}</li>
-                                        <li>{% trans "Manufacturing defect detected" %}</li>
-                                        <li>{% trans "Product damaged during delivery" %}</li>
-                                        <li>{% trans "Required kit not included" %}</li>
-                                    </ul>
+                                    <h5>{% trans "1.2 Agreement to Terms" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        By registering on the platform or using any of its services, you confirm that
+                                        you have read, understood, and agree to these Terms of Use. If you do not agree
+                                        with any provision, please refrain from using the platform.
+                                        {% endblocktrans %}
+                                    </p>
 
-                                    <h5>❌ {% trans "Returns are not accepted:" %}</h5>
+                                    <h5>{% trans "1.3 User Eligibility" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        You must be at least 18 years old or the age of majority in your jurisdiction
+                                        to use our platform. By using the platform, you represent and warrant that you
+                                        meet these requirements.
+                                        {% endblocktrans %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Регистрация и аккаунт -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingRegistration">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseRegistration" aria-expanded="false"
+                                    aria-controls="collapseRegistration">
+                                    2️⃣ {% trans "Registration and Account" %}
+                                </button>
+                            </h2>
+                            <div id="collapseRegistration" class="accordion-collapse collapse"
+                                aria-labelledby="headingRegistration" data-bs-parent="#termsAccordion">
+                                <div class="accordion-body">
+                                    <h5>{% trans "2.1 Account Creation" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        To access certain features, you must create an account. You agree to provide
+                                        accurate, current, and complete information during registration and to update
+                                        such information to keep it accurate, current, and complete.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "2.2 Account Security" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        You are responsible for maintaining the confidentiality of your account
+                                        credentials and for all activities that occur under your account. You agree to
+                                        immediately notify us of any unauthorized use of your account.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "2.3 Account Types" %}</h5>
                                     <ul>
-                                        <li>{% trans "Product made to individual order" %}</li>
-                                        <li>{% trans "Color/size didn't suit the buyer (if not seller's error)" %}</li>
-                                        <li>{% trans "Product was used" %}</li>
-                                        <li>{% trans "Original packaging damaged" %}</li>
+                                        <li>
+                                            <strong>{% trans "Buyer Account:" %}</strong>
+                                            {% trans "For purchasing handmade products." %}
+                                        </li>
+                                        <li>
+                                            <strong>{% trans "Seller Account:" %}</strong>
+                                            {% trans "For selling handmade products (requires additional verification)."
+                                            %}
+                                        </li>
+                                        <li>
+                                            <strong>{% trans "Business Account:" %}</strong>
+                                            {% trans "For professional craftsmen and workshops." %}
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Процесс возврата -->
+                        <!-- Правила использования -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingProcess">
+                            <h2 class="accordion-header" id="headingRules">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseProcess" aria-expanded="false"
-                                    aria-controls="collapseProcess">
-                                    🔄 {% trans "Return Process" %}
+                                    data-bs-target="#collapseRules" aria-expanded="false" aria-controls="collapseRules">
+                                    3️⃣ {% trans "Rules of Use" %}
                                 </button>
                             </h2>
-                            <div id="collapseProcess" class="accordion-collapse collapse"
-                                aria-labelledby="headingProcess" data-bs-parent="#returnsAccordion">
+                            <div id="collapseRules" class="accordion-collapse collapse" aria-labelledby="headingRules"
+                                data-bs-parent="#termsAccordion">
                                 <div class="accordion-body">
-                                    <div class="row text-center">
-                                        <div class="col-md-4 mb-3">
-                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
-                                                style="width: 70px; height: 70px;">
-                                                <span style="font-size: 1.5rem;">📞</span>
-                                            </div>
-                                            <h6>1. {% trans "Contacts" %}</h6>
-                                            <p class="small text-muted">{% trans "Contact the seller through the
-                                                platform" %}</p>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
-                                                style="width: 70px; height: 70px;">
-                                                <span style="font-size: 1.5rem;">📝</span>
-                                            </div>
-                                            <h6>2. {% trans "Application" %}</h6>
-                                            <p class="small text-muted">{% trans "Fill out a return application in your
-                                                personal account" %}</p>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <div class="bg-light rounded-circle p-3 mx-auto mb-2 d-inline-flex align-items-center justify-content-center"
-                                                style="width: 70px; height: 70px;">
-                                                <span style="font-size: 1.5rem;">🚚</span>
-                                            </div>
-                                            <h6>3. {% trans "Shipment" %}</h6>
-                                            <p class="small text-muted">{% trans "Send the product back to the seller"
-                                                %}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Сроки и стоимость -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTerms">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseTerms" aria-expanded="false" aria-controls="collapseTerms">
-                                    ⏰ {% trans "Terms and Cost" %}
-                                </button>
-                            </h2>
-                            <div id="collapseTerms" class="accordion-collapse collapse" aria-labelledby="headingTerms"
-                                data-bs-parent="#returnsAccordion">
-                                <div class="accordion-body">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <h6>⏱️ {% trans "Consideration Period" %}</h6>
-                                            <p class="small">{% trans "3-5 business days from the moment the seller
-                                                receives the product" %}</p>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <h6>💰 {% trans "Return Cost" %}</h6>
-                                            <p class="small">{% trans "If the return is due to seller's fault - expenses
-                                                are borne by the seller" %}</p>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <h6>💸 {% trans "Money Refund" %}</h6>
-                                            <p class="small">{% trans "Money is refunded within 10 business days" %}</p>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <h6>🔄 {% trans "Product Exchange" %}</h6>
-                                            <p class="small">{% trans "Possible within 14 days from receipt" %}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Для продавцов -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingSellers">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseSellers" aria-expanded="false"
-                                    aria-controls="collapseSellers">
-                                    👨‍🎨 {% trans "Information for Sellers" %}
-                                </button>
-                            </h2>
-                            <div id="collapseSellers" class="accordion-collapse collapse"
-                                aria-labelledby="headingSellers" data-bs-parent="#returnsAccordion">
-                                <div class="accordion-body">
-                                    <h6>{% trans "How to manage returns:" %}</h6>
+                                    <h5>{% trans "3.1 Acceptable Use" %}</h5>
+                                    <p>{% trans "You agree to use the platform only for lawful purposes and in
+                                        accordance with these terms:" %}</p>
                                     <ul>
-                                        <li>{% trans "All return applications are displayed in the 'My Sales' section"
-                                            %}</li>
-                                        <li>{% trans "You can accept or reject a return with reason" %}</li>
-                                        <li>{% trans "When accepting a return, specify the address for sending the
-                                            product" %}</li>
-                                        <li>{% trans "After receiving the product, confirm its condition" %}</li>
+                                        <li>{% trans "Provide accurate product information" %}</li>
+                                        <li>{% trans "Respect intellectual property rights" %}</li>
+                                        <li>{% trans "Maintain respectful communication" %}</li>
+                                        <li>{% trans "Fulfill orders promptly" %}</li>
                                     </ul>
-                                    <div class="alert alert-warning mt-3">
-                                        <small>💡 {% trans "Tip: clearly describe products and make quality photos to
-                                            avoid misunderstandings with buyers." %}</small>
-                                    </div>
+
+                                    <h5>{% trans "3.2 Prohibited Activities" %}</h5>
+                                    <p>{% trans "You must not:" %}</p>
+                                    <ul>
+                                        <li>{% trans "Post counterfeit or infringing items" %}</li>
+                                        <li>{% trans "Use the platform for illegal activities" %}</li>
+                                        <li>{% trans "Harass or discriminate against other users" %}</li>
+                                        <li>{% trans "Manipulate reviews or ratings" %}</li>
+                                        <li>{% trans "Attempt to circumvent the platform's fee structure" %}</li>
+                                    </ul>
+
+                                    <h5>{% trans "3.3 Product Listings" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        Sellers are responsible for the accuracy and completeness of their product
+                                        listings. All products must be handmade or handcrafted by the seller or their
+                                        authorized partners.
+                                        {% endblocktrans %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Продажи и транзакции -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTransactions">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTransactions" aria-expanded="false"
+                                    aria-controls="collapseTransactions">
+                                    4️⃣ {% trans "Sales and Transactions" %}
+                                </button>
+                            </h2>
+                            <div id="collapseTransactions" class="accordion-collapse collapse"
+                                aria-labelledby="headingTransactions" data-bs-parent="#termsAccordion">
+                                <div class="accordion-body">
+                                    <h5>{% trans "4.1 Order Process" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        When a buyer places an order, the seller receives a notification and is
+                                        expected to confirm the order within 48 hours. Once confirmed, the transaction
+                                        becomes binding for both parties.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "4.2 Pricing and Fees" %}</h5>
+                                    <ul>
+                                        <li>
+                                            <strong>{% trans "Product Price:" %}</strong>
+                                            {% trans "Set by the seller" %}
+                                        </li>
+                                        <li>
+                                            <strong>{% trans "Platform Commission:" %}</strong>
+                                            {% trans "X% of the sale price (specified in seller agreement)" %}
+                                        </li>
+                                        <li>
+                                            <strong>{% trans "Payment Processing:" %}</strong>
+                                            {% trans "Additional fees may apply" %}
+                                        </li>
+                                    </ul>
+
+                                    <h5>{% trans "4.3 Payment Processing" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        All payments are processed through secure third-party payment processors.
+                                        HandmadeMarket does not store credit card information. Payment is released to
+                                        the seller after order completion and buyer confirmation of receipt.
+                                        {% endblocktrans %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Интеллектуальная собственность -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingIP">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseIP" aria-expanded="false" aria-controls="collapseIP">
+                                    5️⃣ {% trans "Intellectual Property" %}
+                                </button>
+                            </h2>
+                            <div id="collapseIP" class="accordion-collapse collapse" aria-labelledby="headingIP"
+                                data-bs-parent="#termsAccordion">
+                                <div class="accordion-body">
+                                    <h5>{% trans "5.1 Platform Content" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        All platform software, design, text, graphics, logos, and other content (except
+                                        user-generated content) are the property of HandmadeMarket and are protected by
+                                        copyright and other intellectual property laws.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "5.2 User Content" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        By posting content on the platform, you grant HandmadeMarket a non-exclusive,
+                                        worldwide, royalty-free license to use, display, reproduce, and distribute such
+                                        content in connection with the platform's services.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "5.3 Product Designs" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        Sellers retain intellectual property rights to their original designs. However,
+                                        by listing products, sellers grant buyers the right to purchase and use the
+                                        physical product for personal use.
+                                        {% endblocktrans %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ответственность и ограничения -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingLiability">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseLiability" aria-expanded="false"
+                                    aria-controls="collapseLiability">
+                                    6️⃣ {% trans "Liability and Limitations" %}
+                                </button>
+                            </h2>
+                            <div id="collapseLiability" class="accordion-collapse collapse"
+                                aria-labelledby="headingLiability" data-bs-parent="#termsAccordion">
+                                <div class="accordion-body">
+                                    <h5>{% trans "6.1 Platform as Marketplace" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        HandmadeMarket acts as a marketplace connecting buyers and sellers. We are not
+                                        a party to transactions between users and do not assume responsibility for the
+                                        quality, safety, or legality of products sold.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "6.2 Dispute Resolution" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        In case of disputes between buyers and sellers, HandmadeMarket may provide
+                                        mediation services. However, we encourage users to resolve issues directly
+                                        before escalating to platform support.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "6.3 Limitation of Liability" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        To the fullest extent permitted by law, HandmadeMarket shall not be liable for
+                                        any indirect, incidental, special, consequential, or punitive damages resulting
+                                        from your use of the platform.
+                                        {% endblocktrans %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Изменения и прекращение -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingChanges">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseChanges" aria-expanded="false"
+                                    aria-controls="collapseChanges">
+                                    7️⃣ {% trans "Changes and Termination" %}
+                                </button>
+                            </h2>
+                            <div id="collapseChanges" class="accordion-collapse collapse"
+                                aria-labelledby="headingChanges" data-bs-parent="#termsAccordion">
+                                <div class="accordion-body">
+                                    <h5>{% trans "7.1 Changes to Terms" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        We reserve the right to modify these Terms of Use at any time. Continued use of
+                                        the platform after changes constitutes acceptance of the new terms. We will
+                                        notify users of significant changes via email or platform notifications.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "7.2 Account Termination" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        You may terminate your account at any time by contacting support or using the
+                                        account deletion feature in your settings. We reserve the right to suspend or
+                                        terminate accounts that violate these terms.
+                                        {% endblocktrans %}
+                                    </p>
+
+                                    <h5>{% trans "7.3 Effect of Termination" %}</h5>
+                                    <p>
+                                        {% blocktrans trimmed %}
+                                        Upon termination, your right to use the platform ceases immediately.
+                                        Outstanding orders must be fulfilled according to these terms. We may retain
+                                        certain information as required by law or for legitimate business purposes.
+                                        {% endblocktrans %}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -161,12 +334,34 @@
                     <!-- Важная информация -->
                     <div class="mt-4 p-3 bg-light rounded">
                         <h6>💡 {% trans "Important Information:" %}</h6>
-                        <p class="mb-2 small">
-                            {% trans "Before processing a return, be sure to contact the seller to clarify details. Keep
-                            the original packaging and documents until the return procedure is completed." %}
+                        <p class="mb-2">
+                            {% blocktrans trimmed %}
+                            These Terms of Use constitute the entire agreement between you and HandmadeMarket regarding
+                            your use of the platform. If any provision is found to be unenforceable, the remaining
+                            provisions will remain in full force and effect.
+                            {% endblocktrans %}
                         </p>
-                        <a href="{% url 'pages:contacts' %}" class="btn btn-primary btn-sm">📞 {% trans "Contact
-                            support" %}</a>
+
+                        <div class="alert alert-warning mt-3">
+                            <strong>{% trans "Governing Law:" %}</strong>
+                            {% blocktrans trimmed %}
+                            These terms are governed by the laws of [Your Country/State]. Any disputes shall be
+                            resolved in the courts of [Your Jurisdiction].
+                            {% endblocktrans %}
+                        </div>
+
+                        <p class="mt-3">
+                            <strong>{% trans "Contact for Legal Inquiries:" %}</strong><br>
+                            <a href="mailto:legal@handmade-market.com">legal@handmade-market.com</a>
+                        </p>
+
+                        <!-- ИСПРАВЛЕННЫЕ ССЫЛКИ: используем правильные имена с namespace -->
+                        <a href="{% url 'pages:privacy_policy' %}" class="btn btn-outline-primary btn-sm me-2">
+                            🔒 {% trans "Privacy Policy" %}
+                        </a>
+                        <a href="{% url 'pages:contacts' %}" class="btn btn-primary btn-sm">
+                            📞 {% trans "Contact Support" %}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -183,6 +378,21 @@
     .accordion-button:focus {
         box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25);
         border-color: #8B4513;
+    }
+
+    .accordion-body h5 {
+        color: #8B4513;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .accordion-body ul {
+        margin-bottom: 1rem;
+    }
+
+    .accordion-body ul li {
+        margin-bottom: 0.25rem;
     }
 </style>
 {% endblock %}

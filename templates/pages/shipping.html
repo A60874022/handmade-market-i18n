@@ -1,45 +1,79 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Returns and Exchanges" %} | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Shipping and Payment" %} | HandmadeMarket{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="fw-bold mb-4">↩️ {% trans "Returns and Exchanges" %}</h1>
+            <h1 class="fw-bold mb-4">🚚 💳 {% trans "Shipping and Payment" %}</h1>
 
-            <!-- Условия возврата -->
+            <!-- Способы доставки -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">📋 {% trans "Return Conditions" %}</h4>
+                    <h4 class="mb-0">📦 {% trans "Delivery Methods" %}</h4>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info">
-                        <strong>⚠️ {% trans "Attention!" %}</strong> {% trans "Handmade products have special return
-                        conditions." %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h5>🏪 {% trans "Pickup Points" %}</h5>
+                            <p class="small text-muted">
+                                {% blocktrans trimmed %}
+                                From partner networks
+                                {% endblocktrans %}
+                            </p>
+                            <ul class="small">
+                                <li>{% trans "5-7 business days" %}</li>
+                                <li>{% trans "Payment upon receipt" %}</li>
+                                <li>{% trans "Free from $50" %}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h5>🚗 {% trans "Courier Delivery" %}</h5>
+                            <p class="small text-muted">
+                                {% blocktrans trimmed %}
+                                Door-to-door delivery
+                                {% endblocktrans %}
+                            </p>
+                            <ul class="small">
+                                <li>{% trans "1-3 business days" %}</li>
+                                <li>{% trans "Prepayment required" %}</li>
+                                <li>{% trans "Fixed rate: $10" %}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h5>✈️ {% trans "Express Delivery" %}</h5>
+                            <p class="small text-muted">
+                                {% blocktrans trimmed %}
+                                Express services
+                                {% endblocktrans %}
+                            </p>
+                            <ul class="small">
+                                <li>{% trans "1-2 business days" %}</li>
+                                <li>{% trans "Trackable shipment" %}</li>
+                                <li>{% trans "From $15" %}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h5>📮 {% trans "Postal Service" %}</h5>
+                            <p class="small text-muted">
+                                {% blocktrans trimmed %}
+                                Regular mail
+                                {% endblocktrans %}
+                            </p>
+                            <ul class="small">
+                                <li>{% trans "7-14 business days" %}</li>
+                                <li>{% trans "Lowest cost" %}</li>
+                                <li>{% trans "From $5" %}</li>
+                            </ul>
+                        </div>
                     </div>
-
-                    <h5>✅ {% trans "Returns are accepted in cases:" %}</h5>
-                    <ul>
-                        <li>{% trans "Product does not match the description" %}</li>
-                        <li>{% trans "Manufacturing defect detected" %}</li>
-                        <li>{% trans "Product damaged during delivery" %}</li>
-                        <li>{% trans "Required kit not included" %}</li>
-                    </ul>
-
-                    <h5>❌ {% trans "Returns are not accepted:" %}</h5>
-                    <ul>
-                        <li>{% trans "Product made to individual order" %}</li>
-                        <li>{% trans "Color/size didn't suit the buyer (if not seller's error)" %}</li>
-                        <li>{% trans "Product was used" %}</li>
-                        <li>{% trans "Original packaging damaged" %}</li>
-                    </ul>
                 </div>
             </div>
 
-            <!-- Процесс возврата -->
+            <!-- Способы оплаты -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">🔄 {% trans "Return Process" %}</h4>
+                    <h4 class="mb-0">💳 {% trans "Payment Methods" %}</h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -47,60 +81,86 @@
                             <div class="text-center">
                                 <div class="bg-light rounded-circle p-3 mx-auto mb-2"
                                     style="width: 70px; height: 70px;">
-                                    <span style="font-size: 1.5rem;">📞</span>
+                                    <span style="font-size: 1.5rem;">💳</span>
                                 </div>
-                                <h6>1. {% trans "Contacts" %}</h6>
-                                <p class="small text-muted">{% trans "Contact the seller" %}</p>
+                                <h6>{% trans "Bank Cards" %}</h6>
+                                <p class="small text-muted">Visa, MasterCard, Mir</p>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="text-center">
                                 <div class="bg-light rounded-circle p-3 mx-auto mb-2"
                                     style="width: 70px; height: 70px;">
-                                    <span style="font-size: 1.5rem;">📝</span>
+                                    <span style="font-size: 1.5rem;">📱</span>
                                 </div>
-                                <h6>2. {% trans "Application" %}</h6>
-                                <p class="small text-muted">{% trans "Fill out a return application" %}</p>
+                                <h6>{% trans "E-wallets" %}</h6>
+                                <p class="small text-muted">Apple Pay, Google Pay</p>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="text-center">
                                 <div class="bg-light rounded-circle p-3 mx-auto mb-2"
                                     style="width: 70px; height: 70px;">
-                                    <span style="font-size: 1.5rem;">🚚</span>
+                                    <span style="font-size: 1.5rem;">💰</span>
                                 </div>
-                                <h6>3. {% trans "Shipment" %}</h6>
-                                <p class="small text-muted">{% trans "Send the product back" %}</p>
+                                <h6>{% trans "Cash" %}</h6>
+                                <p class="small text-muted">
+                                    {% blocktrans trimmed %}
+                                    Upon pickup/delivery
+                                    {% endblocktrans %}
+                                </p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>🔒 {% trans "Secure Payments:" %}</strong>
+                        {% blocktrans trimmed %}
+                        All online payments are processed through a secure payment system. We do not store your bank
+                        card details.
+                        {% endblocktrans %}
                     </div>
                 </div>
             </div>
 
-            <!-- Сроки и стоимость -->
+            <!-- Сроки и условия -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-brown text-white">
-                    <h4 class="mb-0">⏰ {% trans "Terms and Cost" %}</h4>
+                    <h4 class="mb-0">⏰ {% trans "Terms and Conditions" %}</h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <h5>⏱️ {% trans "Consideration Period" %}</h5>
-                            <p>{% trans "Usually 3-5 business days from the moment the seller receives the product" %}
+                            <h5>📅 {% trans "Processing Time" %}</h5>
+                            <p>
+                                {% blocktrans trimmed %}
+                                Handmade products require 1-3 business days for preparation before shipment
+                                {% endblocktrans %}
                             </p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <h5>💰 {% trans "Return Cost" %}</h5>
-                            <p>{% trans "If the return is due to seller's fault - expenses are borne by the seller" %}
+                            <h5>🌍 {% trans "International Delivery" %}</h5>
+                            <p>
+                                {% blocktrans trimmed %}
+                                Available to most countries (10-21 business days)
+                                {% endblocktrans %}
                             </p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <h5>💸 {% trans "Money Refund" %}</h5>
-                            <p>{% trans "Money is refunded within 10 business days" %}</p>
+                            <h5>📋 {% trans "Order Tracking" %}</h5>
+                            <p>
+                                {% blocktrans trimmed %}
+                                Tracking number provided for all shipments except regular mail
+                                {% endblocktrans %}
+                            </p>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <h5>🔄 {% trans "Product Exchange" %}</h5>
-                            <p>{% trans "Possible within 14 days from receipt" %}</p>
+                            <h5>🏷️ {% trans "Customs Duties" %}</h5>
+                            <p>
+                                {% blocktrans trimmed %}
+                                For international orders, customs duties are the buyer's responsibility
+                                {% endblocktrans %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -110,8 +170,22 @@
             <div class="alert alert-warning mt-4">
                 <h6>💡 {% trans "Important Information:" %}</h6>
                 <p class="mb-0">
-                    {% trans "Before processing a return, be sure to contact the seller to clarify details. Keep the
-                    original packaging and documents until the return procedure is completed." %}
+                    {% blocktrans trimmed %}
+                    Delivery times may vary depending on the seller's location and production time. Each handmade
+                    product is unique and may require additional time for creation. For custom orders, please discuss
+                    delivery dates directly with the seller.
+                    {% endblocktrans %}
+                </p>
+            </div>
+
+            <!-- Контакты -->
+            <div class="alert alert-light border mt-3">
+                <h6>📞 {% trans "Questions about delivery?" %}</h6>
+                <p class="mb-0 small">
+                    {% blocktrans trimmed %}
+                    Contact the seller directly through their profile or write to our support team at
+                    {% endblocktrans %}
+                    <a href="mailto:support@handmade-market.com">support@handmade-market.com</a>
                 </p>
             </div>
         </div>

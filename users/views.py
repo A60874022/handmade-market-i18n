@@ -260,7 +260,7 @@ class CustomPasswordResetView(PasswordResetView):
     """
 
     template_name = "users/password_reset.html"
-    email_template_name = "users/password_reset_email.html"
+    email_template_name = "users/password_reset_email.txt"  
     success_url = reverse_lazy("users:password_reset_done")
 
     def form_valid(self, form):

@@ -85,8 +85,9 @@
             <div class="me-3">🎨</div>
             <div>
                 <strong>{% trans "Your craftsman account" %}</strong><br>
-                {% trans "After registration, you will be able to buy products from other craftsmen and sell your own"
-                %}
+                {% blocktrans trimmed %}
+                After registration, you will be able to buy products from other craftsmen and sell your own
+                {% endblocktrans %}
             </div>
         </div>
     </div>
@@ -209,6 +210,15 @@
 </style>
 
 <script>
+    // Создаем глобальный объект для переводов
+    const TRANSLATIONS = {
+        passwordStrength: "{% trans 'Password strength' %}",
+        weak: "{% trans 'Weak' %}",
+        medium: "{% trans 'Medium' %}",
+        strong: "{% trans 'Strong' %}",
+        passwordsNoMatch: "{% trans 'Passwords do not match' %}"
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         // Функция для переключения видимости пароля
         function togglePasswordVisibility(button) {
@@ -259,7 +269,7 @@
             });
         });
 
-        // Функция для проверки силы пароля (опционально)
+        // Функция для проверки силы пароля
         function checkPasswordStrength(password) {
             let strength = 0;
 
@@ -271,7 +281,7 @@
             return strength;
         }
 
-        // Отображаем силу пароля (опционально)
+        // Отображаем силу пароля
         const passwordInput = document.getElementById('{{ form.password1.id_for_label }}');
         const confirmPasswordInput = document.getElementById('{{ form.password2.id_for_label }}');
 
@@ -279,9 +289,10 @@
             // Создаем контейнер для индикатора силы пароля
             const strengthContainer = document.createElement('div');
             strengthContainer.className = 'password-strength';
+
             strengthContainer.innerHTML = `
                 <div class="d-flex justify-content-between mb-1">
-                    <small>{% trans "Password strength" %}:</small>
+                    <small>${TRANSLATIONS.passwordStrength}:</small>
                     <small class="strength-text">-</small>
                 </div>
                 <div class="strength-bar-container bg-light rounded" style="height: 3px;">
@@ -310,18 +321,18 @@
                     case 0:
                     case 1:
                         strengthBar.className = 'strength-bar strength-weak';
-                        strengthText.textContent = '{% trans "Weak" %}';
+                        strengthText.textContent = TRANSLATIONS.weak;
                         strengthText.style.color = '#dc3545';
                         break;
                     case 2:
                         strengthBar.className = 'strength-bar strength-medium';
-                        strengthText.textContent = '{% trans "Medium" %}';
+                        strengthText.textContent = TRANSLATIONS.medium;
                         strengthText.style.color = '#ffc107';
                         break;
                     case 3:
                     case 4:
                         strengthBar.className = 'strength-bar strength-strong';
-                        strengthText.textContent = '{% trans "Strong" %}';
+                        strengthText.textContent = TRANSLATIONS.strong;
                         strengthText.style.color = '#198754';
                         break;
                 }
@@ -382,7 +393,7 @@
                             errorDiv.className = 'invalid-feedback password-match-error';
                             confirmPasswordInput.parentNode.appendChild(errorDiv);
                         }
-                        errorDiv.textContent = '{% trans "Passwords do not match" %}';
+                        errorDiv.textContent = TRANSLATIONS.passwordsNoMatch;
                     }
 
                     // Фокусируем на поле подтверждения пароля
