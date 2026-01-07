@@ -74,7 +74,7 @@ class Product(models.Model):
             MinValueValidator(1, message=_("Price must be at least 1 ruble")),
             MaxValueValidator(
                 MAX_PRICE,
-                message=_("Price cannot exceed %(max_price)s rubles")
+                message=_("Price cannot exceed %(max_price)s euros")
                 % {"max_price": f"{MAX_PRICE:,}"},
             ),
         ],

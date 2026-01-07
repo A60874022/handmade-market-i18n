@@ -76,7 +76,7 @@ def create_new_order_notification(sender, instance, created, **kwargs):
                     user=master,
                     notification_type="new_order",
                     title="🎉 Новый заказ!",
-                    message=f"Покупатель {instance.customer.email} оформил заказ на ваши товары: {item_titles}. Общая сумма: {total_for_master} ₽.",
+                    message=f"Покупатель {instance.customer.email} оформил заказ на ваши товары: {item_titles}. Общая сумма: {total_for_master} €.",
                     action_url=f"/orders/master/orders/",
                     related_object_id=instance.id,
                     related_content_type="order",

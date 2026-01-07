@@ -55,8 +55,8 @@ msgstr " und %(count)d weitere Produkte"
 msgid "🎉 New order!"
 msgstr "🎉 Neue Bestellung!"
 
-msgid "Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s RUB."
-msgstr "Kunde %(email)s hat eine Bestellung für Ihre Produkte aufgegeben: %(items)s. Gesamtbetrag: %(total)s RUB."
+msgid "Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s euros"
+msgstr "Kunde %(email)s hat eine Bestellung für Ihre Produkte aufgegeben: %(items)s. Gesamtbetrag: %(total)s euros"
 
 msgid "New message from %(email)s: %(text)s%(ellipsis)s"
 msgstr "Neue Nachricht von %(email)s: %(text)s%(ellipsis)s"
@@ -202,7 +202,7 @@ msgstr "Geben Sie den korrekten Preis ein (nur Zahlen)"
 msgid "Price must be at least 1 ruble"
 msgstr "Preis muss mindestens 1 Rubel betragen"
 
-msgid "Price cannot exceed 5,000,000 rubles"
+msgid "Price cannot exceed 5,000,000 euros"
 msgstr "Preis darf 5.000.000 Rubel nicht überschreiten"
 
 msgid "Title cannot exceed 60 characters"
@@ -235,7 +235,7 @@ msgstr "Beschreibung"
 msgid "Price"
 msgstr "Preis"
 
-msgid "Price cannot exceed %(max_price)s rubles"
+msgid "Price cannot exceed %(max_price)s euros"
 msgstr "Preis darf %(max_price)s Rubel nicht überschreiten"
 
 msgid "Created at"
@@ -1093,10 +1093,10 @@ msgstr "Pflichtfelder"
 msgid "Basic information"
 msgstr "Grundinformationen"
 
-msgid "Price (rub.)"
-msgstr "Preis (Rub.)"
+msgid "Price (euros)"
+msgstr "Preis (euros)"
 
-msgid "Integer from 1 to 5,000,000 rubles"
+msgid "Integer from 1 to 5,000,000 euros"
 msgstr "Ganzzahl von 1 bis 5.000.000 Rubel"
 
 msgid "Product name"
@@ -1174,7 +1174,7 @@ msgstr "Produktkategorie auswählen"
 msgid "Enter valid price"
 msgstr "Gültigen Preis eingeben"
 
-msgid "Price cannot exceed {{ max_price }} rubles"
+msgid "Price cannot exceed {{ max_price }} euros"
 msgstr "Preis darf {{ max_price }} Rubel nicht überschreiten"
 
 msgid "Enter product name"
@@ -1201,8 +1201,6 @@ msgstr "Sie können jedes hochgeladene Bild als Hauptbild auswählen. Für neue 
 msgid "Max 60 characters, only letters, numbers and spaces"
 msgstr "Max. 60 Zeichen, nur Buchstaben, Zahlen und Leerzeichen"
 
-msgid "Max 300 characters, only letters, numbers and punctuation"
-msgstr "Max. 300 Zeichen, nur Buchstaben, Zahlen und Satzzeichen"
 
 msgid "characters left"
 msgstr "Zeichen übrig"
@@ -1255,7 +1253,7 @@ msgstr "Bis zu 4 Fotos pro Produkt"
 msgid "Manage orders in profile"
 msgstr "Bestellungen im Profil verwalten"
 
-msgid "Price cannot exceed 5000000 rubles"
+msgid "Price cannot exceed 5000000 euros"
 msgstr "Preis darf 5.000.000 Rubel nicht überschreiten"
 
 msgid "Maximum number of images: 4"

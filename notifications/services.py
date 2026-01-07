@@ -31,7 +31,7 @@ class NotificationService:
                 notification_type="new_order",
                 title=_("🎉 New order!"),
                 message=_(
-                    "Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s RUB."
+                    "Customer %(email)s placed an order for your products: %(items)s. Total amount: %(total)s euros"
                 )
                 % {
                     "email": order.customer.email,

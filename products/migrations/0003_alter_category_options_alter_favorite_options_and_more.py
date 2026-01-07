@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                         1, message="Price must be at least 1 ruble"
                     ),
                     django.core.validators.MaxValueValidator(
-                        5000000, message="Price cannot exceed 5,000,000 rubles"
+                        5000000, message="Price cannot exceed 5,000,000 euros"
                     ),
                 ],
                 verbose_name="Price",

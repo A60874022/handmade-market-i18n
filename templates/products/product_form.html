@@ -71,11 +71,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="{{ form.price.id_for_label }}" class="form-label">
-                                        {% trans "Price (rub.)" %} <span class="text-danger">*</span>
+                                        {% trans "Price (euros)" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="price-input-container position-relative">
                                         {{ form.price }}
-                                        <span class="price-suffix">₽</span>
+                                        <span class="price-suffix">€</span>
                                         <button type="button" class="btn-clear-field" style="display: none;">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -93,7 +93,7 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Integer from 1 to 5,000,000 rubles" %}</div>
+                                    <div class="form-text">{% trans "Integer from 1 to 5,000,000 euros" %}</div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">
@@ -118,8 +118,11 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Max 60 characters, only letters, numbers and
-                                        spaces" %}</div>
+                                    <div class="form-text">
+                                        {% blocktrans trimmed %}
+                                        Max 60 characters, only letters, numbers and spaces
+                                        {% endblocktrans %}
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.description.id_for_label }}" class="form-label">
@@ -144,8 +147,11 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Max 300 characters, only letters, numbers and
-                                        punctuation" %}</div>
+                                    <div class="form-text">
+                                        {% blocktrans trimmed %}
+                                        Max 300 characters, only letters, numbers and punctuation
+                                        {% endblocktrans %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,8 +168,10 @@
                                     <div class="me-3" style="font-size: 1.5rem;">💡</div>
                                     <div>
                                         <strong>{% trans "Important!" %}</strong>
-                                        {% trans "The first uploaded image will automatically become main. You can
-                                        change this later by selecting another image as main." %}
+                                        {% blocktrans trimmed %}
+                                        The first uploaded image will automatically become main. You can change this
+                                        later by selecting another image as main.
+                                        {% endblocktrans %}
                                     </div>
                                 </div>
                             </div>
@@ -538,11 +546,11 @@
         chooseCategoryError: "{% trans 'Select product category' %}",
         enterValidPrice: "{% trans 'Enter valid price' %}",
         priceMinError: "{% trans 'Price must be at least 1 ruble' %}",
-        priceMaxError: "{% trans 'Price cannot exceed 5000000 rubles' %}",
+        priceMaxError: "{% trans 'Price cannot exceed 5000000 euros' %}",
         enterProductName: "{% trans 'Enter product name' %}",
-        nameValidationError: "{% trans 'Name must contain only letters, numbers and spaces' %}",
+        nameValidationError: "{% blocktrans trimmed %}Name must contain only letters, numbers and spaces{% endblocktrans %}",
         enterDescription: "{% trans 'Enter product description' %}",
-        descriptionValidationError: "{% trans 'Description must contain only letters, numbers and punctuation' %}",
+        descriptionValidationError: "{% blocktrans trimmed %}Description must contain only letters, numbers and punctuation{% endblocktrans %}",
         atLeastOneImage: "{% trans 'At least one product image must be uploaded' %}",
         selectMainImage: "{% trans 'Main image must be selected' %}",
         maxImagesWarning: "{% trans 'Maximum number of images: 4' %}",

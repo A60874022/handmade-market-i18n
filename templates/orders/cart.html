@@ -52,8 +52,8 @@
                         </div>
 
                         <div class="col-md-2 text-center">
-                            <span class="fw-bold text-brown h5">{{ item.total_price }} ₽</span>
-                            <div class="text-muted small">{% trans "per piece:" %} {{ item.product.price }} ₽</div>
+                            <span class="fw-bold text-brown h5">{{ item.total_price }} €</span>
+                            <div class="text-muted small">{% trans "per piece:" %} {{ item.product.price }} €</div>
                         </div>
 
                         <div class="col-md-1 text-end">
@@ -72,7 +72,7 @@
                 <div class="card-footer bg-white">
                     <div class="row align-items-center">
                         <div class="col-md-6">
-                            <h4 class="fw-bold text-brown mb-0">{% trans "Total:" %} {{ cart.total_price }} ₽</h4>
+                            <h4 class="fw-bold text-brown mb-0">{% trans "Total:" %} {{ cart.total_price }} €</h4>
                             <small class="text-muted">{% trans "For" %} {{ cart.total_quantity }} {% trans "product(s)"%}</small>
                         </div>
                         <div class="col-md-6 text-end">

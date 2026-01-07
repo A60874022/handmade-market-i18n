@@ -72,7 +72,7 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError(_("Price must be at least 1 ruble"))
 
         if price_int > 5000000:
-            raise forms.ValidationError(_("Price cannot exceed 5,000,000 rubles"))
+            raise forms.ValidationError(_("Price cannot exceed 5,000,000 euros"))
 
         return price_int
 

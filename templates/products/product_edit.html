@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load static i18n %}
+{% load static %}
+{% load i18n %}
 
 {% block title %}{% trans "Edit product" %} | HandmadeMarket{% endblock %}
 
@@ -10,7 +11,9 @@
             <!-- Заголовок -->
             <div class="text-center mb-5">
                 <h1 class="fw-bold mb-3">✏️ {% trans "Edit product" %}</h1>
-                <p class="text-muted">{% trans "Update information about your handmade product" %}</p>
+                <p class="text-muted">
+                    {% trans "Update information about your handmade product" %}
+                </p>
                 <p class="text-danger small mt-2">* — {% trans "required fields" %}</p>
             </div>
 
@@ -59,11 +62,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="{{ form.price.id_for_label }}" class="form-label">
-                                        {% trans "Price (rub.)" %} <span class="text-danger">*</span>
+                                        {% trans "Price (euros)" %} <span class="text-danger">*</span>
                                     </label>
                                     <div class="price-input-container position-relative">
                                         {{ form.price }}
-                                        <span class="price-suffix">₽</span>
+                                        <span class="price-suffix">€</span>
                                         <button type="button" class="btn-clear-field" style="display: none;">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +84,9 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Integer from 1 to 5,000,000 rubles" %}</div>
+                                    <div class="form-text">
+                                        {% trans "Integer from 1 to 5,000,000 euros" %}
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">
@@ -104,10 +109,6 @@
                                         {% for error in form.title.errors %}
                                         <div>{{ error }}</div>
                                         {% endfor %}
-                                    </div>
-                                    {% endif %}
-                                    <div class="form-text">{% trans "Max 60 characters, only letters, numbers and
-                                        spaces" %}</div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.description.id_for_label }}" class="form-label">
@@ -132,8 +133,6 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Max 300 characters, only letters, numbers and
-                                        punctuation" %}</div>
                                 </div>
                             </div>
                         </div>
@@ -149,16 +148,21 @@
                                 <div class="d-flex align-items-center">
                                     <div class="me-3" style="font-size: 1.5rem;">💡</div>
                                     <div>
-                                        <strong>{% trans "Important!" %}</strong> {% trans "You can select any uploaded
-                                        image as main. For new images - the first uploaded one will automatically become
-                                        main." %}
+                                        <strong>{% trans "Important!" %}</strong>
+                                        {% blocktrans trimmed %}
+                                        You can choose any uploaded photo as the main one. For new images, the first uploaded will automatically become the main one.
+                                        {% endblocktrans %}
                                     </div>
                                 </div>
                             </div>
 
                             <p class="text-muted mb-3">
-                                {% trans "You can upload up to 4 photos." %}
-                                <span class="text-danger">{% trans "At least one image must be uploaded." %}</span>
+                                {% blocktrans trimmed %}
+                                You can upload up to 4 photos.
+                                <span class="text-danger">
+                                    You need to upload at least one image.
+                                </span>
+                                {% endblocktrans %}
                             </p>
 
                             {{ formset.management_form }}
@@ -195,8 +199,9 @@
                                                         <img class="image-preview"
                                                             style="max-width: 100px; max-height: 100px; display: none;">
                                                     </div>
-                                                    <div class="form-text mt-1">{% trans "Select a new image to replace"
-                                                        %}</div>
+                                                    <div class="form-text mt-1">
+                                                        {% trans "Select a new image to replace" %}
+                                                    </div>
                                                     <div class="mt-2">
                                                         <button type="button"
                                                             class="btn btn-outline-secondary btn-sm cancel-replace-btn">
@@ -224,7 +229,7 @@
                                                 <!-- Сообщение о невозможности установки основным -->
                                                 <div class="no-file-message text-danger small mt-1"
                                                     style="display: none;">
-                                                    ❌ {% trans "First upload an image" %}
+                                                    ❌ {% trans "Upload image first" %}
                                                 </div>
                                             </div>
                                         </div>
@@ -253,7 +258,9 @@
                                                 <img class="image-preview"
                                                     style="max-width: 100px; max-height: 100px; display: none;">
                                             </div>
-                                            <div class="form-text">{% trans "Select an image file" %}</div>
+                                            <div class="form-text">
+                                                {% trans "Select image file" %}
+                                            </div>
 
                                             {% if image_form.image.errors %}
                                             <div class="text-danger small mt-1">
@@ -273,7 +280,7 @@
                                                 <!-- Сообщение о невозможности установки основным -->
                                                 <div class="no-file-message text-danger small mt-1"
                                                     style="display: none;">
-                                                    ❌ {% trans "First upload an image" %}
+                                                    ❌ {% trans "Upload image first" %}
                                                 </div>
                                             </div>
                                         </div>
@@ -297,7 +304,9 @@
                                 <button type="button" id="add-more-images" class="btn btn-outline-primary btn-sm">
                                     ➕ {% trans "Add another image" %}
                                 </button>
-                                <div class="form-text">{% trans "Maximum 4 images" %}</div>
+                                <div class="form-text">
+                                    {% trans "Maximum 4 images" %}
+                                </div>
                             </div>
                         </div>
 
@@ -480,7 +489,7 @@
         pricePlaceholder: "{% trans '1000' %}",
         chooseCategory: "{% trans 'Choose category' %}",
         selectNewImage: "{% trans 'Select a new image to replace' %}",
-        selectImageFile: "{% trans 'Select an image file' %}",
+        selectImageFile: "{% trans 'Select image file' %}",
         cancelReplacement: "{% trans 'Cancel replacement' %}",
         addAnotherImage: "{% trans 'Add another image' %}",
         saveChanges: "{% trans 'Save changes' %}",
@@ -488,33 +497,33 @@
         // Предупреждения и ошибки
         maxImagesWarning: "{% trans 'Maximum number of images: {{ count }}' %}",
         cannotSetMainWithoutFile: "{% trans 'Cannot set image as main without uploaded file!' %}",
-        chooseCategoryError: "{% trans 'Select product category' %}",
+        chooseCategoryError: "{% trans 'Choose product category' %}",
         enterValidPrice: "{% trans 'Enter valid price' %}",
-        priceMinError: "{% trans 'Price must be at least 1 ruble' %}",
-        priceMaxError: "{% trans 'Price cannot exceed {{ max_price }} rubles' %}",
+        priceMinError: "{% trans 'Price should be at least 1 ruble' %}",
+        priceMaxError: "{% trans 'Price cannot exceed {{ max_price }} euros' %}",
         enterProductName: "{% trans 'Enter product name' %}",
-        nameValidationError: "{% trans 'Name must contain only letters, numbers and spaces' %}",
+        nameValidationError: "{% trans 'Name should contain only letters, numbers and spaces' %}",
         enterDescription: "{% trans 'Enter product description' %}",
-        descriptionValidationError: "{% trans 'Description must contain only letters, numbers and punctuation' %}",
-        atLeastOneImage: "{% trans 'At least one product image must be uploaded' %}",
-        selectMainImage: "{% trans 'Main image must be selected' %}",
+        descriptionValidationError: "{% trans 'Description should contain only letters, numbers and punctuation' %}",
+        atLeastOneImage: "{% trans 'You need to upload at least one product image' %}",
+        selectMainImage: "{% trans 'You need to select main image' %}",
 
         // Информационные сообщения
         important: "{% trans 'Important!' %}",
-        firstImageMain: "{% trans 'You can select any uploaded image as main. For new images - the first uploaded one will automatically become main.' %}",
+        firstImageMain: "{% trans 'You can choose any uploaded photo as the main one. For new images - the first uploaded will automatically become the main one.' %}",
         maxImagesText: "{% trans 'Maximum 4 images' %}",
         upTo4Photos: "{% trans 'You can upload up to 4 photos.' %}",
-        atLeastOneRequired: "{% trans 'At least one image must be uploaded.' %}",
-        integerFromTo: "{% trans 'Integer from 1 to 5,000,000 rubles' %}",
-        max60Chars: "{% trans 'Max 60 characters, only letters, numbers and spaces' %}",
-        max300Chars: "{% trans 'Max 300 characters, only letters, numbers and punctuation' %}",
+        atLeastOneRequired: "{% trans 'You need to upload at least one image.' %}",
+        integerFromTo: "{% trans 'Integer from 1 to 5,000,000 euros' %}",
+        max60Chars: "{% trans 'Max. 60 characters, only letters, numbers and spaces' %}",
+        max300Chars: "{% trans 'Max. 300 characters, only letters, numbers and punctuation' %}",
         charsLeft: "{% trans 'characters left' %}",
 
         // Статусы
         currentImage: "{% trans 'Current image' %}",
         newImage: "{% trans 'New image' %}",
         main: "{% trans 'Main' %}",
-        firstUploadImage: "{% trans 'First upload an image' %}",
+        firstUploadImage: "{% trans 'Upload image first' %}",
         canEnterDigits: "{% trans 'You can enter up to {{ digits }} digits' %}"
     };
 
@@ -544,12 +553,12 @@
             const deleteCheckbox = imageForm.querySelector('input[type="checkbox"][name*="DELETE"]');
 
             // Если есть существующее изображение и оно не помечено на удаление
-            if (existingImage &amp;&amp; (!deleteCheckbox || !deleteCheckbox.checked)) {
+            if (existingImage && (!deleteCheckbox || !deleteCheckbox.checked)) {
                 return true;
             }
 
             // Если есть загруженный файл
-            if (fileInput &amp;&amp; fileInput.files.length > 0) {
+            if (fileInput && fileInput.files.length > 0) {
                 return true;
             }
 
@@ -581,14 +590,14 @@
                     if (noFileMessage) noFileMessage.style.display = 'none';
 
                     // Запоминаем первое доступное новое изображение
-                    if (!firstAvailableNewImage &amp;&amp; form.classList.contains('new-image-form') &amp;&amp; !hasMainImage) {
+                    if (!firstAvailableNewImage && form.classList.contains('new-image-form') && !hasMainImage) {
                         firstAvailableNewImage = checkbox;
                     }
                 }
             });
 
             // Автоматически устанавливаем первое доступное новое изображение как основное
-            if (firstAvailableNewImage &amp;&amp; !hasMainImage) {
+            if (firstAvailableNewImage && !hasMainImage) {
                 firstAvailableNewImage.checked = true;
                 hasMainImage = true;
             }
@@ -599,7 +608,7 @@
             const imageForm = checkbox.closest('.image-form');
 
             // Проверяем, есть ли у изображения файл
-            if (checkbox.checked &amp;&amp; !hasImageFile(imageForm)) {
+            if (checkbox.checked && !hasImageFile(imageForm)) {
                 // Если нет файла, не позволяем установить чекбокс
                 checkbox.checked = false;
                 alert(translations.cannotSetMainWithoutFile);
@@ -630,7 +639,7 @@
             if (priceField) priceField.placeholder = translations.pricePlaceholder;
             if (categoryField) {
                 const firstOption = categoryField.querySelector('option');
-                if (firstOption &amp;&amp; firstOption.value === '') {
+                if (firstOption && firstOption.value === '') {
                     firstOption.textContent = translations.chooseCategory;
                     firstOption.disabled = true;
                 }
@@ -657,7 +666,7 @@
 
                     const previewImg = previewContainer.querySelector('.image-preview');
 
-                    if (file &amp;&amp; previewImg) {
+                    if (file && previewImg) {
                         const reader = new FileReader();
                         reader.onload = function (e) {
                             previewImg.src = e.target.result;
@@ -923,7 +932,7 @@
             let hasMain = false;
 
             mainCheckboxes.forEach(checkbox => {
-                if (checkbox.checked &amp;&amp; hasImageFile(checkbox.closest('.image-form'))) {
+                if (checkbox.checked && hasImageFile(checkbox.closest('.image-form'))) {
                     hasMain = true;
                 }
             });
@@ -992,21 +1001,21 @@
 
             priceField.addEventListener('blur', function () {
                 const numericValue = parseFormattedNumber(this.value);
-                if (!isNaN(numericValue) &amp;&amp; numericValue > 0) {
+                if (!isNaN(numericValue) && numericValue > 0) {
                     this.value = numericValue;
                 }
             });
 
             priceField.addEventListener('focus', function () {
                 const numericValue = parseFormattedNumber(this.value);
-                if (!isNaN(numericValue) &amp;&amp; numericValue > 0) {
+                if (!isNaN(numericValue) && numericValue > 0) {
                     this.value = formatNumber(numericValue);
                 }
             });
 
             priceField.addEventListener('keydown', function (e) {
                 if (
-                    (e.key >= '0' &amp;&amp; e.key <= '9') ||
+                    (e.key >= '0' && e.key <= '9') ||
                     e.key === 'Backspace' ||
                     e.key === 'Delete' ||
                     e.key === 'Tab' ||
@@ -1023,7 +1032,7 @@
 
             if (priceField.value) {
                 const numericValue = parseFormattedNumber(priceField.value);
-                if (!isNaN(numericValue) &amp;&amp; numericValue > 0) {
+                if (!isNaN(numericValue) && numericValue > 0) {
                     priceField.value = formatNumber(numericValue);
                 }
             }
@@ -1034,7 +1043,7 @@
             let hasErrors = false;
 
             // Валидация категории
-            if (categoryField &amp;&amp; (!categoryField.value || categoryField.value === '')) {
+            if (categoryField && (!categoryField.value || categoryField.value === '')) {
                 showFieldError(categoryField, translations.chooseCategoryError);
                 if (!hasErrors) {
                     categoryField.focus();
@@ -1067,13 +1076,13 @@
             }
 
             // Валидация названия
-            if (titleField &amp;&amp; (!titleField.value || titleField.value.trim() === '')) {
+            if (titleField && (!titleField.value || titleField.value.trim() === '')) {
                 showFieldError(titleField, translations.enterProductName);
                 if (!hasErrors) {
                     titleField.focus();
                     hasErrors = true;
                 }
-            } else if (titleField &amp;&amp; !validateText(titleField, 'title')) {
+            } else if (titleField && !validateText(titleField, 'title')) {
                 showFieldError(titleField, translations.nameValidationError);
                 if (!hasErrors) {
                     titleField.focus();
@@ -1082,13 +1091,13 @@
             }
 
             // Валидация описания
-            if (descriptionField &amp;&amp; (!descriptionField.value || descriptionField.value.trim() === '')) {
+            if (descriptionField && (!descriptionField.value || descriptionField.value.trim() === '')) {
                 showFieldError(descriptionField, translations.enterDescription);
                 if (!hasErrors) {
                     descriptionField.focus();
                     hasErrors = true;
                 }
-            } else if (descriptionField &amp;&amp; !validateText(descriptionField, 'description')) {
+            } else if (descriptionField && !validateText(descriptionField, 'description')) {
                 showFieldError(descriptionField, translations.descriptionValidationError);
                 if (!hasErrors) {
                     descriptionField.focus();
@@ -1168,7 +1177,7 @@
 
         // Проверяем, есть ли уже основное изображение при загрузке
         document.querySelectorAll('input[name$="-is_main"]').forEach(checkbox => {
-            if (checkbox.checked &amp;&amp; hasImageFile(checkbox.closest('.image-form'))) {
+            if (checkbox.checked && hasImageFile(checkbox.closest('.image-form'))) {
                 hasMainImage = true;
             }
         });

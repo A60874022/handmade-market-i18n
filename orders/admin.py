@@ -30,7 +30,7 @@ class CartAdmin(admin.ModelAdmin):
     total_quantity.short_description = "Общее количество"
 
     def total_price(self, obj):
-        return f"{obj.total_price} ₽"
+        return f"{obj.total_price} €"
 
     total_price.short_description = "Общая стоимость"
 
@@ -46,7 +46,7 @@ class CartItemAdmin(admin.ModelAdmin):
     raw_id_fields = ["cart", "product"]
 
     def total_price(self, obj):
-        return f"{obj.total_price} ₽"
+        return f"{obj.total_price} €"
 
     total_price.short_description = "Общая стоимость"
 
@@ -86,7 +86,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
 
     def total_amount_display(self, obj):
-        return f"{obj.total_amount} ₽"
+        return f"{obj.total_amount} €"
 
     total_amount_display.short_description = "Общая сумма"
 
@@ -102,6 +102,6 @@ class OrderItemAdmin(admin.ModelAdmin):
     raw_id_fields = ["order", "product"]
 
     def total_price(self, obj):
-        return f"{obj.total_price} ₽"
+        return f"{obj.total_price} €"
 
     total_price.short_description = "Общая стоимость"

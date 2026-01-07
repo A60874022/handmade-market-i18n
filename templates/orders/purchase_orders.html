@@ -10,7 +10,9 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 class="fw-bold mb-2">🛍️ {% trans "My Purchases" %}</h1>
-                    <p class="text-muted">{% trans "History of your handmade products purchases" %}</p>
+                    <p class="text-muted">
+                        {% trans "History of your handmade products purchases" %}
+                    </p>
                 </div>
                 <div>
                     <a href="{% url 'orders:sale_orders' %}" class="btn btn-outline-primary me-2">
@@ -41,9 +43,16 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="fw-bold mb-1">{% trans "Order" %} #{{ order.id }}</h5>
-                                <small class="text-muted">{% trans "Created:" %} {{ order.created_at|date:"d.m.Y H:i"
-                                    }}</small>
+                                <h5 class="fw-bold mb-1">
+                                    {% blocktrans with order_id=order.id trimmed %}
+                                    Order #{{ order_id }}
+                                    {% endblocktrans %}
+                                </h5>
+                                <small class="text-muted">
+                                    {% blocktrans with created_date=order.created_at|date:"d.m.Y H:i" trimmed %}
+                                    Created: {{ created_date }}
+                                    {% endblocktrans %}
+                                </small>
                             </div>
                             <div class="text-end">
                                 <span class="badge 
@@ -55,7 +64,7 @@
                                     {{ order.get_status_display }}
                                 </span>
                                 <div class="mt-1">
-                                    <strong class="text-brown">{{ order.total_amount }} ₽</strong>
+                                    <strong class="text-brown">{{ order.total_amount }} €</strong>
                                 </div>
                             </div>
                         </div>
@@ -91,8 +100,9 @@
                                     <span class="fw-bold">×{{ item.quantity }}</span>
                                 </div>
                                 <div class="col-md-2 text-end">
-                                    <span class="fw-bold text-brown">{{ item.total_price }} ₽</span>
-                                    <div class="text-muted small">{% trans "per piece:" %} {{ item.price_at_moment }} ₽
+                                    <span class="fw-bold text-brown">{{ item.total_price }} €</span>
+                                    <div class="text-muted small">
+                                        {% trans "per piece:" %} {{ item.price_at_moment }} €
                                     </div>
                                 </div>
                             </div>
@@ -101,7 +111,9 @@
                         <div class="card-footer bg-white">
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
-                                    {% trans "Updated:" %} {{ order.updated_at|date:"d.m.Y H:i" }}
+                                    {% blocktrans with updated_date=order.updated_at|date:"d.m.Y H:i" trimmed %}
+                                    Updated: {{ updated_date }}
+                                    {% endblocktrans %}
                                 </small>
                                 <div>
                                     {% if order.status != 'доставлен' %}
@@ -110,8 +122,9 @@
                                         🗑 {% trans "Delete Order" %}
                                     </button>
                                     {% else %}
-                                    <span class="text-muted small">{% trans "Delivered orders cannot be deleted"
-                                        %}</span>
+                                    <span class="text-muted small">
+                                        {% trans "Delivered orders cannot be deleted" %}
+                                    </span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -131,22 +144,31 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>{% trans "Are you sure you want to delete order" %} <strong>#{{ order.id
-                                            }}</strong>?</p>
+                                    <p>
+                                        {% blocktrans with order_id=order.id trimmed %}
+                                        Are you sure you want to delete order <strong>#{{ order_id }}</strong>?
+                                        {% endblocktrans %}
+                                    </p>
                                     <p class="text-danger">
-                                        <small>{% trans "This action cannot be undone. All order data will be
-                                            permanently deleted." %}</small>
+                                        <small>
+                                            {% trans "This action cannot be undone. All order data will be permanently deleted." %}
+                                        </small>
                                     </p>
                                     {% if order.status != 'оформлен' %}
                                     <div class="alert alert-warning mt-3">
-                                        <small>⚠️ {% trans "Warning! This order is already being processed. Deletion may
-                                            cause problems for the craftsman." %}</small>
+                                        <small>⚠️
+                                            {% blocktrans trimmed %}
+                                            Warning! This order is already being processed. Deletion may cause problems
+                                            for the craftsman.
+                                            {% endblocktrans %}
+                                        </small>
                                     </div>
                                     {% endif %}
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans
-                                        "Cancel" %}</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        {% trans "Cancel" %}
+                                    </button>
                                     <form action="{% url 'orders:delete_order' order.id %}" method="post">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger">
@@ -163,8 +185,12 @@
             {% else %}
             <div class="text-center py-5">
                 <div class="mb-4" style="font-size: 4rem;">🛍️</div>
-                <h3 class="fw-bold mb-3">{% trans "You have no purchases yet" %}</h3>
-                <p class="text-muted mb-4">{% trans "When you place an order, it will appear on this page" %}</p>
+                <h3 class="fw-bold mb-3">
+                    {% trans "You have no purchases yet" %}
+                </h3>
+                <p class="text-muted mb-4">
+                    {% trans "When you place an order, it will appear on this page" %}
+                </p>
                 <div class="d-flex justify-content-center gap-3">
                     <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
                         🛍️ {% trans "Go to Catalog" %}
