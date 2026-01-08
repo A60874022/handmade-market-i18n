@@ -7,24 +7,109 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import uuid
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
+
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name=_("Name"))
-    slug = models.SlugField(max_length=100, unique=True, verbose_name=_("URL"))
+    LANGUAGES = [
+        ('en', 'English'),
+        ('fr', 'French'),
+        ('de', 'German'),
+        # добавьте другие языки по мере необходимости
+    ]
+    
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    slug = models.SlugField(max_length=100, verbose_name=_("URL"))
+    language_code = models.CharField(
+        max_length=10,
+        choices=LANGUAGES,
+        default='en',
+        verbose_name=_("Language Code")
+    )
+    translation_group = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name=_("Translation Group"),
+        db_index=True
+    )
+    # Сохраняем оригинальное поле для совместимости
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
 
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
+        # Обеспечиваем уникальность в рамках группы переводов
+        unique_together = [['translation_group', 'language_code']]
+        # Также уникальность slug в рамках языка
+        constraints = [
+            models.UniqueConstraint(
+                fields=['language_code', 'slug'],
+                name='unique_slug_per_language'
+            ),
+        ]
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.get_language_code_display()})"
 
     def save(self, *args, **kwargs):
         # Note 17: Save name with capital letter
         if self.name:
             self.name = self.name.capitalize()
+        
+        # Автоматически генерируем slug из name, если не указан
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+        
         super().save(*args, **kwargs)
 
+    def clean(self):
+        """Валидация для предотвращения дублирования"""
+        super().clean()
+        
+        # Проверяем, что slug уникален для данного языка
+        if Category.objects.filter(
+            language_code=self.language_code,
+            slug=self.slug
+        ).exclude(pk=self.pk).exists():
+            raise ValidationError(
+                _('A category with this slug already exists for the selected language.')
+            )
+
+    @property
+    def base_slug(self):
+        """Возвращает базовый slug без языкового суффикса"""
+        # Удаляем языковой суффикс если он есть
+        if self.slug.endswith(f'-{self.language_code}'):
+            return self.slug[:-len(f'-{self.language_code}')]
+        return self.slug
+
+    @classmethod
+    def get_translation_group_categories(cls, translation_group):
+        """Получить все переводы категории"""
+        return cls.objects.filter(
+            translation_group=translation_group,
+            is_active=True
+        )
+
+    @classmethod
+    def get_category_in_language(cls, translation_group, language_code):
+        """Получить категорию в определенном языке"""
+        return cls.objects.filter(
+            translation_group=translation_group,
+            language_code=language_code,
+            is_active=True
+        ).first()
+
+    def get_translations(self):
+        """Получить все переводы этой категории"""
+        return self.__class__.objects.filter(
+            translation_group=self.translation_group,
+            is_active=True
+        ).exclude(pk=self.pk)
 
 class Product(models.Model):
     MAX_PRICE = 5000000

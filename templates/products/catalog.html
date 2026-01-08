@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load static i18n %}
 
+{% block meta_description %}
+{% trans "Discover unique handmade products at HandmadeMarket. Browse leather goods, ceramics, and crafts from talented
+artisans. Filter by category and city to find your perfect item." %}
+{% endblock %}
+
 {% block title %}{% trans "Product Catalog" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
@@ -35,8 +40,10 @@
                 {% endif %}
             </div>
 
+            <!-- ИЗМЕНЕНО: Добавлен H2 для секции фильтров -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
+                    <h2 class="visually-hidden">{% trans "Search and Filter Products" %}</h2>
                     <form method="get" id="filter-form">
                         <div class="row">
                             <div class="col-md-4">
@@ -53,26 +60,22 @@
                             <div class="col-md-4">
                                 <select class="form-select" name="category" onchange="this.form.submit()">
                                     <option value="">{% trans "All Categories" %}</option>
-                            
                                     {% for category in categories %}
-                                        <option value="{{ category.slug }}" 
-                                            {% if request.GET.category == category.slug %}selected{% endif %}>
-                                            {{ category.name }}
+                                    <option value="{{ category.translation_group|stringformat:'s' }}"
+                                        {% if request.GET.category == category.translation_group|stringformat:'s' %}selected{% endif %}>
+                                        {{ category.name }}
                                     </option>
                                     {% empty %}
-                                        <option disabled>{% trans "No categories available" %}</option>
+                                    <option disabled>{% trans "No categories available" %}</option>
                                     {% endfor %}
-                                </select>
+                                </select>                      
                             </div>
-                            
-                            
-
                             <div class="col-md-4">
                                 <select class="form-select" name="city" onchange="this.form.submit()">
                                     <option value="">{% trans "All Cities" %}</option>
                                     {% for city in cities %}
-                                    <option value="{{ city.id }}" {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>
-                                       
+                                    <option value="{{ city.id }}" 
+                                        {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>
                                         {{ city.name }}
                                     </option>
                                     {% empty %}
@@ -102,11 +105,11 @@
                         <span class="badge bg-primary ms-2">{% trans "Search:" %} "{{ request.GET.q }}"</span>
                         {% endif %}
                         {% if request.GET.category %}
-                        {% for category in categories %}
-                        {% if category.slug == request.GET.category %}
-                        <span class="badge bg-brown ms-2">{% trans "Category:" %} {{ category.name }}</span>
+                        {% if selected_category %}
+                        <span class="badge bg-brown ms-2">{% trans "Category:" %} {{ selected_category.name }}</span>
+                        {% else %}
+                        <span class="badge bg-brown ms-2">{% trans "Category:" %} {% trans "Selected" %}</span>
                         {% endif %}
-                        {% endfor %}
                         {% endif %}
                         {% if request.GET.city %}
                         {% for city in cities %}
@@ -123,6 +126,8 @@
             </div>
             {% endif %}
 
+            <!-- ИЗМЕНЕНО: Добавлен H2 для секции товаров -->
+            <h2 class="mb-4">{% trans "Available Products" %}</h2>
             <div class="row">
                 {% for product in products %}
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -131,7 +136,10 @@
                             data-product-url="{% url 'products:product_detail' product.pk %}">
                             {% with first_image=product.images.first %}
                             {% if first_image %}
-                            <img src="{{ first_image.image.url }}" class="card-img-top" alt="{{ product.title }}"
+                            <img src="{{ first_image.image.url }}" 
+                                class="card-img-top"
+                                alt="{% if product.title %}{{ product.title }}{% else %}Handmade product{% endif %}"
+                                title="{% if product.title %}{{ product.title }}{% endif %}" 
                                 style="height: 250px; object-fit: cover;">
                             {% else %}
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
@@ -153,8 +161,10 @@
                                 data-product-url="{% url 'products:product_detail' product.pk %}">
                                 <div class="mb-2">
                                     <span class="badge bg-brown mb-2">{{ product.category.name }}</span>
-                                    <h5 class="card-title fw-bold mb-1">{{ product.title }}</h5>
-                                    <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:15}}</p>
+                                    <!-- ИЗМЕНЕНО: H5 изменён на H3 для правильной иерархии -->
+                                    <h3 class="card-title fw-bold mb-1">{{ product.title }}</h3>
+                                    <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:15}}
+                                    </p>
                                 </div>
 
                                 <div class="mb-3">
@@ -352,6 +362,14 @@
         background-color: rgba(139, 69, 19, 0.05);
     }
 
+    /* ИЗМЕНЕНО: Добавлены стили для новых заголовков H3 */
+    .card h3.card-title {
+        font-size: 1.25rem;
+        /* Сохраняем оригинальный размер как у H5 */
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
     /* Autocomplete styles */
     .autocomplete-dropdown {
         position: absolute;
@@ -478,6 +496,31 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    /* Дополнительные стили для улучшения UX */
+    .form-select:focus {
+        border-color: #8B4513;
+        box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25);
+    }
+
+    .category-translation-hint {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    /* ИЗМЕНЕНО: Стиль для скрытых заголовков доступности */
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 </style>
 
@@ -701,6 +744,19 @@
                 }
             });
         });
+
+        // Добавляем логику для отображения подсказок о переводах категорий
+        const categorySelect = document.querySelector('select[name="category"]');
+        if (categorySelect) {
+            // Можно добавить tooltip или всплывающую подсказку о том, что фильтр работает для всех языков
+            categorySelect.title = "{% trans 'This filter will show products from all language versions of this category' %}";
+
+            // Добавляем визуальный индикатор многоязычности
+            const categoryHelp = document.createElement('small');
+            categoryHelp.className = 'category-translation-hint';
+            categoryHelp.textContent = "{% trans 'Categories show products in all languages' %}";
+            categorySelect.parentNode.appendChild(categoryHelp);
+        }
     });
 </script>
 {% endblock %}

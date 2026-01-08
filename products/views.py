@@ -1,3 +1,5 @@
+#
+import uuid 
 import logging
 import os
 
@@ -44,11 +46,16 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
             return redirect("users:edit_profile")
         return super().dispatch(request, *args, **kwargs)
 
+    def get_form_kwargs(self):
+        """Передаем request в форму для фильтрации категорий"""
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_valid(self, form):
         try:
             with transaction.atomic():
                 form.instance.master = self.request.user
-                # City is automatically taken from profile through city property of Product model
                 response = super().form_valid(form)
 
                 formset = ProductImageFormSet(
@@ -113,6 +120,12 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         product = self.get_object()
         return self.request.user == product.master
 
+    def get_form_kwargs(self):
+        """Передаем request в форму для фильтрации категорий"""
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
@@ -170,6 +183,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return self.form_invalid(form)
 
 
+
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy("products:my_products")
@@ -211,6 +225,10 @@ from django.views.generic import ListView
 
 logger = logging.getLogger(__name__)
 
+from django.db.models import Q
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProductCatalogView(ListView):
     model = Product
@@ -224,44 +242,90 @@ class ProductCatalogView(ListView):
                 is_active=True, is_approved=True
             ).select_related("master", "category", "master__profile__city")
 
-            # Filter by category (robust: use category__slug)
-            category_slug = self.request.GET.get("category")
-            if category_slug:
-                qs = qs.filter(category__slug=category_slug)
-
-            # Search by title and description
-            q = self.request.GET.get("q")
-            if q:
-                qs = qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
-
-            # Filter by city (expecting city id in select value)
-            city_value = self.request.GET.get("city")
-            if city_value:
+            # ФИЛЬТРАЦИЯ ПО ГРУППЕ ПЕРЕВОДОВ КАТЕГОРИЙ
+            translation_group_param = self.request.GET.get("category")
+            if translation_group_param:
                 try:
-                    city_id = int(city_value)
+                    # Пытаемся получить translation_group из параметра
+                    translation_group = uuid.UUID(translation_group_param)
+                    # Находим все категории в этой группе переводов
+                    categories_in_group = Category.objects.filter(
+                        translation_group=translation_group,
+                        is_active=True
+                    )
+                    # Фильтруем продукты по всем категориям в группе
+                    qs = qs.filter(category__in=categories_in_group)
+                except (ValueError, TypeError):
+                    # Если параметр не UUID, пробуем найти по slug (для обратной совместимости)
+                    try:
+                        category = Category.objects.get(
+                            slug=translation_group_param,
+                            is_active=True
+                        )
+                        qs = qs.filter(category__in=category.get_translations())
+                    except Category.DoesNotExist:
+                        logger.warning(f"Category not found: {translation_group_param}")
+
+            # Поиск по названию и описанию
+            search_query = self.request.GET.get("q")
+            if search_query:
+                qs = qs.filter(
+                    Q(title__icontains=search_query) | 
+                    Q(description__icontains=search_query)
+                )
+
+            # Фильтр по городу
+            city_param = self.request.GET.get("city")
+            if city_param:
+                try:
+                    city_id = int(city_param)
                     qs = qs.filter(master__profile__city_id=city_id)
                 except (ValueError, TypeError):
-                    # если пришло не число — игнорируем фильтр
-                    logger.debug(
-                        "Invalid city id provided for filtering: %r", city_value
-                    )
+                    logger.debug(f"Invalid city id: {city_param}")
 
             return qs.order_by("-created_at")
 
         except Exception as e:
-            logger.error("Error loading product catalog: %s", e, exc_info=True)
+            logger.error(f"Error loading product catalog: {e}", exc_info=True)
             return Product.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Получаем текущий язык пользователя
+        current_language = self.request.LANGUAGE_CODE if hasattr(self.request, 'LANGUAGE_CODE') else 'en'
+        
+        # Показываем только категории на текущем языке пользователя
+        context["categories"] = Category.objects.filter(
+            language_code=current_language,
+            is_active=True
+        ).order_by("name")
+        
+        # Также передаем выбранную категорию для отображения в активных фильтрах
+        selected_translation_group = self.request.GET.get("category")
+        if selected_translation_group:
+            try:
+                translation_group = uuid.UUID(selected_translation_group)
+                # Находим категорию на текущем языке в этой группе
+                selected_category = Category.objects.filter(
+                    translation_group=translation_group,
+                    language_code=current_language,
+                    is_active=True
+                ).first()
+                if selected_category:
+                    context["selected_category"] = selected_category
+            except (ValueError, TypeError):
+                # Для обратной совместимости
+                selected_category = Category.objects.filter(
+                    slug=selected_translation_group,
+                    is_active=True
+                ).first()
+                if selected_category:
+                    context["selected_category"] = selected_category
 
-        # Передаём все категории (для селекта)
-        context["categories"] = Category.objects.all().order_by("name")
-
-        # Получаем города только те, у которых есть активные продукты (если у вас модель City есть)
+        # Города
         try:
             from users.models import City
-
             context["cities"] = (
                 City.objects.filter(
                     is_active=True,
@@ -271,11 +335,11 @@ class ProductCatalogView(ListView):
                 .distinct()
                 .order_by("name")
             )
-        except Exception:
-            # если модели City нет или связь другая — просто отдаём пустой список, но не ломаем страницу
+        except Exception as e:
+            logger.error(f"Error loading cities: {e}")
             context["cities"] = []
 
-        # favorites
+        # Избранное
         if self.request.user.is_authenticated:
             context["user_favorites"] = list(
                 self.request.user.favorites.values_list("product_id", flat=True)
@@ -284,7 +348,6 @@ class ProductCatalogView(ListView):
             context["user_favorites"] = []
 
         return context
-
 
 class ProductDetailView(DetailView):
     model = Product

@@ -1,14 +1,37 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block title %}{% trans "Contacts" %} | HandmadeMarket{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="fw-bold mb-4">📞 {% trans "Contacts" %}</h1>
+
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <p class="text-muted">{% trans "Page content will be added later." %}</p>
+                    <h3 class="h5 fw-bold mb-3">{% trans "Contact Information" %}</h3>
+
+                    <div class="mb-4">
+                        <h4 class="h6 fw-bold text-primary mb-2">{% trans "Support Email" %}</h4>
+                        <p class="mb-1">
+                            <i class="bi bi-envelope me-2"></i>
+                            <a href="mailto:support@handmade-market.com" class="text-decoration-none">
+                                support@handmade-market.com
+                            </a>
+                        </p>
+                        <small class="text-muted">
+                            {% trans "For technical support and general inquiries" %}
+                        </small>
+                    </div>
+
+                    <div>
+                        <h4 class="h6 fw-bold text-primary mb-2">{% trans "Response Time" %}</h4>
+                        <p class="mb-0 text-muted">
+                            <i class="bi bi-clock me-2"></i>
+                            {% trans "We typically respond within 24-48 hours on business days" %}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

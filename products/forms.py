@@ -1,8 +1,9 @@
+# products/forms.py
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
 
-from .models import Product, ProductImage
+from .models import Category, Product, ProductImage
 
 
 class ProductForm(forms.ModelForm):
@@ -26,18 +27,20 @@ class ProductForm(forms.ModelForm):
                     "maxlength": "300",
                 }
             ),
-            # CHANGED: NumberInput to TextInput to remove browser restrictions
             "price": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "0",
-                    "inputmode": "numeric",  # Shows numeric keyboard on mobile
+                    "inputmode": "numeric",
                 }
             ),
         }
 
     def __init__(self, *args, **kwargs):
+        # Получаем request из kwargs, если он передан
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+        
         # Note 18: Add validators for Latin characters
         self.fields["title"].validators.append(
             RegexValidator(
@@ -55,6 +58,27 @@ class ProductForm(forms.ModelForm):
                 ),
             )
         )
+        
+        # ФИЛЬТРУЕМ КАТЕГОРИИ ПО ТЕКУЩЕМУ ЯЗЫКУ
+        if self.request:
+            # Получаем текущий язык из запроса
+            current_language = self.request.LANGUAGE_CODE if hasattr(self.request, 'LANGUAGE_CODE') else 'en'
+            
+            # Фильтруем категории по текущему языку
+            self.fields["category"].queryset = Category.objects.filter(
+                language_code=current_language,
+                is_active=True
+            ).order_by("name")
+            
+            # Если это редактирование существующего товара, добавляем текущую категорию в queryset,
+            # даже если она на другом языке (для обратной совместимости)
+            if self.instance and self.instance.category_id:
+                current_category = Category.objects.filter(
+                    pk=self.instance.category_id,
+                    is_active=True
+                ).first()
+                if current_category and current_category not in self.fields["category"].queryset:
+                    self.fields["category"].queryset = self.fields["category"].queryset | Category.objects.filter(pk=current_category.pk)
 
     def clean_price(self):
         price = self.cleaned_data.get("price")
@@ -111,12 +135,11 @@ class ProductImageForm(forms.ModelForm):
             self.fields["image"].required = False
 
 
-# Note 20: Clarify number of photos (up to 4 inclusive)
 ProductImageFormSet = forms.inlineformset_factory(
     Product,
     ProductImage,
     form=ProductImageForm,
-    extra=4,  # Can upload up to 4 photos inclusive
+    extra=4,
     can_delete=True,
-    max_num=4,  # Maximum 4 photos
+    max_num=4,
 )
