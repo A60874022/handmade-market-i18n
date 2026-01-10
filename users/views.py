@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, FormView, View
-
+from django.core.paginator import Paginator
 from .forms import (
     AccountDeleteForm,
     EmailVerificationForm,
@@ -25,7 +25,7 @@ from .forms import (
 )
 from .models import City, User
 from .services.email_service import email_service
-
+from products.models import Product
 logger = logging.getLogger(__name__)
 
 
@@ -457,3 +457,36 @@ def delete_account(request):
         )
         messages.error(request, _("Error deleting account."))
         return redirect("users:edit_profile")
+
+
+
+def public_profile(request, user_id):
+    """View public profile of any user"""
+    profile_user = get_object_or_404(User, id=user_id)
+    
+    # Check if user is viewing their own profile
+    is_own_profile = request.user.is_authenticated and request.user.id == user_id
+    
+    # Get user's profile (will be None if not created yet)
+    profile = getattr(profile_user, 'profile', None)
+    
+    # Get active products of the user
+    products = Product.objects.filter(
+        master=profile_user,
+        is_active=True,
+        is_approved=True
+    ).select_related('category')
+    
+    # Paginate products
+    paginator = Paginator(products, 6)
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+    
+    context = {
+        'profile_user': profile_user,
+        'profile': profile,
+        'is_own_profile': is_own_profile,
+        'products': products_page,
+    }
+    
+    return render(request, 'users/public_profile.html', context)

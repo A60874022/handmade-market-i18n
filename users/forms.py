@@ -214,8 +214,22 @@ class UserEditForm(forms.ModelForm):
             "last_name",
         )  # Add fields as needed
 
-
 class ProfileEditForm(forms.ModelForm):
+    # Добавляем поле для имени
+    first_name = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": _("Enter your name"),
+                "id": "first-name-input",
+            }
+        ),
+        label=_("Your Name"),
+        help_text=_("This name will be visible to other users as seller name"),
+    )
+
     # Override bio field to add character counter
     bio = forms.CharField(
         max_length=500,
@@ -272,27 +286,18 @@ class ProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ("avatar", "bio", "city")
+        fields = ("first_name", "avatar", "bio", "city")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add CSS classes for validation
-        self.fields["email"] = forms.EmailField(
-            required=True,
-            widget=forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": _("Enter your email")}
-            ),
-            label=_("Email address"),
-        )
-
-        # Update queryset for city field in init to always get current data
-        self.fields["city"].queryset = City.objects.filter(is_active=True).order_by(
-            "name"
-        )
-
+        
         # Set initial value for city search field
         if self.instance and self.instance.city:
             self.fields["city_search"].initial = self.instance.city.name
+            
+        # Если имя уже есть в профиле, используем его, иначе берем из пользователя
+        if self.instance and not self.instance.first_name and self.instance.user:
+            self.fields["first_name"].initial = self.instance.user.first_name or ""
 
     def clean(self):
         """General form validation"""
@@ -309,18 +314,10 @@ class ProfileEditForm(forms.ModelForm):
             except City.DoesNotExist:
                 self.add_error("city_search", _("Select city from list"))
 
-        # Can add cross-field validations if needed
-        city = cleaned_data.get("city")
-        bio = cleaned_data.get("bio")
-
-        # Example: if city specified but no bio - warning
-        if city and not bio:
-            self.add_warning(
-                "bio",
-                _(
-                    "We recommend adding information about yourself for better profile presentation."
-                ),
-            )
+        # Validate first_name - необязательное, но если заполнено, проверяем длину
+        first_name = cleaned_data.get("first_name", "").strip()
+        if first_name and len(first_name) > 100:
+            self.add_error("first_name", _("Name is too long. Maximum 100 characters."))
 
         return cleaned_data
 
@@ -352,6 +349,20 @@ class ProfileEditForm(forms.ModelForm):
         """Get form warnings"""
         return getattr(self, "_warnings", {})
 
+    def save(self, commit=True):
+        """Save profile with first name"""
+        profile = super().save(commit=False)
+        
+        # Также обновим first_name в User модели для совместимости
+        if self.cleaned_data.get('first_name') and profile.user:
+            profile.user.first_name = self.cleaned_data['first_name'].strip()
+            if commit:
+                profile.user.save()
+        
+        if commit:
+            profile.save()
+        
+        return profile
 
 class AccountDeleteForm(forms.Form):
     confirm = forms.BooleanField(

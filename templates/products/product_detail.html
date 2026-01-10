@@ -99,13 +99,45 @@
                         <p class="text-muted" style="line-height: 1.6; font-size: 1.1rem;">{{ product.description }}</p>
                     </div>
 
-                    <!-- CRAFTSMAN AND CITY INFORMATION -->
+                    <!-- CRAFTSMAN INFORMATION -->
                     <div class="mb-4">
                         <h5 class="fw-bold mb-3">👨‍🎨 {% trans "Craftsman Information" %}</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <small class="text-muted">📍 {% trans "City" %}</small>
-                                <p class="mb-2 fw-bold">{{ product.get_city_display }}</p>
+                        <div class="craftsman-card bg-light p-3 rounded-3">
+                            <div class="d-flex align-items-center">
+                                <!-- Craftsman Avatar -->
+                                {% if product.master.profile.avatar %}
+                                <img src="{{ product.master.profile.avatar.url }}" class="rounded-circle me-3"
+                                    alt="{{ product.master.profile.get_display_name }}"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                                    style="width: 50px; height: 50px;">
+                                    <span class="text-white fs-6">👤</span>
+                                </div>
+                                {% endif %}
+
+                                <div>
+                                    <!-- Craftsman Name with Link -->
+                                    <h6 class="fw-bold mb-0">
+                                        <a href="{% url 'users:public_profile' product.master.id %}"
+                                            class="text-decoration-none text-dark">
+                                            {{ product.master.profile.get_display_name }}
+                                        </a>
+                                    </h6>
+
+                                    <!-- City information -->
+                                    <small class="text-muted">
+                                        📍 {{ product.get_city_display }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Link to Craftsman Profile -->
+                            <div class="mt-3 text-center">
+                                <a href="{% url 'users:public_profile' product.master.id %}"
+                                    class="btn btn-outline-brown btn-sm">
+                                    👁️ {% trans "View Craftsman Profile" %}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -142,13 +174,6 @@
                                 🛒 {% trans "Add to Cart" %}
                             </button>
                         </form>
-
-                        <!-- Discuss product button - MOVED HERE -->
-                        <a href="{% url 'chat:start_dialogue_from_product' product.pk %}"
-                            class="btn btn-outline-brown btn-lg py-3"
-                            title="{% trans 'Start discussion about this product with the craftsman' %}">
-                            💬 {% trans "Discuss Product with Craftsman" %}
-                        </a>
                         {% else %}
                         <button class="btn btn-outline-secondary btn-lg w-100 py-3" disabled
                             title="{% trans 'This is your product' %}">
@@ -161,41 +186,6 @@
                             🛒 {% trans "Log in to add to cart" %}
                         </a>
                         {% endif %}
-
-                        <!-- Favorites button -->
-                        <div class="favorite-section">
-                            {% if user.is_authenticated %}
-                            {% if is_own_product %}
-                            <button class="btn btn-outline-secondary btn-lg w-100 py-3" disabled
-                                title="{% trans 'This is your product' %}">
-                                ⭐ {% trans "Your Product" %}
-                            </button>
-                            {% elif is_in_favorites %}
-                            <form method="post"
-                                action="{% url 'products:remove_from_favorites_by_product' product.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-lg w-100 py-3"
-                                    title="{% trans 'Remove from favorites' %}">
-                                    ❤️ {% trans "In Favorites" %}
-                                </button>
-                            </form>
-                            {% else %}
-                            <form method="post" action="{% url 'products:add_to_favorites' product.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-primary btn-lg w-100 py-3"
-                                    title="{% trans 'Add to favorites' %}">
-                                    🤍 {% trans "Add to Favorites" %}
-                                </button>
-                            </form>
-                            {% endif %}
-                            {% else %}
-                            <a href="{% url 'users:login' %}?next={{ request.path }}"
-                                class="btn btn-outline-primary btn-lg w-100 py-3"
-                                title="{% trans 'Log in to add to favorites' %}">
-                                🤍 {% trans "Add to Favorites" %}
-                            </a>
-                            {% endif %}
-                        </div>
                     </div>
 
                     <!-- Additional buttons -->
@@ -459,6 +449,12 @@
         border-radius: 12px;
     }
 
+    /* Craftsman card styles - упрощенный */
+    .craftsman-card {
+        border: 1px solid #e9ecef;
+        background: #f8f9fa;
+    }
+
     /* Improved spacing */
     .container {
         padding-left: 20px;
@@ -479,6 +475,15 @@
         .col-md-7,
         .col-md-5 {
             margin-bottom: 2rem;
+        }
+
+        .craftsman-card .btn-sm {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .craftsman-card .btn-sm.ms-2 {
+            margin-left: 0 !important;
         }
     }
 </style>

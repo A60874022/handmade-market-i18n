@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}
+{% if profile %}{{ profile.get_display_name }}{% else %}{{ profile_user.email }}{% endif %} | HandmadeMarket
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left sidebar with profile info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <!-- Avatar - теперь прямоугольный -->
+                    <div class="position-relative mb-4">
+                        {% if profile and profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" class="rounded-3 border border-3 border-brown"
+                            alt="{% if profile %}{{ profile.get_display_name }}{% else %}{{ profile_user.email }}{% endif %}"
+                            style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-3 bg-secondary d-flex align-items-center justify-content-center mx-auto border border-3 border-brown"
+                            style="width: 150px; height: 150px;">
+                            <span class="text-white fs-1">👤</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Craftsman badge -->
+                        <div class="mt-3">
+                            <span class="badge bg-success fs-6 p-2">🎨 {% trans "Craftsman" %}</span>
+                        </div>
+                    </div>
+
+                    <!-- Name and basic info -->
+                    <h2 class="h4 fw-bold mb-2">
+                        {% if profile %}
+                        {{ profile.get_display_name }}
+                        {% else %}
+                        {{ profile_user.email }}
+                        {% endif %}
+                    </h2>
+
+                    {% if profile and profile.city %}
+                    <p class="text-muted mb-3">
+                        📍 {{ profile.city.name }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Stats -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <div class="h5 fw-bold mb-1">{{ products.paginator.count }}</div>
+                                <small class="text-muted">{% trans "Products" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <div class="h5 fw-bold mb-1">
+                                    {{ profile_user.date_joined|date:"d.m.Y" }}
+                                </div>
+                                <small class="text-muted">{% trans "Member since" %}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile owner actions (только для владельца профиля) -->
+                    {% if is_own_profile %}
+                    <div class="mt-4">
+                        <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-brown w-100">
+                            ✏️ {% trans "Edit Profile" %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-lg-8">
+            <!-- Bio section -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-0 pb-0">
+                    <h3 class="h5 fw-bold">👨‍🎨 {% trans "About the Craftsman" %}</h3>
+                </div>
+                <div class="card-body">
+                    {% if profile and profile.bio %}
+                    <p class="mb-0" style="line-height: 1.6; font-size: 1.1rem;">
+                        {{ profile.bio|linebreaks }}
+                    </p>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <div class="mb-3" style="font-size: 3rem;">📝</div>
+                        <p class="text-muted mb-0">
+                            {% if is_own_profile %}
+                            {% trans "You haven't written anything about yourself yet." %}
+                            {% else %}
+                            {% trans "This craftsman hasn't written anything about themselves yet." %}
+                            {% endif %}
+                        </p>
+                        {% if is_own_profile %}
+                        <a href="{% url 'users:profile_edit' %}" class="btn btn-sm btn-outline-brown mt-3">
+                            ✏️ {% trans "Add information about yourself" %}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Products section -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="h5 fw-bold mb-0">🛍️ {% trans "Products" %}</h3>
+                        <span class="badge bg-brown">{{ products.paginator.count }} {% trans "items" %}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if products %}
+                    <div class="row g-4">
+                        {% for product in products %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm product-card">
+                                <!-- Product image -->
+                                {% with product.images.all|first as main_image %}
+                                <a href="{% url 'products:product_detail' product.pk %}">
+                                    {% if main_image %}
+                                    <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.title }}"
+                                        style="height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+                                    {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 200px; border-radius: 8px 8px 0 0;">
+                                        <span class="text-muted fs-1">🎨</span>
+                                    </div>
+                                    {% endif %}
+                                </a>
+                                {% endwith %}
+
+                                <!-- Product info -->
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold mb-2">
+                                        <a href="{% url 'products:product_detail' product.pk %}"
+                                            class="text-decoration-none text-dark">
+                                            {{ product.title|truncatechars:40 }}
+                                        </a>
+                                    </h6>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-brown">{{ product.price }} €</span>
+                                        <span class="badge bg-light text-dark">{{ product.category.name }}</span>
+                                    </div>
+
+                                    <small class="text-muted">
+                                        📍 {{ product.get_city_display }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if products.has_other_pages %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}">&laquo;</a>
+                            </li>
+                            {% endif %}
+
+                            {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                            {% elif i > products.number|add:'-3' and i < products.number|add:'3' %} <li
+                                class="page-item">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+
+                                {% if products.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ products.next_page_number }}">&raquo;</a>
+                                </li>
+                                {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3" style="font-size: 4rem;">🎁</div>
+                        <h5 class="fw-bold mb-2">
+                            {% if is_own_profile %}
+                            {% trans "You don't have any products yet" %}
+                            {% else %}
+                            {% trans "No products yet" %}
+                            {% endif %}
+                        </h5>
+                        <p class="text-muted">
+                            {% if is_own_profile %}
+                            {% trans "Start by adding your first handmade product!" %}
+                            {% else %}
+                            {% trans "This craftsman hasn't added any products yet." %}
+                            {% endif %}
+                        </p>
+                        {% if is_own_profile %}
+                        <a href="{% url 'products:product_add' %}" class="btn btn-brown">
+                            ➕ {% trans "Add First Product" %}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-brown {
+        color: #8B4513;
+    }
+
+    .border-brown {
+        border-color: #8B4513 !important;
+    }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #654321;
+        border-color: #654321;
+    }
+
+    .btn-brown {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-brown:hover {
+        background-color: #654321;
+        border-color: #654321;
+        color: white;
+    }
+
+    .btn-outline-brown {
+        color: #8B4513;
+        border-color: #8B4513;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-outline-brown:hover {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        color: white;
+    }
+
+    .bg-brown {
+        background-color: #8B4513 !important;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .product-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .page-link {
+        color: #8B4513;
+        border: 1px solid #dee2e6;
+    }
+
+    .page-item.active .page-link {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        color: white;
+    }
+
+    .page-link:hover {
+        color: #654321;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+
+    /* Стиль для прямоугольной аватарки */
+    .rounded-3 {
+        border-radius: 12px !important;
+    }
+</style>
+{% endblock %}

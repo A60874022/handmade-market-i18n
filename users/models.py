@@ -160,13 +160,20 @@ class City(models.Model):
     def __str__(self):
         return f"{self.name}" + (f" ({self.region})" if self.region else "")
 
-
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="profile",
         verbose_name=_("User"),
+    )
+
+    # Добавляем поле для имени продавца
+    first_name = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name=_("First name"),
+        help_text=_("Your name that will be visible to other users"),
     )
 
     avatar = models.ImageField(
@@ -210,12 +217,10 @@ class Profile(models.Model):
         if self.avatar and hasattr(self.avatar, "url"):
             return self.avatar.url
         return None
-
-    def clean(self):
-        """Additional model-level validation"""
-        super().clean()
-
-    def save(self, *args, **kwargs):
-        """Override save to call clean"""
-        self.full_clean()
-        super().save(*args, **kwargs)
+    
+    def get_display_name(self):
+        """Get display name for the seller"""
+        if self.first_name:
+            return self.first_name
+        # Fallback to email username part if no first name
+        return self.user.email.split('@')[0]

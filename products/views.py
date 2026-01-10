@@ -359,11 +359,20 @@ class ProductDetailView(DetailView):
         if self.request.user.is_authenticated:
             return Product.objects.filter(
                 Q(is_active=True, is_approved=True) | Q(master=self.request.user)
-            ).select_related("master")
+            ).select_related("master", "master__profile")
         else:
             return Product.objects.filter(
                 is_active=True, is_approved=True
-            ).select_related("master")
+            ).select_related("master", "master__profile")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = context['product']
+        
+        # Проверяем, является ли текущий пользователь владельцем товара
+        context['is_own_product'] = self.request.user == product.master
+            
+        return context
 
 
 @login_required
