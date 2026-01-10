@@ -374,7 +374,6 @@ class ProductDetailView(DetailView):
             
         return context
 
-
 @login_required
 def profile(request):
     """Master profile main page with tabs"""
