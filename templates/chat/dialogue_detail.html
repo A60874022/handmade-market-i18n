@@ -76,7 +76,13 @@ Chat about "{{ title }}" | HandmadeMarket
                         </div>
                         {% endif %}
                         <div>
-                            <small class="fw-bold d-block">{% trans "You" %}</small>
+                            <small class="fw-bold d-block">
+                                {% if user.profile.get_display_name %}
+                                {{ user.profile.get_display_name }}
+                                {% else %}
+                                {% trans "You" %}
+                                {% endif %}
+                            </small>
                             <small class="text-muted">
                                 {% if user == dialogue.master %}
                                 <span class="badge bg-success">🎨 {% trans "Seller" %}</span>
@@ -91,7 +97,8 @@ Chat about "{{ title }}" | HandmadeMarket
                     <div class="d-flex align-items-center p-2 bg-light rounded">
                         {% if interlocutor.profile.avatar %}
                         <img src="{{ interlocutor.profile.avatar.url }}" class="rounded-circle me-2"
-                            alt="{{ interlocutor.email|escape }}" style="width:40px; height:40px; object-fit:cover;">
+                            alt="{{ interlocutor.profile.get_display_name|escape }}"
+                            style="width:40px; height:40px; object-fit:cover;">
                         {% else %}
                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
                             style="width:40px; height:40px;">
@@ -99,7 +106,7 @@ Chat about "{{ title }}" | HandmadeMarket
                         </div>
                         {% endif %}
                         <div>
-                            <small class="fw-bold d-block">{{ interlocutor.email }}</small>
+                            <small class="fw-bold d-block">{{ interlocutor.profile.get_display_name }}</small>
                             <small class="text-muted">
                                 {% if interlocutor == dialogue.master %}
                                 <span class="badge bg-success">🎨 {% trans "Seller" %}</span>
@@ -131,8 +138,8 @@ Chat about "{{ title }}" | HandmadeMarket
                                     {% endif %}
                                 </h4>
                                 <p class="text-muted mb-0">
-                                    {% blocktrans with email=interlocutor.email trimmed %}
-                                    with {{ email }}
+                                    {% blocktrans with name=interlocutor.profile.get_display_name trimmed %}
+                                    with {{ name }}
                                     {% endblocktrans %}
                                 </p>
                             </div>
@@ -156,8 +163,7 @@ Chat about "{{ title }}" | HandmadeMarket
                                 {% if dialogue.product %}
                                 {% url 'products:product_detail' dialogue.product.pk as product_url %}
                                 {% blocktrans with title=dialogue.product.title product_url=product_url trimmed %}
-                                Discussion about: <a href="{{ product_url }}" class="text-brown text-decoration-none">{{
-                                    title }}</a>
+                                Discussion about: <a href="{{ product_url }}" class="text-brown text-decoration-none">{{ title }}</a>
                                 {% endblocktrans %}
                                 {% else %}
                                 <span class="text-warning">
@@ -182,14 +188,19 @@ Chat about "{{ title }}" | HandmadeMarket
                             <small
                                 class="fw-bold {% if message.sender == user %}text-primary{% else %}text-brown{% endif %}">
                                 {% if message.sender == user %}
-                                👤 {% trans "You" %}
+                                👤
+                                {% if user.profile.get_display_name %}
+                                {{ user.profile.get_display_name }}
+                                {% else %}
+                                {% trans "You" %}
+                                {% endif %}
                                 {% if user == dialogue.master %}
                                 <span class="badge bg-success ms-1">🎨</span>
                                 {% else %}
                                 <span class="badge bg-primary ms-1">👤</span>
                                 {% endif %}
                                 {% else %}
-                                🎨 {{ interlocutor.email }}
+                                🎨 {{ interlocutor.profile.get_display_name }}
                                 {% if interlocutor == dialogue.master %}
                                 <span class="badge bg-success ms-1">🎨</span>
                                 {% else %}
@@ -347,7 +358,8 @@ Chat about "{{ title }}" | HandmadeMarket
 <script>
     const DIALOGUE_ID = {{ dialogue.id }};
     const CURRENT_USER_ID = {{ user.id }};
-    const INTERLOCUTOR_EMAIL = "{{ interlocutor.email|escapejs }}";
+    const CURRENT_USER_NAME = "{{ user.profile.get_display_name|escapejs }}";
+    const INTERLOCUTOR_NAME = "{{ interlocutor.profile.get_display_name|escapejs }}";
     const PRODUCT_TITLE = {% if dialogue.product %}"{{ dialogue.product.title|escapejs }}"{% else %} null{% endif %};
     const IS_CURRENT_USER_MASTER = {% if user == dialogue.master %}true{% else %} false{% endif %};
     const IS_INTERLOCUTOR_MASTER = {% if interlocutor == dialogue.master %}true{% else %} false{% endif %};
@@ -427,11 +439,11 @@ Chat about "{{ title }}" | HandmadeMarket
         const small = document.createElement('small'); small.className = `fw-bold ${isOwn ? 'text-primary' : 'text-brown'}`;
 
         if (isOwn) {
-            small.innerHTML = `👤 You`;
+            small.innerHTML = `👤 ${escapeHtml(CURRENT_USER_NAME)}`;
             const badge = document.createElement('span'); badge.className = 'badge ms-1 ' + (IS_CURRENT_USER_MASTER ? 'bg-success' : 'bg-primary');
             badge.textContent = IS_CURRENT_USER_MASTER ? '🎨' : '👤'; small.appendChild(badge);
         } else {
-            small.innerHTML = `🎨 ${escapeHtml(INTERLOCUTOR_EMAIL)}`;
+            small.innerHTML = `🎨 ${escapeHtml(INTERLOCUTOR_NAME)}`;
             const badge = document.createElement('span'); badge.className = 'badge ms-1 ' + (IS_INTERLOCUTOR_MASTER ? 'bg-success' : 'bg-primary');
             badge.textContent = IS_INTERLOCUTOR_MASTER ? '🎨' : '👤'; small.appendChild(badge);
         }

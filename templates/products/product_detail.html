@@ -139,11 +139,30 @@
                                 </div>
                             </div>
 
-                            <!-- Link to Craftsman Profile -->
-                            <div class="text-center mt-3">
+                            <!-- Message button -->
+                            <div class="d-grid gap-2 mt-3">
+                                {% if user.is_authenticated %}
+                                {% if user.id != product.master.id %}
+                                <a href="{% url 'chat:start_dialogue_from_product' product.pk %}"
+                                    class="btn btn-brown btn-sm">
+                                    💬 {% trans "Write to Craftsman" %}
+                                </a>
+                                {% else %}
+                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    👤 {% trans "This is your product" %}
+                                </button>
+                                {% endif %}
+                                {% else %}
+                                <a href="{% url 'users:login' %}?next={{ request.path }}"
+                                    class="btn btn-outline-brown btn-sm">
+                                    🔑 {% trans "Log in to write" %}
+                                </a>
+                                {% endif %}
+
+                                <!-- Profile link -->
                                 <a href="{% url 'users:public_profile' product.master.id %}"
-                                    class="btn btn-outline-brown btn-sm w-100">
-                                    👁️ {% trans "View Craftsman Profile" %}
+                                    class="btn btn-outline-secondary btn-sm">
+                                    👁️ {% trans "View Profile" %}
                                 </a>
                             </div>
                         </div>
@@ -197,6 +216,14 @@
                             🛒 {% trans "Log in to add to cart" %}
                         </a>
                         {% endif %}
+
+                        <!-- Additional communication option -->
+                        {% if user.is_authenticated and user.id != product.master.id %}
+                        <a href="{% url 'chat:start_dialogue_from_product' product.pk %}"
+                            class="btn btn-outline-brown btn-lg w-100 py-3">
+                            💬 {% trans "Ask about product" %}
+                        </a>
+                        {% endif %}
                     </div>
 
                     <!-- Additional buttons -->
@@ -233,7 +260,7 @@
                             📋 {% trans "My Products" %}
                         </a>
                         <a href="{% url 'chat:dialogue_list' %}" class="btn btn-outline-brown btn-lg">
-                            💬 {% trans "My Product Dialogs" %}
+                            💬 {% trans "View Product Dialogs" %}
                         </a>
                         <button type="button" class="btn btn-outline-danger btn-lg" data-bs-toggle="modal"
                             data-bs-target="#deleteModal">
@@ -246,7 +273,7 @@
                         <h6 class="fw-bold mb-2">💡 {% trans "Information for Craftsman" %}</h6>
                         <p class="text-muted small mb-0">
                             {% trans "Buyers can start a separate chat to discuss this product. All dialogs for your
-                            products are available in the \"My Dialogs\" section." %}
+                            products are available in the \"View Product Dialogs\" section." %}
                         </p>
                     </div>
                 </div>
@@ -346,6 +373,18 @@
 <style>
     .text-brown {
         color: #8B4513;
+    }
+
+    .btn-brown {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        color: white;
+    }
+
+    .btn-brown:hover {
+        background-color: #654321;
+        border-color: #654321;
+        color: white;
     }
 
     .btn-primary {
@@ -493,6 +532,13 @@
 
     .mb-2 {
         margin-bottom: 0.5rem !important;
+    }
+
+    /* Message button styling in craftsman card */
+    .craftsman-card .btn-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
     }
 </style>
 
