@@ -4,7 +4,6 @@ on:
   push:
     branches: [ master ]
 
-
 jobs:
   build_and_push:
     name: Build and Push Docker Image
