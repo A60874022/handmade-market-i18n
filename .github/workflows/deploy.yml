@@ -31,37 +31,35 @@ jobs:
       - name: Create .env file
         run: |
           echo "🔧 Creating .env file..."
-          cat > .env << EOF
-          # Django
-          SECRET_KEY=${{ secrets.SECRET_KEY }}
-          DEBUG=${{ secrets.DEBUG }}
-          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-          
-          # Database
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_PORT=${{ secrets.DB_PORT }}
-          
-          # Redis
-          REDIS_URL=${{ secrets.REDIS_URL }}
-          
-          # Email
-          EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-          EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
-          EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
-          EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-          DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}
-          
-          # Security
-          CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
-          
-          # SSL
-          CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
-          DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
-          EOF
+          echo "# Django" > .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "" >> .env
+          echo "# Database" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "" >> .env
+          echo "# Redis" >> .env
+          echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
+          echo "" >> .env
+          echo "# Email" >> .env
+          echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
+          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
+          echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> .env
+          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
+          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
+          echo "DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}" >> .env
+          echo "" >> .env
+          echo "# Security" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          echo "" >> .env
+          echo "# SSL" >> .env
+          echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
+          echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
           echo "✅ .env file created"
 
       # ========== ОСНОВНЫЕ ШАГИ ДЕПЛОЯ ==========
@@ -73,7 +71,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo "🧹 Cleaning old containers..."
-            # Останавливаем и удаляем старые контейнеры
             docker stop handmade_web handmade_nginx handmade_db handmade_redis 2>/dev/null || true
             docker rm handmade_web handmade_nginx handmade_db handmade_redis 2>/dev/null || true
             echo "✅ Old containers cleaned"
@@ -124,45 +121,44 @@ jobs:
           target: "/root/ad_service/"
           overwrite: true
 
-      - name: Ensure nginx config exists
+      - name: Create basic nginx config if missing
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔧 Ensuring nginx config..."
+            echo "🔧 Creating basic nginx config..."
             cd /root/ad_service
             
-            # Если конфига нет - создаем простой
             if [ ! -f "nginx/conf.d/django.conf" ]; then
-              cat > nginx/conf.d/django.conf << 'EOF'
-              upstream django {
-                  server web:8000;
-              }
-              
-              server {
-                  listen 80;
-                  server_name mart.akatosphere.com www.mart.akatosphere.com;
-                  
-                  location / {
-                      proxy_pass http://django;
-                      proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                  }
-                  
-                  location /static/ {
-                      alias /app/staticfiles/;
-                  }
-                  
-                  location /media/ {
-                      alias /app/media/;
-                  }
-              }
-              EOF
+              echo 'upstream django {' > nginx/conf.d/django.conf
+              echo '    server web:8000;' >> nginx/conf.d/django.conf
+              echo '}' >> nginx/conf.d/django.conf
+              echo '' >> nginx/conf.d/django.conf
+              echo 'server {' >> nginx/conf.d/django.conf
+              echo '    listen 80;' >> nginx/conf.d/django.conf
+              echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django.conf
+              echo '' >> nginx/conf.d/django.conf
+              echo '    location / {' >> nginx/conf.d/django.conf
+              echo '        proxy_pass http://django;' >> nginx/conf.d/django.conf
+              echo '        proxy_set_header Host $host;' >> nginx/conf.d/django.conf
+              echo '        proxy_set_header X-Real-IP $remote_addr;' >> nginx/conf.d/django.conf
+              echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> nginx/conf.d/django.conf
+              echo '        proxy_set_header X-Forwarded-Proto $scheme;' >> nginx/conf.d/django.conf
+              echo '    }' >> nginx/conf.d/django.conf
+              echo '' >> nginx/conf.d/django.conf
+              echo '    location /static/ {' >> nginx/conf.d/django.conf
+              echo '        alias /app/staticfiles/;' >> nginx/conf.d/django.conf
+              echo '    }' >> nginx/conf.d/django.conf
+              echo '' >> nginx/conf.d/django.conf
+              echo '    location /media/ {' >> nginx/conf.d/django.conf
+              echo '        alias /app/media/;' >> nginx/conf.d/django.conf
+              echo '    }' >> nginx/conf.d/django.conf
+              echo '}' >> nginx/conf.d/django.conf
               echo "✅ Basic nginx config created"
+            else
+              echo "✅ Nginx config already exists"
             fi
 
       - name: Stop system nginx
@@ -176,7 +172,7 @@ jobs:
             systemctl stop nginx 2>/dev/null || true
             echo "✅ System nginx stopped"
 
-      - name: Pull and start services (without SSL)
+      - name: Pull and start services
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -186,46 +182,35 @@ jobs:
             echo "🚀 Starting services..."
             cd /root/ad_service
             
-            # Логинимся в Docker Hub
+            echo "Logging in to Docker Hub..."
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             
-            # Подтягиваем образы
+            echo "Pulling images..."
             docker pull anton60874022/ad_service:latest
             docker pull postgres:15-alpine
             docker pull redis:7-alpine
             docker pull nginx:alpine
             
-            # Запускаем без nginx сначала
-            echo "Starting db, redis and web..."
-            docker-compose up -d db redis web
+            echo "Starting services..."
+            docker-compose up -d
             
-            # Ждем
-            echo "Waiting for services..."
+            echo "Waiting for services to start..."
             sleep 30
-            
-            # Запускаем nginx
-            echo "Starting nginx..."
-            docker-compose up -d nginx
             
             echo "✅ Services started"
             docker-compose ps
 
-      - name: Install Certbot if needed
+      - name: Install Certbot
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔐 Checking Certbot..."
-            if ! command -v certbot &> /dev/null; then
-              echo "Installing Certbot..."
-              apt-get update
-              apt-get install -y certbot python3-certbot-nginx
-              echo "✅ Certbot installed"
-            else
-              echo "✅ Certbot already installed"
-            fi
+            echo "🔐 Installing Certbot..."
+            apt-get update
+            apt-get install -y certbot python3-certbot-nginx
+            echo "✅ Certbot installed"
 
       - name: Get SSL certificate
         uses: appleboy/ssh-action@master
@@ -235,12 +220,10 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo "📜 Getting SSL certificate..."
-            
-            # Временно останавливаем nginx контейнер для получения сертификата
             cd /root/ad_service
+            
             docker-compose stop nginx 2>/dev/null || true
             
-            # Получаем сертификат
             certbot certonly --standalone \
               -d mart.akatosphere.com \
               -d www.mart.akatosphere.com \
@@ -252,12 +235,11 @@ jobs:
             
             echo "✅ SSL certificate obtained!"
             
-            # Копируем сертификаты в нужную папку
             mkdir -p /root/ad_service/certbot/conf/live/mart.akatosphere.com
             cp /etc/letsencrypt/live/mart.akatosphere.com/fullchain.pem /root/ad_service/certbot/conf/live/mart.akatosphere.com/
             cp /etc/letsencrypt/live/mart.akatosphere.com/privkey.pem /root/ad_service/certbot/conf/live/mart.akatosphere.com/
 
-      - name: Update nginx config with SSL
+      - name: Update nginx config for SSL
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -267,51 +249,46 @@ jobs:
             echo "🔧 Updating nginx config for SSL..."
             cd /root/ad_service
             
-            # Создаем SSL конфиг
-            cat > nginx/conf.d/django-ssl.conf << 'EOF'
-            upstream django {
-                server web:8000;
-            }
+            echo 'upstream django {' > nginx/conf.d/django-ssl.conf
+            echo '    server web:8000;' >> nginx/conf.d/django-ssl.conf
+            echo '}' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo 'server {' >> nginx/conf.d/django-ssl.conf
+            echo '    listen 443 ssl http2;' >> nginx/conf.d/django-ssl.conf
+            echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo '    ssl_certificate /etc/letsencrypt/live/mart.akatosphere.com/fullchain.pem;' >> nginx/conf.d/django-ssl.conf
+            echo '    ssl_certificate_key /etc/letsencrypt/live/mart.akatosphere.com/privkey.pem;' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo '    ssl_protocols TLSv1.2 TLSv1.3;' >> nginx/conf.d/django-ssl.conf
+            echo '    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo '    location / {' >> nginx/conf.d/django-ssl.conf
+            echo '        proxy_pass http://django;' >> nginx/conf.d/django-ssl.conf
+            echo '        proxy_set_header Host $host;' >> nginx/conf.d/django-ssl.conf
+            echo '        proxy_set_header X-Real-IP $remote_addr;' >> nginx/conf.d/django-ssl.conf
+            echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> nginx/conf.d/django-ssl.conf
+            echo '        proxy_set_header X-Forwarded-Proto $scheme;' >> nginx/conf.d/django-ssl.conf
+            echo '    }' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo '    location /static/ {' >> nginx/conf.d/django-ssl.conf
+            echo '        alias /app/staticfiles/;' >> nginx/conf.d/django-ssl.conf
+            echo '    }' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo '    location /media/ {' >> nginx/conf.d/django-ssl.conf
+            echo '        alias /app/media/;' >> nginx/conf.d/django-ssl.conf
+            echo '    }' >> nginx/conf.d/django-ssl.conf
+            echo '}' >> nginx/conf.d/django-ssl.conf
+            echo '' >> nginx/conf.d/django-ssl.conf
+            echo 'server {' >> nginx/conf.d/django-ssl.conf
+            echo '    listen 80;' >> nginx/conf.d/django-ssl.conf
+            echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django-ssl.conf
+            echo '    return 301 https://$server_name$request_uri;' >> nginx/conf.d/django-ssl.conf
+            echo '}' >> nginx/conf.d/django-ssl.conf
             
-            server {
-                listen 443 ssl http2;
-                server_name mart.akatosphere.com www.mart.akatosphere.com;
-
-                ssl_certificate /etc/letsencrypt/live/mart.akatosphere.com/fullchain.pem;
-                ssl_certificate_key /etc/letsencrypt/live/mart.akatosphere.com/privkey.pem;
-
-                ssl_protocols TLSv1.2 TLSv1.3;
-                ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
-                
-                location / {
-                    proxy_pass http://django;
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                }
-                
-                location /static/ {
-                    alias /app/staticfiles/;
-                }
-                
-                location /media/ {
-                    alias /app/media/;
-                }
-            }
-            
-            server {
-                listen 80;
-                server_name mart.akatosphere.com www.mart.akatosphere.com;
-                return 301 https://$server_name$request_uri;
-            }
-            EOF
-            
-            # Переключаем на SSL конфиг
             mv nginx/conf.d/django.conf nginx/conf.d/django.conf.backup
             mv nginx/conf.d/django-ssl.conf nginx/conf.d/django.conf
             
-            # Перезапускаем nginx
             docker-compose restart nginx
             
             echo "✅ SSL configured"
@@ -330,13 +307,12 @@ jobs:
             docker-compose ps
             
             echo ""
-            echo "2. Testing HTTPS..."
-            sleep 5
-            curl -I https://mart.akatosphere.com 2>/dev/null | head -1 || echo "HTTPS check failed"
+            echo "2. Testing nginx config..."
+            docker-compose exec nginx nginx -t || echo "Nginx config test failed"
             
             echo ""
-            echo "3. Logs (last 5 lines):"
-            docker-compose logs --tail=5
+            echo "3. Logs (last 10 lines):"
+            docker-compose logs --tail=10
             
             echo ""
-            echo "🎉 Deployment completed successfully!"
+            echo "🎉 Deployment completed!"
