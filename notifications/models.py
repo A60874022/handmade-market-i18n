@@ -17,24 +17,56 @@ class Notification(models.Model):
     ]
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="notifications"
+        User, 
+        on_delete=models.CASCADE, 
+        related_name="notifications",
+        verbose_name=_("user")
     )
-    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
-    title = models.CharField(max_length=200)
-    message = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(default=timezone.now)
+    notification_type = models.CharField(
+        max_length=50, 
+        choices=NOTIFICATION_TYPES,
+        verbose_name=_("notification type")
+    )
+    title = models.CharField(
+        max_length=200,
+        verbose_name=_("title")
+    )
+    message = models.TextField(
+        verbose_name=_("message")
+    )
+    is_read = models.BooleanField(
+        default=False,
+        verbose_name=_("is read")
+    )
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name=_("created at")
+    )
 
     # Links to related objects
-    related_object_id = models.PositiveIntegerField(null=True, blank=True)
-    related_content_type = models.CharField(max_length=100, blank=True)
-    action_url = models.CharField(max_length=500, blank=True)
+    related_object_id = models.PositiveIntegerField(
+        null=True, 
+        blank=True,
+        verbose_name=_("related object ID")
+    )
+    related_content_type = models.CharField(
+        max_length=100, 
+        blank=True,
+        verbose_name=_("related content type")
+    )
+    action_url = models.CharField(
+        max_length=500, 
+        blank=True,
+        verbose_name=_("action URL")
+    )
 
     class Meta:
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["user", "is_read", "created_at"]),
         ]
+        verbose_name = _("notification")
+        verbose_name_plural = _("notifications")
 
     def __str__(self):
         return _("%(type)s for %(email)s") % {

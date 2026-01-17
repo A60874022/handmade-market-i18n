@@ -7,6 +7,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django.utils.translation import gettext as _
 
 from notifications.services import NotificationService
 from products.models import Product
@@ -62,7 +63,7 @@ def dialogue_list(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке списка диалогов")
+        messages.error(request, _("Error loading dialogue list"))
         return redirect("products:catalog")
 
 
@@ -74,7 +75,7 @@ def dialogue_detail(request, pk):
 
         # Проверка прав доступа - пользователь должен быть участником диалога
         if request.user not in [dialogue.user1, dialogue.user2]:
-            messages.error(request, "У вас нет доступа к этому диалогу")
+            messages.error(request, _("You don't have access to this dialogue"))
             return redirect("chat:dialogue_list")
 
         # Получаем собеседника
@@ -106,7 +107,7 @@ def dialogue_detail(request, pk):
                     dialogue_id=pk,
                 )
 
-                messages.success(request, "Сообщение отправлено")
+                messages.success(request, _("Message sent"))
                 return redirect("chat:dialogue_detail", pk=pk)
 
         # Получаем все сообщения диалога
@@ -130,7 +131,7 @@ def dialogue_detail(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при загрузке диалога")
+        messages.error(request, _("Error loading dialogue"))
         return redirect("chat:dialogue_list")
 
 
@@ -148,7 +149,7 @@ def send_message(request, pk):
                 request.user.id,
                 pk,
             )
-            return JsonResponse({"status": "error", "message": "No permission"})
+            return JsonResponse({"status": "error", "message": _("No permission")})
 
         text = request.POST.get("text", "").strip()
         if text:
@@ -175,7 +176,7 @@ def send_message(request, pk):
                 }
             )
 
-        return JsonResponse({"status": "error", "message": "Empty message"})
+        return JsonResponse({"status": "error", "message": _("Empty message")})
 
     except Exception as e:
         logger.error(
@@ -185,7 +186,7 @@ def send_message(request, pk):
             str(e),
             exc_info=True,
         )
-        return JsonResponse({"status": "error", "message": "Internal server error"})
+        return JsonResponse({"status": "error", "message": _("Internal server error")})
 
 
 @login_required
@@ -202,7 +203,7 @@ def mark_messages_read(request, pk):
                 request.user.id,
                 pk,
             )
-            return JsonResponse({"status": "error", "message": "No permission"})
+            return JsonResponse({"status": "error", "message": _("No permission")})
 
         # Помечаем все сообщения собеседника как прочитанные
         messages_to_mark = Message.objects.filter(
@@ -224,7 +225,7 @@ def mark_messages_read(request, pk):
             str(e),
             exc_info=True,
         )
-        return JsonResponse({"status": "error", "message": "Internal server error"})
+        return JsonResponse({"status": "error", "message": _("Internal server error")})
 
 
 @login_required
@@ -235,7 +236,7 @@ def delete_dialogue(request, pk):
 
         # Проверяем права доступа
         if request.user not in [dialogue.user1, dialogue.user2]:
-            messages.error(request, "У вас нет прав для удаления этого диалога")
+            messages.error(request, _("You don't have permission to delete this dialogue"))
             return redirect("chat:dialogue_list")
 
         if request.method == "POST":
@@ -247,7 +248,7 @@ def delete_dialogue(request, pk):
             dialogue.messages.all().delete()
             dialogue.delete()
 
-            messages.success(request, "Диалог успешно удален")
+            messages.success(request, _("Dialogue successfully deleted"))
             return redirect("chat:dialogue_list")
 
         return redirect("chat:dialogue_list")
@@ -260,7 +261,7 @@ def delete_dialogue(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при удалении диалога")
+        messages.error(request, _("Error deleting dialogue"))
         return redirect("chat:dialogue_list")
 
 
@@ -287,7 +288,7 @@ def clear_all_dialogues(request):
                 dialogue.messages.all().delete()
                 dialogue.delete()
 
-            messages.success(request, f"Удалено {deleted_count} диалогов")
+            messages.success(request, _("Deleted {count} dialogues").format(count=deleted_count))
             return redirect("chat:dialogue_list")
 
         return redirect("chat:dialogue_list")
@@ -299,7 +300,7 @@ def clear_all_dialogues(request):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при удалении диалогов")
+        messages.error(request, _("Error deleting dialogues"))
         return redirect("chat:dialogue_list")
 
 
@@ -311,7 +312,7 @@ def start_dialogue_from_product(request, pk):
 
         # Проверяем, что пользователь не пытается написать сам себе
         if request.user == product.master:
-            messages.error(request, "Вы не можете начать диалог с самим собой")
+            messages.error(request, _("You cannot start a dialogue with yourself"))
             return redirect("products:product_detail", pk=pk)
 
         # Ищем существующий диалог для этого товара
@@ -341,5 +342,5 @@ def start_dialogue_from_product(request, pk):
             str(e),
             exc_info=True,
         )
-        messages.error(request, "Ошибка при создании диалога")
+        messages.error(request, _("Error creating dialogue"))
         return redirect("products:product_detail", pk=pk)

@@ -1,4 +1,3 @@
-# products/forms.py
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
@@ -37,7 +36,7 @@ class ProductForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # Получаем request из kwargs, если он передан
+        # Get request from kwargs if passed
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         
@@ -59,19 +58,19 @@ class ProductForm(forms.ModelForm):
             )
         )
         
-        # ФИЛЬТРУЕМ КАТЕГОРИИ ПО ТЕКУЩЕМУ ЯЗЫКУ
+        # FILTER CATEGORIES BY CURRENT LANGUAGE
         if self.request:
-            # Получаем текущий язык из запроса
+            # Get current language from request
             current_language = self.request.LANGUAGE_CODE if hasattr(self.request, 'LANGUAGE_CODE') else 'en'
             
-            # Фильтруем категории по текущему языку
+            # Filter categories by current language
             self.fields["category"].queryset = Category.objects.filter(
                 language_code=current_language,
                 is_active=True
             ).order_by("name")
             
-            # Если это редактирование существующего товара, добавляем текущую категорию в queryset,
-            # даже если она на другом языке (для обратной совместимости)
+            # If editing existing product, add current category to queryset,
+            # even if it's in another language (for backward compatibility)
             if self.instance and self.instance.category_id:
                 current_category = Category.objects.filter(
                     pk=self.instance.category_id,
@@ -93,7 +92,7 @@ class ProductForm(forms.ModelForm):
 
         # Check price limits
         if price_int < 1:
-            raise forms.ValidationError(_("Price must be at least 1 ruble"))
+            raise forms.ValidationError(_("Price must be at least 1 euro"))
 
         if price_int > 5000000:
             raise forms.ValidationError(_("Price cannot exceed 5,000,000 euros"))

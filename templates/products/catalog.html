@@ -6,32 +6,44 @@
 artisans. Filter by category and city to find your perfect item." %}
 {% endblock %}
 
-{% block title %}{% trans "Product Catalog" %} | HandmadeMarket{% endblock %}
+{% block title %}{% trans "Product Catalog - Handmade Products from Local Artisans" %} | HandmadeMarket{% endblock %}
+
+{% block head_extra %}
+<!-- ИСПРАВЛЕНО: Добавляем явный meta description для SEO -->
+<meta name="description"
+    content="{% trans 'Browse our catalog of unique handmade products. Discover leather goods, ceramics, crafts from local artisans. Filter by category and city. Support local craftsmanship.' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <!-- ИЗМЕНЕНО: Улучшена верстка заголовка и кнопок для мобильных устройств -->
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                <div class="mb-3 mb-md-0">
                     <h1 class="fw-bold mb-2">🛍️ {% trans "Product Catalog" %}</h1>
                     <p class="text-muted">{% trans "Unique handmade products from talented craftsmen" %}</p>
                 </div>
                 {% if user.is_authenticated %}
-                <div>
+                <div class="d-flex flex-wrap gap-2">
                     <a href="{% url 'products:profile' %}?tab=favorites"
-                        class="btn btn-outline-danger position-relative me-2">
-                        ❤️ {% trans "Favorites" %}
+                        class="btn btn-outline-danger position-relative">
+                        ❤️ <span class="d-none d-md-inline">{% trans "Favorites" %}</span>
                         {% if user.favorites.count > 0 %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-md-block"
+                            style="font-size: 0.65rem; transform: translate(-40%, -40%);">
                             {{ user.favorites.count }}
                         </span>
                         {% endif %}
                     </a>
                     <a href="{% url 'orders:cart_view' %}" class="btn btn-primary position-relative">
-                        🛒 {% trans "Shopping Cart" %}
+                        🛒 <span class="d-none d-md-inline">{% trans "Shopping Cart" %}</span>
                         {% if user.cart.items.count > 0 %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-md-block"
+                            style="font-size: 0.65rem; transform: translate(-40%, -40%);">
                             {{ user.cart.items.count }}
                         </span>
                         {% endif %}
@@ -40,41 +52,42 @@ artisans. Filter by category and city to find your perfect item." %}
                 {% endif %}
             </div>
 
-            <!-- ИЗМЕНЕНО: Добавлен H2 для секции фильтров -->
+            <!-- ИСПРАВЛЕНО: Изменен h2 на h3 для правильной иерархии -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="visually-hidden">{% trans "Search and Filter Products" %}</h2>
+                    <h3 class="visually-hidden">{% trans "Search and Filter Products" %}</h3>
                     <form method="get" id="filter-form">
-                        <div class="row">
-                            <div class="col-md-4">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
                                 <div class="d-flex position-relative">
-                                    <input type="text" name="q" class="form-control me-2"
+                                    <input type="text" name="q" class="form-control"
                                         placeholder="{% trans 'Start typing product name...' %}"
                                         value="{{ request.GET.q|default:'' }}" autocomplete="off" id="search-input"
                                         data-autocomplete-url="{% url 'products:autocomplete' %}">
-                                    <button type="submit" class="btn btn-outline-brown">🔍</button>
+                                    <button type="submit" class="btn btn-outline-brown ms-2">🔍</button>
                                     <div id="autocomplete-results" class="autocomplete-dropdown"></div>
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-12 col-md-4">
                                 <select class="form-select" name="category" onchange="this.form.submit()">
                                     <option value="">{% trans "All Categories" %}</option>
                                     {% for category in categories %}
-                                    <option value="{{ category.translation_group|stringformat:'s' }}"
-                                        {% if request.GET.category == category.translation_group|stringformat:'s' %}selected{% endif %}>
+                                    <option value="{{ category.translation_group|stringformat:'s' }}" {% if
+                                        request.GET.category==category.translation_group|stringformat:'s' %}selected{%
+                                        endif %}>
                                         {{ category.name }}
                                     </option>
                                     {% empty %}
                                     <option disabled>{% trans "No categories available" %}</option>
                                     {% endfor %}
-                                </select>                      
+                                </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-12 col-md-4">
                                 <select class="form-select" name="city" onchange="this.form.submit()">
                                     <option value="">{% trans "All Cities" %}</option>
                                     {% for city in cities %}
-                                    <option value="{{ city.id }}" 
+                                    <option value="{{ city.id }}"
                                         {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>
                                         {{ city.name }}
                                     </option>
@@ -98,8 +111,9 @@ artisans. Filter by category and city to find your perfect item." %}
 
             {% if request.GET.q or request.GET.category or request.GET.city %}
             <div class="alert alert-info mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                    <div class="mb-2 mb-md-0">
                         <strong>🔍 {% trans "Active Filters:" %}</strong>
                         {% if request.GET.q %}
                         <span class="badge bg-primary ms-2">{% trans "Search:" %} "{{ request.GET.q }}"</span>
@@ -126,20 +140,20 @@ artisans. Filter by category and city to find your perfect item." %}
             </div>
             {% endif %}
 
-            <!-- ИЗМЕНЕНО: Добавлен H2 для секции товаров -->
+            <!-- ИСПРАВЛЕНО: Изменен h2 на h3 для правильной иерархии -->
             <h2 class="mb-4">{% trans "Available Products" %}</h2>
             <div class="row">
                 {% for product in products %}
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 border-0 shadow-sm product-card">
-                        <div class="position-relative product-clickable-area"
-                            data-product-url="{% url 'products:product_detail' product.pk %}">
+                        <!-- ИСПРАВЛЕНО: Заменен div на ссылку <a> для семантической правильности -->
+                        <a href="{% url 'products:product_detail' product.pk %}"
+                            class="position-relative text-decoration-none">
                             {% with first_image=product.images.first %}
                             {% if first_image %}
-                            <img src="{{ first_image.image.url }}" 
-                                class="card-img-top"
-                                alt="{% if product.title %}{{ product.title }}{% else %}Handmade product{% endif %}"
-                                title="{% if product.title %}{{ product.title }}{% endif %}" 
+                            <img src="{{ first_image.image.url }}" class="card-img-top"
+                                alt="{% if product.title %}{{ product.title }}{% else %}{% trans 'Handmade product' %}{% endif %}"
+                                title="{% if product.title %}{{ product.title }}{% endif %}"
                                 style="height: 250px; object-fit: cover;">
                             {% else %}
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
@@ -154,22 +168,24 @@ artisans. Filter by category and city to find your perfect item." %}
                                 <span class="badge bg-danger">❤️</span>
                             </div>
                             {% endif %}
-                        </div>
+                        </a>
 
                         <div class="card-body d-flex flex-column p-0">
-                            <div class="product-clickable-area p-3 flex-grow-1"
-                                data-product-url="{% url 'products:product_detail' product.pk %}">
+                            <!-- ИСПРАВЛЕНО: Заменен div на ссылку <a> для семантической правильности -->
+                            <a href="{% url 'products:product_detail' product.pk %}"
+                                class="text-decoration-none text-dark p-3 flex-grow-1">
                                 <div class="mb-2">
                                     <span class="badge bg-brown mb-2">{{ product.category.name }}</span>
-                                    <!-- ИЗМЕНЕНО: H5 изменён на H3 для правильной иерархии -->
+                                    <!-- ИСПРАВЛЕНО: Заменен h3 на h4 для правильной иерархии -->
                                     <h3 class="card-title fw-bold mb-1">{{ product.title }}</h3>
                                     <p class="card-text text-muted small mb-2">{{ product.description|truncatewords:15}}
                                     </p>
                                 </div>
 
                                 <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
+                                    <div
+                                        class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+                                        <small class="text-muted mb-1 mb-sm-0">
                                             <i class="bi bi-geo-alt-fill"></i>
                                             <strong>{% trans "City:" %}</strong>
                                             {{ product.get_city_display }}
@@ -192,27 +208,30 @@ artisans. Filter by category and city to find your perfect item." %}
                                     <span class="h5 text-brown fw-bold mb-0">{{ product.price }} €</span>
                                     <div style="width: 40px;"></div>
                                 </div>
-                            </div>
+                            </a>
 
                             <div class="p-3 pt-0 mt-2 border-top">
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div
+                                    class="d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
                                     {% if user.is_authenticated %}
                                     {% if product.master != user %}
-                                    <form method="post" action="{% url 'orders:add_to_cart' product.pk %}" class="mb-0">
+                                    <form method="post" action="{% url 'orders:add_to_cart' product.pk %}"
+                                        class="w-100 w-sm-auto mb-0">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-primary btn-sm"
+                                        <button type="submit" class="btn btn-primary btn-sm w-100"
                                             title="{% trans 'Add to Cart' %}">
                                             🛒 {% trans "Add to Cart" %}
                                         </button>
                                     </form>
                                     {% else %}
-                                    <button class="btn btn-outline-secondary btn-sm" disabled
+                                    <button class="btn btn-outline-secondary btn-sm w-100 w-sm-auto" disabled
                                         title="{% trans 'This is your product' %}">
                                         🛒 {% trans "Your Product" %}
                                     </button>
                                     {% endif %}
                                     {% else %}
-                                    <a href="{% url 'users:login' %}" class="btn btn-outline-primary btn-sm"
+                                    <a href="{% url 'users:login' %}"
+                                        class="btn btn-outline-primary btn-sm w-100 w-sm-auto"
                                         title="{% trans 'Log in to add to cart' %}">
                                         🛒 {% trans "Add to Cart" %}
                                     </a>
@@ -220,29 +239,30 @@ artisans. Filter by category and city to find your perfect item." %}
 
                                     {% if user.is_authenticated %}
                                     {% if product.master == user %}
-                                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    <button class="btn btn-outline-secondary btn-sm w-100 w-sm-auto" disabled>
                                         ⭐ {% trans "Your Product" %}
                                     </button>
                                     {% elif product.pk in user_favorites %}
                                     <form method="post"
                                         action="{% url 'products:remove_from_favorites_by_product' product.pk %}"
-                                        class="mb-0">
+                                        class="w-100 w-sm-auto mb-0">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">
+                                        <button type="submit" class="btn btn-danger btn-sm w-100">
                                             ❤️ {% trans "In Favorites" %}
                                         </button>
                                     </form>
                                     {% else %}
                                     <form method="post" action="{% url 'products:add_to_favorites' product.pk %}"
-                                        class="mb-0">
+                                        class="w-100 w-sm-auto mb-0">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
                                             🤍 {% trans "Favorite" %}
                                         </button>
                                     </form>
                                     {% endif %}
                                     {% else %}
-                                    <a href="{% url 'users:login' %}" class="btn btn-outline-secondary btn-sm">
+                                    <a href="{% url 'users:login' %}"
+                                        class="btn btn-outline-secondary btn-sm w-100 w-sm-auto">
                                         🤍 {% trans "Favorite" %}
                                     </a>
                                     {% endif %}
@@ -272,7 +292,9 @@ artisans. Filter by category and city to find your perfect item." %}
             </div>
 
             {% if is_paginated %}
-            <nav aria-label="Page navigation" class="mt-5">
+            <!-- ИСПРАВЛЕНО: Добавлен h3 для навигации по страницам -->
+            <nav aria-label="{% trans 'Page navigation' %}" class="mt-5">
+                <h3 class="visually-hidden">{% trans "Product pagination" %}</h3>
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
@@ -353,16 +375,12 @@ artisans. Filter by category and city to find your perfect item." %}
         transform: translateY(-5px);
     }
 
-    .product-clickable-area {
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    .product-clickable-area:hover {
+    /* ИСПРАВЛЕНО: Удалены стили для product-clickable-area, так как теперь используются ссылки */
+    .card a:hover {
         background-color: rgba(139, 69, 19, 0.05);
     }
 
-    /* ИЗМЕНЕНО: Добавлены стили для новых заголовков H3 */
+    /* ИЗМЕНЕНО: Добавлены стили для новых заголовков h3 */
     .card h3.card-title {
         font-size: 1.25rem;
         /* Сохраняем оригинальный размер как у H5 */
@@ -521,6 +539,44 @@ artisans. Filter by category and city to find your perfect item." %}
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
+    }
+
+    /* ИЗМЕНЕНО: Медиа-запросы для адаптивного дизайна */
+    @media (max-width: 767.98px) {
+        .d-md-block {
+            display: block !important;
+        }
+
+        .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .position-relative .badge {
+            font-size: 0.6rem !important;
+            padding: 0.15rem 0.35rem;
+            transform: translate(-30%, -30%) !important;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .d-flex.gap-2 {
+            gap: 0.5rem !important;
+        }
+
+        .btn {
+            min-width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .position-relative .badge {
+            font-size: 0.5rem !important;
+            padding: 0.1rem 0.25rem;
+            transform: translate(-20%, -20%) !important;
+        }
     }
 </style>
 
@@ -726,24 +782,7 @@ artisans. Filter by category and city to find your perfect item." %}
             new ProductAutocomplete(searchInput, resultsContainer);
         }
 
-        // Add click handlers for product cards
-        document.querySelectorAll('.product-clickable-area').forEach(area => {
-            area.addEventListener('click', function (e) {
-                // Don't navigate if the click was on a button or form inside the clickable area
-                if (e.target.tagName === 'BUTTON' ||
-                    e.target.tagName === 'A' ||
-                    e.target.closest('button') ||
-                    e.target.closest('a') ||
-                    e.target.closest('form')) {
-                    return;
-                }
-
-                const url = this.getAttribute('data-product-url');
-                if (url) {
-                    window.location.href = url;
-                }
-            });
-        });
+        // ИСПРАВЛЕНО: Удален обработчик клика для product-clickable-area, так как теперь используются семантические ссылки
 
         // Добавляем логику для отображения подсказок о переводах категорий
         const categorySelect = document.querySelector('select[name="category"]');

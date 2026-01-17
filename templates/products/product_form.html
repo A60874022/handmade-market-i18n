@@ -93,7 +93,7 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">{% trans "Integer from 1 to 5,000,000 euros" %}</div>
+                                    <div class="form-text">{% trans "Integer from 1 to 5,000 euros" %}</div>
                                 </div>
                                 <div class="col-12">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">
@@ -230,15 +230,41 @@
                                                     </div>
                                                 </div>
                                                 <div class="image-upload-field" style="display: none;">
-                                                    {{ image_form.image }}
-                                                    <div class="form-text mt-1">{% trans "Select a new image" %}</div>
+                                                    <!-- Кастомная кнопка для выбора файла -->
+                                                    <div class="custom-file-input-wrapper mb-2">
+                                                        <button type="button"
+                                                            class="btn btn-outline-primary btn-sm choose-file-btn">
+                                                            📁 {% trans "Choose File" %}
+                                                        </button>
+                                                        <span class="file-name-display ms-2 text-muted small">
+                                                            {% trans "No file chosen" %}
+                                                        </span>
+                                                        <input type="file" name="{{ image_form.image.html_name }}"
+                                                            id="{{ image_form.image.id_for_label }}" class="d-none"
+                                                            accept="image/jpeg,image/png,image/gif,image/webp"
+                                                            data-max-size="5242880">
+                                                    </div>
                                                 </div>
                                             </div>
                                             {% else %}
                                             <!-- Для новых изображений -->
-                                            <label class="form-label">{% trans "Image" %}</label>
-                                            {{ image_form.image }}
-                                            <div class="form-text">{% trans "Select an image file" %}</div>
+                                            <div class="new-image">
+                                                <label class="form-label">{% trans "Image" %}</label>
+                                                <!-- Кастомная кнопка для выбора файла -->
+                                                <div class="custom-file-input-wrapper mb-2">
+                                                    <button type="button"
+                                                        class="btn btn-outline-primary btn-sm choose-file-btn">
+                                                        📁 {% trans "Choose File" %}
+                                                    </button>
+                                                    <span class="file-name-display ms-2 text-muted small">
+                                                        {% trans "No file chosen" %}
+                                                    </span>
+                                                    <input type="file" name="{{ image_form.image.html_name }}"
+                                                        id="{{ image_form.image.id_for_label }}" class="d-none"
+                                                        accept="image/jpeg,image/png,image/gif,image/webp"
+                                                        data-max-size="5242880">
+                                                </div>
+                                            </div>
                                             {% endif %}
 
                                             {% if image_form.image.errors %}
@@ -518,6 +544,16 @@
     .no-file-message {
         font-size: 0.75rem;
     }
+
+    .custom-file-input-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .file-name-display {
+        font-size: 0.875rem;
+        min-height: 1.5rem;
+    }
 </style>
 
 <script>
@@ -533,20 +569,23 @@
 
         // Сообщения и подсказки
         deleteFile: "{% trans 'Delete file' %}",
+        chooseFile: "{% trans 'Choose File' %}",
+        noFileChosen: "{% trans 'No file chosen' %}",
+        fileSelected: "{% trans 'File selected: ' %}",
         selectNewImage: "{% trans 'Select a new image' %}",
         selectImageFile: "{% trans 'Select an image file' %}",
         chooseCategory: "{% trans 'Choose category' %}",
         productNamePlaceholder: "{% trans 'For example: Handmade knitted scarf' %}",
         descriptionPlaceholder: "{% trans 'Describe your product: materials, sizes, manufacturing features...' %}",
-        pricePlaceholder: "{% trans '1000' %}",
+        pricePlaceholder: "{% trans '50' %}",
         firstUploadImage: "{% trans 'First upload an image' %}",
 
         // Ошибки и валидация
         cannotSetMainWithoutFile: "{% trans 'Cannot set image as main without uploaded file!' %}",
         chooseCategoryError: "{% trans 'Select product category' %}",
         enterValidPrice: "{% trans 'Enter valid price' %}",
-        priceMinError: "{% trans 'Price must be at least 1 ruble' %}",
-        priceMaxError: "{% trans 'Price cannot exceed 5000000 euros' %}",
+        priceMinError: "{% trans 'Price must be at least 1 euro' %}",
+        priceMaxError: "{% trans 'Price cannot exceed 5000 euros' %}",
         enterProductName: "{% trans 'Enter product name' %}",
         nameValidationError: "{% blocktrans trimmed %}Name must contain only letters, numbers and spaces{% endblocktrans %}",
         enterDescription: "{% trans 'Enter product description' %}",
@@ -556,17 +595,22 @@
         maxImagesWarning: "{% trans 'Maximum number of images: 4' %}",
 
         // Информационные сообщения
-        priceLimitReached: "{% trans 'Reached limit of 7 digits' %}",
-        canEnterDigits: "{% trans 'You can enter up to 7 digits' %}",
+        priceLimitReached: "{% trans 'Reached limit of 4 digits' %}",
+        canEnterDigits: "{% trans 'You can enter up to 4 digits' %}",
         charactersCount: "{% trans 'characters (left: ' %}",
-        charactersLeft: "{% trans 'characters left' %}"
+        charactersLeft: "{% trans 'characters left' %}",
+
+        // Валидация файлов
+        unsupportedFormat: "{% trans 'Unsupported file format. Use JPG, PNG, GIF or WebP.' %}",
+        fileSizeExceeded: "{% trans 'File size must not exceed 5MB.' %}",
+        errorReadingFile: "{% trans 'Error reading file. Please try another image.' %}"
     };
 
     document.addEventListener('DOMContentLoaded', function () {
         // Константы для валидации цены
         const MIN_PRICE = 1;
-        const MAX_PRICE = 5000000;
-        const MAX_DIGITS = 7;
+        const MAX_PRICE = 5000;  // Изменено для евро
+        const MAX_DIGITS = 4;    // Изменено для 5000 евро (4 цифры вместо 7)
 
         // Функция для форматирования чисел с разделителями тысяч
         function formatNumber(number) {
@@ -588,6 +632,75 @@
         // Переменная для отслеживания основного изображения
         let hasMainImage = false;
 
+        // Функция для инициализации кастомных кнопок выбора файла
+        function initializeCustomFileButtons() {
+            document.querySelectorAll('.choose-file-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const fileInput = this.parentNode.querySelector('input[type="file"]');
+                    if (fileInput) {
+                        fileInput.click();
+                    }
+                });
+            });
+
+            // Обработчики для изменения файловых инпутов
+            document.querySelectorAll('input[type="file"]').forEach(fileInput => {
+                fileInput.addEventListener('change', function () {
+                    const fileNameDisplay = this.parentNode.querySelector('.file-name-display');
+                    const file = this.files[0];
+
+                    if (file) {
+                        if (fileNameDisplay) {
+                            fileNameDisplay.textContent = translations.fileSelected + file.name;
+                        }
+
+                        // Валидация файла
+                        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                        const maxSize = 5242880; // 5MB
+
+                        if (!validTypes.includes(file.type)) {
+                            showErrorMessage(this.parentNode, translations.unsupportedFormat);
+                            this.value = '';
+                            if (fileNameDisplay) {
+                                fileNameDisplay.textContent = translations.noFileChosen;
+                            }
+                            return;
+                        }
+
+                        if (file.size > maxSize) {
+                            showErrorMessage(this.parentNode, translations.fileSizeExceeded);
+                            this.value = '';
+                            if (fileNameDisplay) {
+                                fileNameDisplay.textContent = translations.noFileChosen;
+                            }
+                            return;
+                        }
+
+                        // Убрать сообщение об ошибке, если оно было
+                        clearErrorMessage(this.parentNode);
+
+                        // Показать кнопку удаления для новых файлов
+                        const removeBtn = this.closest('.image-form').querySelector('.btn-remove-image');
+                        if (removeBtn) {
+                            removeBtn.style.display = 'flex';
+                        }
+                    } else {
+                        if (fileNameDisplay) {
+                            fileNameDisplay.textContent = translations.noFileChosen;
+                        }
+                        // Скрыть кнопку удаления если файла нет
+                        const removeBtn = this.closest('.image-form').querySelector('.btn-remove-image');
+                        if (removeBtn) {
+                            removeBtn.style.display = 'none';
+                        }
+                    }
+
+                    // Обновить состояние чекбоксов
+                    updateMainCheckboxes();
+                });
+            });
+        }
+
         // Функция для проверки, есть ли у изображения файл
         function hasImageFile(imageForm) {
             const fileInput = imageForm.querySelector('input[type="file"]');
@@ -596,7 +709,10 @@
 
             // Если есть существующее изображение и оно не помечено на удаление
             if (existingImage && (!deleteCheckbox || !deleteCheckbox.checked)) {
-                return true;
+                const img = existingImage.querySelector('img');
+                if (img && img.src) {
+                    return true;
+                }
             }
 
             // Если есть загруженный файл
@@ -739,20 +855,14 @@
                 const removeBtn = fileInput.closest('.image-form').querySelector('.btn-remove-image');
                 if (!removeBtn) return;
 
-                fileInput.addEventListener('change', function () {
-                    removeBtn.style.display = this.files.length > 0 ? 'flex' : 'none';
-                    // Обновляем состояние чекбоксов после загрузки файла
-                    updateMainCheckboxes();
-                });
-
                 removeBtn.addEventListener('click', function () {
                     fileInput.value = '';
                     removeBtn.style.display = 'none';
 
-                    // Также сбрасываем preview если он есть
-                    const preview = fileInput.closest('.image-form').querySelector('img');
-                    if (preview && preview.src.startsWith('blob:')) {
-                        preview.src = '';
+                    // Сбросить отображение имени файла
+                    const fileNameDisplay = fileInput.parentNode.querySelector('.file-name-display');
+                    if (fileNameDisplay) {
+                        fileNameDisplay.textContent = translations.noFileChosen;
                     }
 
                     // Обновляем состояние чекбоксов после удаления файла
@@ -773,6 +883,10 @@
                         // Очищаем поле замены и скрываем его
                         if (fileInput) {
                             fileInput.value = '';
+                            const fileNameDisplay = fileInput.parentNode.querySelector('.file-name-display');
+                            if (fileNameDisplay) {
+                                fileNameDisplay.textContent = translations.noFileChosen;
+                            }
                         }
                         replaceField.style.display = 'none';
                         // Показываем оригинальное изображение
@@ -796,6 +910,7 @@
         // Инициализация кнопок очистки и удаления
         setupClearFieldButtons();
         setupImageRemoveButtons();
+        initializeCustomFileButtons();
 
         // Обработчики для кнопок замены изображения
         document.querySelectorAll('.replace-image-btn').forEach(btn => {
@@ -951,7 +1066,7 @@
                 // Разрешаем только цифры
                 value = value.replace(/\D/g, '');
 
-                // Ограничиваем количество цифр до 7 (для 5 000 000)
+                // Ограничиваем количество цифр до 4 (для 5000)
                 if (value.length > MAX_DIGITS) {
                     value = value.substring(0, MAX_DIGITS);
                     // Показываем уведомление о достижении лимита
@@ -1187,6 +1302,23 @@
                     errorDiv.remove();
                 }
             }, 5000);
+        }
+
+        // Вспомогательные функции для отображения ошибок файлов
+        function showErrorMessage(container, message) {
+            clearErrorMessage(container);
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-danger small mt-1';
+            errorDiv.textContent = message;
+            container.appendChild(errorDiv);
+        }
+
+        function clearErrorMessage(container) {
+            const existingError = container.querySelector('.text-danger.small');
+            if (existingError) {
+                existingError.remove();
+            }
         }
 
         // Инициализация состояния чекбоксов при загрузке страницы

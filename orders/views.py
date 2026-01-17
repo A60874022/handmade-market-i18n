@@ -6,7 +6,6 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as _
 
 from notifications.services import NotificationService
 from products.models import Product
@@ -200,7 +199,7 @@ def create_order(request):
                 ),
             )
 
-        order = Order.objects.create(customer=request.user, status=_("placed"))
+        order = Order.objects.create(customer=request.user, status="placed")
         total_amount = 0
         masters_notified = set()
 
@@ -236,7 +235,7 @@ def create_order(request):
 
         messages.success(
             request,
-            _("Order #%(id)s successfully placed! Amount: %(amount)s RUB")
+            _("Order #%(id)s successfully placed! Amount: %(amount)s €")
             % {"id": order.id, "amount": total_amount},
         )
         return redirect("orders:purchase_orders")
@@ -319,7 +318,7 @@ def delete_order(request, order_id):
         order_status = order.status
 
         # Additional check: cannot delete delivered orders
-        if order.status == _("delivered"):
+        if order.status == "delivered":
             messages.error(request, _("Cannot delete delivered order."))
             return redirect("orders:purchase_orders")
 

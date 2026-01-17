@@ -133,6 +133,7 @@ class UserLoginForm(AuthenticationForm):
     """
 
     username = forms.EmailField(
+        label=_("Email"),
         widget=forms.EmailInput(
             attrs={
                 "class": "form-control",
@@ -142,6 +143,7 @@ class UserLoginForm(AuthenticationForm):
         )
     )
     password = forms.CharField(
+        label=_("Password"),
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
@@ -203,19 +205,49 @@ class EmailVerificationForm(forms.Form):
 
 
 class UserEditForm(forms.ModelForm):
-    # Remove password field so user doesn't see it in plain text
-    password = None
+    """
+    Form for editing user information
+    """
 
     class Meta:
         model = User
-        fields = (
-            "email",
-            "first_name",
-            "last_name",
-        )  # Add fields as needed
+        fields = ("email", "first_name", "last_name")
+        widgets = {
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": _("your.email@example.com"),
+                }
+            ),
+            "first_name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": _("First name"),
+                }
+            ),
+            "last_name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": _("Last name"),
+                }
+            ),
+        }
+        labels = {
+            "email": _("Email"),
+            "first_name": _("First name"),
+            "last_name": _("Last name"),
+        }
+        help_texts = {
+            "email": _("Your email address for notifications and login"),
+        }
+
 
 class ProfileEditForm(forms.ModelForm):
-    # Добавляем поле для имени
+    """
+    Form for editing profile information
+    """
+
+    # Add name field
     first_name = forms.CharField(
         max_length=100,
         required=False,
@@ -295,7 +327,7 @@ class ProfileEditForm(forms.ModelForm):
         if self.instance and self.instance.city:
             self.fields["city_search"].initial = self.instance.city.name
             
-        # Если имя уже есть в профиле, используем его, иначе берем из пользователя
+        # If name already exists in profile, use it, otherwise take from user
         if self.instance and not self.instance.first_name and self.instance.user:
             self.fields["first_name"].initial = self.instance.user.first_name or ""
 
@@ -314,7 +346,7 @@ class ProfileEditForm(forms.ModelForm):
             except City.DoesNotExist:
                 self.add_error("city_search", _("Select city from list"))
 
-        # Validate first_name - необязательное, но если заполнено, проверяем длину
+        # Validate first_name - optional, but if filled, check length
         first_name = cleaned_data.get("first_name", "").strip()
         if first_name and len(first_name) > 100:
             self.add_error("first_name", _("Name is too long. Maximum 100 characters."))
@@ -353,7 +385,7 @@ class ProfileEditForm(forms.ModelForm):
         """Save profile with first name"""
         profile = super().save(commit=False)
         
-        # Также обновим first_name в User модели для совместимости
+        # Also update first_name in User model for compatibility
         if self.cleaned_data.get('first_name') and profile.user:
             profile.user.first_name = self.cleaned_data['first_name'].strip()
             if commit:
@@ -364,7 +396,12 @@ class ProfileEditForm(forms.ModelForm):
         
         return profile
 
+
 class AccountDeleteForm(forms.Form):
+    """
+    Form for account deletion confirmation
+    """
+    
     confirm = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),

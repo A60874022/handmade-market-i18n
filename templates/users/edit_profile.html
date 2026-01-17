@@ -10,273 +10,209 @@
             <!-- Header -->
             <div class="text-center mb-5">
                 <h1 class="fw-bold mb-3">👤 {% trans "Edit Profile" %}</h1>
-                <p class="text-muted">{% trans "Update your information and configure your craftsman account" %}</p>
+                <p class="text-muted">{% trans "Update your information" %}</p>
             </div>
 
-            <!-- Navigation tabs -->
-            <ul class="nav nav-tabs nav-justified mb-4" id="profileTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main"
-                        type="button" role="tab" aria-controls="main" aria-selected="true">
-                        📝 {% trans "Main Information" %}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="goods-tab" data-bs-toggle="tab" data-bs-target="#goods" type="button"
-                        role="tab" aria-controls="goods" aria-selected="false">
-                        🛍️ {% trans "My Products" %}
-                    </button>
-                </li>
-            </ul>
+            <!-- Display only first system message -->
+            {% if messages %}
+            {% for message in messages %}
+            {% if forloop.first %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
 
-            <!-- Tab content -->
-            <div class="tab-content" id="profileTabsContent">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="profile-form">
+                        {% csrf_token %}
 
-                <!-- "Main Information" tab -->
-                <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
+                        <div class="row">
+                            <!-- Avatar and contact information -->
+                            <div class="col-lg-4 mb-4">
+                                <div class="text-center">
+                                    <!-- Avatar display -->
+                                    <div class="position-relative d-inline-block mb-3">
+                                        {% if user.profile.avatar and user.profile.avatar.url %}
+                                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle"
+                                            alt="{% blocktrans with email=user.email %}Avatar of {{ email }}{% endblocktrans %}"
+                                            style="width: 150px; height: 150px; object-fit: cover;" id="avatar-preview"
+                                            data-current-avatar="{{ user.profile.avatar.url }}">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                                            style="width: 150px; height: 150px;" id="default-avatar">
+                                            <span class="text-white" style="font-size: 3rem;">👤</span>
+                                        </div>
+                                        <img src="" class="rounded-circle d-none"
+                                            style="width: 150px; height: 150px; object-fit: cover;" id="avatar-preview">
+                                        {% endif %}
+                                    </div>
 
-                    <!-- Display only first system message -->
-                    {% if messages %}
-                    {% for message in messages %}
-                    {% if forloop.first %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
-                        {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                    {% endif %}
+                                    <h5 class="fw-bold">{{ user.email }}</h5>
 
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <form method="post" enctype="multipart/form-data" id="profile-form">
-                                {% csrf_token %}
+                                    <!-- Display current name if available -->
+                                    {% if user.profile.first_name %}
+                                    <p class="text-success mb-2">
+                                        <strong>{{ user.profile.first_name }}</strong>
+                                    </p>
+                                    {% endif %}
 
-                                <div class="row">
-                                    <!-- Avatar and contact information -->
-                                    <div class="col-lg-4 mb-4">
-                                        <div class="text-center">
-                                            <!-- Avatar display -->
-                                            <div class="position-relative d-inline-block mb-3">
-                                                {% if user.profile.avatar and user.profile.avatar.url %}
-                                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle"
-                                                    alt="{% blocktrans %}Avatar of {{ user.email }}{% endblocktrans %}"
-                                                    style="width: 150px; height: 150px; object-fit: cover;"
-                                                    id="avatar-preview"
-                                                    data-current-avatar="{{ user.profile.avatar.url }}">
-                                                {% else %}
-                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
-                                                    style="width: 150px; height: 150px;" id="default-avatar">
-                                                    <span class="text-white" style="font-size: 3rem;">👤</span>
+                                    {% if user.profile.city %}
+                                    <p class="text-muted mb-3">📍 {{ user.profile.city.name }}</p>
+                                    {% endif %}
+
+                                    <!-- Craftsman badge -->
+                                    <div class="mb-3">
+                                        <span class="badge bg-success fs-6">🎨 {% trans "Craftsman" %}</span>
+                                    </div>
+
+                                    <!-- Avatar upload with custom buttons -->
+                                    <div class="mb-3">
+                                        <div class="avatar-upload-container">
+                                            {% if user.profile.avatar and user.profile.avatar.url %}
+                                            <!-- For existing avatar -->
+                                            <div class="existing-avatar">
+                                                <div class="d-flex flex-column align-items-center gap-2 mb-2"
+                                                    id="avatar-buttons">
+                                                    <!-- Custom file selection button -->
+                                                    <div class="custom-file-input-wrapper mb-2">
+                                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                                            id="choose-file-btn">
+                                                            📁 {% trans "Change Photo" %}
+                                                        </button>
+                                                        <span id="file-name-display"
+                                                            class="ms-2 text-muted small d-none"></span>
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        id="remove-avatar-btn">
+                                                        ❌ {% trans "Remove" %}
+                                                    </button>
                                                 </div>
-                                                <img src="" class="rounded-circle d-none"
-                                                    style="width: 150px; height: 150px; object-fit: cover;"
-                                                    id="avatar-preview">
-                                                {% endif %}
+                                                <div class="avatar-upload-field" style="display: none;">
+                                                    <input type="file" name="avatar" id="avatar-input"
+                                                        class="form-control d-none"
+                                                        accept="image/jpeg,image/png,image/gif,image/webp"
+                                                        data-max-size="5242880">
+                                                </div>
+                                                <input type="hidden" name="avatar-clear" id="avatar-clear"
+                                                    value="false">
                                             </div>
-
-                                            <h5 class="fw-bold">{{ user.email }}</h5>
-
-                                            <!-- Display current name if available -->
-                                            {% if user.profile.first_name %}
-                                            <p class="text-success mb-2">
-                                                <strong>👋 {% trans "Display name:" %} {{ user.profile.first_name}}</strong>
-                                            </p>
-                                            {% endif %}
-
-                                            {% if user.profile.city %}
-                                            <p class="text-muted mb-3">📍 {{ user.profile.city.name }}</p>
                                             {% else %}
-                                            <p class="text-muted mb-3">📍 {% trans "City not specified" %}</p>
+                                            <!-- For new avatar -->
+                                            <div class="new-avatar">
+                                                <div class="d-flex flex-column align-items-center gap-2 mb-2"
+                                                    id="avatar-buttons-new">
+                                                    <!-- Custom file selection button -->
+                                                    <div class="custom-file-input-wrapper mb-2">
+                                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                                            id="choose-file-btn-new">
+                                                            📁 {% trans "Add Photo" %}
+                                                        </button>
+                                                        <span id="file-name-display-new"
+                                                            class="ms-2 text-muted small"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="avatar-upload-field" style="display: none;">
+                                                    <input type="file" name="avatar" id="avatar-input-new"
+                                                        class="form-control d-none"
+                                                        accept="image/jpeg,image/png,image/gif,image/webp"
+                                                        data-max-size="5242880">
+                                                </div>
+                                            </div>
                                             {% endif %}
-
-                                            <!-- Craftsman badge -->
-                                            <div class="mb-3">
-                                                <span class="badge bg-success fs-6">🎨 {% trans "Craftsman" %}</span>
-                                            </div>
-
-                                            <!-- Avatar upload with instant preview -->
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">
-                                                    📷 {% trans "Change Avatar" %}
-                                                </label>
-                                                <div class="avatar-upload-container">
-                                                    {% if user.profile.avatar and user.profile.avatar.url %}
-                                                    <!-- For existing avatar -->
-                                                    <div class="existing-avatar">
-                                                        <div class="d-flex flex-column align-items-center gap-2 mb-2"
-                                                            id="avatar-buttons">
-                                                            <button type="button" class="btn btn-outline-primary btn-sm"
-                                                                onclick="document.getElementById('avatar-input').click()">
-                                                                📁 {% trans "Change Avatar" %}
-                                                            </button>
-                                                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                                                id="remove-avatar-btn">
-                                                                ❌ {% trans "Remove" %}
-                                                            </button>
-                                                        </div>
-                                                        <div class="avatar-upload-field" style="display: none;">
-                                                            <input type="file" name="avatar" id="avatar-input"
-                                                                class="form-control d-none"
-                                                                accept="image/jpeg,image/png,image/gif,image/webp"
-                                                                data-max-size="5242880">
-                                                        </div>
-                                                        <input type="hidden" name="avatar-clear" id="avatar-clear"
-                                                            value="false">
-                                                    </div>
-                                                    {% else %}
-                                                    <!-- For new avatar -->
-                                                    <div class="new-avatar">
-                                                        <input type="file" name="avatar" id="avatar-input"
-                                                            class="form-control"
-                                                            accept="image/jpeg,image/png,image/gif,image/webp"
-                                                            data-max-size="5242880">
-                                                        <div class="form-text mt-2">{% trans "Select image file (JPG, PNG, GIF, WebP, max. 5MB)" %}</div>
-                                                    </div>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="error-message text-danger small mt-1 d-none"></div>
-                                                <div class="form-text">{% trans "Recommended size: 150x150 px. Formats: JPG, PNG, GIF, WebP" %}</div>        
-                                            </div>
                                         </div>
-                                    </div>
-                                    <!-- Main form fields -->
-                                    <div class="col-lg-8">
-                                        <div class="row">
-                                            <!-- Email - Display only, not editable -->
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label fw-bold">
-                                                    📧 {% trans "Email Address" %}
-                                                </label>
-                                                <div class="form-control-plaintext bg-light p-3 rounded"
-                                                    style="border: 2px solid #e9ecef;">
-                                                    <strong>{{ user.email }}</strong>
-                                                    <input type="hidden" name="email" value="{{ user.email }}">
-                                                </div>
-                                                <div class="form-text mt-1">
-                                                    <small class="text-muted">{% trans "Email cannot be changed"%}</small>
-                                                </div>
-                                            </div>
-
-                                            <!-- Seller Name - NEW FIELD -->
-                                            <div class="col-12 mb-3">
-                                                <label for="{{ profile_form.first_name.id_for_label }}"
-                                                    class="form-label fw-bold">
-                                                    👑 {% trans "Your Name" %}
-                                                </label>
-                                                {{ profile_form.first_name }}
-                                                {% if profile_form.first_name.errors %}
-                                                <div class="text-danger small mt-1">
-                                                    {{ profile_form.first_name.errors.0 }}
-                                                </div>
-                                                {% endif %}
-                                                <div class="form-text">
-                                                    {% trans "This name will be displayed as your seller name in product cards and detail pages" %}
-                                                </div>
-                                            </div>
-
-                                            <!-- City with autocomplete -->
-                                            <div class="col-12 mb-3">
-                                                <label for="{{ profile_form.city_search.id_for_label }}"
-                                                    class="form-label fw-bold">
-                                                    🏙️ {% trans "City" %}
-                                                </label>
-                                                {{ profile_form.city_search }}
-                                                <!-- Hidden field for city ID -->
-                                                {{ profile_form.city }}
-                                                <!-- Datalist for autocomplete -->
-                                                <datalist id="cities-datalist">
-                                                    {% for city in cities %}
-                                                    <option value="{{ city.name }}">{{ city.name }}</option>
-                                                    {% endfor %}
-                                                </datalist>
-                                                {% if profile_form.city_search.errors %}
-                                                <div class="text-danger small mt-1">
-                                                    {{ profile_form.city_search.errors.0 }}
-                                                </div>
-                                                {% endif %}
-                                                <div class="form-text">{% trans "Start typing city name and select from list" %}</div>
-                                            </div>
-
-                                            <!-- About Me -->
-                                            <div class="col-12 mb-4">
-                                                <label for="{{ profile_form.bio.id_for_label }}"
-                                                    class="form-label fw-bold">
-                                                    💬 {% trans "About Me" %}
-                                                </label>
-                                                {{ profile_form.bio }}
-                                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                                    <div class="form-text">{% trans "Tell about yourself, your experience and creativity" %}</div>
-                                                    <div class="form-text text-end">
-                                                        <span id="bio-counter">500</span> {% trans "characters left" %}
-                                                    </div>
-                                                </div>
-                                                {% if profile_form.bio.errors %}
-                                                <div class="text-danger small mt-1">
-                                                    {{ profile_form.bio.errors.0 }}
-                                                </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                        <!-- Action buttons -->
-                                        <div class="d-flex gap-3 flex-wrap">
-                                            <button type="submit" class="btn btn-primary btn-lg px-4">
-                                                💾 {% trans "Save Changes" %}
-                                            </button>
-                                            <a href="{% url 'products:catalog' %}"
-                                                class="btn btn-outline-secondary btn-lg px-4">
-                                                ← {% trans "Back to Catalog" %}
-                                            </a>
-                                        </div>
+                                        <div class="error-message text-danger small mt-1 d-none"></div>
+                                        <div class="form-text">JPG, PNG, GIF, WebP, max 5MB</div>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
+                            </div>
+                            <!-- Main form fields -->
+                            <div class="col-lg-8">
+                                <div class="row">
+                                    <!-- Email - Display only, not editable -->
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-bold">
+                                            📧 {% trans "Email" %}
+                                        </label>
+                                        <div class="form-control-plaintext bg-light p-3 rounded"
+                                            style="border: 2px solid #e9ecef;">
+                                            <strong>{{ user.email }}</strong>
+                                            <input type="hidden" name="email" value="{{ user.email }}">
+                                        </div>
+                                    </div>
 
-                    <!-- Account deletion block -->
-                    <div class="card border-danger mt-4">
-                        <div class="card-header bg-danger text-white">
-                            <h6 class="mb-0">🗑️ {% trans "Danger Zone" %}</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h6 class="fw-bold text-danger">{% trans "Account Deletion" %}</h6>
-                                    <p class="text-muted small mb-0">{% trans "After account deletion, data recovery is
-                                        impossible. All your products, orders and messages will be permanently
-                                        deleted."%}</p>
+                                    <!-- Seller Name -->
+                                    <div class="col-12 mb-3">
+                                        <label for="{{ profile_form.first_name.id_for_label }}"
+                                            class="form-label fw-bold">
+                                            👑 {% trans "Your Name" %}
+                                        </label>
+                                        {{ profile_form.first_name }}
+                                        {% if profile_form.first_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ profile_form.first_name.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- City with autocomplete -->
+                                    <div class="col-12 mb-3">
+                                        <label for="{{ profile_form.city_search.id_for_label }}"
+                                            class="form-label fw-bold">
+                                            🏙️ {% trans "City" %}
+                                        </label>
+                                        {{ profile_form.city_search }}
+                                        <!-- Hidden field for city ID -->
+                                        {{ profile_form.city }}
+                                        <!-- Datalist for autocomplete -->
+                                        <datalist id="cities-datalist">
+                                            {% for city in cities %}
+                                            <option value="{{ city.name }}">{{ city.name }}</option>
+                                            {% endfor %}
+                                        </datalist>
+                                        {% if profile_form.city_search.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ profile_form.city_search.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- About Me -->
+                                    <div class="col-12 mb-4">
+                                        <label for="{{ profile_form.bio.id_for_label }}" class="form-label fw-bold">
+                                            💬 {% trans "About Me" %}
+                                        </label>
+                                        {{ profile_form.bio }}
+                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                            <div class="form-text text-end">
+                                                <span id="bio-counter">500</span>
+                                            </div>
+                                        </div>
+                                        {% if profile_form.bio.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ profile_form.bio.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="col-md-4 text-md-end">
-                                    <a href="{% url 'users:delete_account' %}" class="btn btn-outline-danger">
-                                        🗑️ {% trans "Delete Account" %}
+
+                                <!-- Action buttons -->
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <button type="submit" class="btn btn-primary btn-lg px-4">
+                                        💾 {% trans "Save Changes" %}
+                                    </button>
+                                    <a href="{% url 'products:catalog' %}"
+                                        class="btn btn-outline-secondary btn-lg px-4">
+                                        ← {% trans "Back to Catalog" %}
                                     </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- "My Products" tab -->
-                <div class="tab-pane fade" id="goods" role="tabpanel" aria-labelledby="goods-tab">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-4 text-center">
-                            <div class="mb-4" style="font-size: 4rem;">🎁</div>
-                            <h4 class="fw-bold mb-3">{% trans "Product Management" %}</h4>
-                            <p class="text-muted mb-4">{% trans "Add and edit your handmade products" %}</p>
-
-                            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                <a href="{% url 'products:my_products' %}" class="btn btn-primary btn-lg px-4">
-                                    🛍️ {% trans "My Products" %}
-                                </a>
-                                <a href="{% url 'products:product_add' %}" class="btn btn-outline-primary btn-lg px-4">
-                                    ➕ {% trans "Add New Product" %}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -284,24 +220,6 @@
 </div>
 
 <style>
-    .nav-tabs .nav-link {
-        color: #6c757d;
-        border: none;
-        padding: 1rem 1.5rem;
-        font-weight: 500;
-    }
-
-    .nav-tabs .nav-link.active {
-        color: #8B4513;
-        border-bottom: 3px solid #8B4513;
-        background: transparent;
-    }
-
-    .nav-tabs .nav-link:hover {
-        color: #8B4513;
-        border-bottom: 3px solid #8B4513;
-    }
-
     .btn-primary {
         background-color: #8B4513;
         border-color: #8B4513;
@@ -375,22 +293,48 @@
         filter: blur(2px);
     }
 
-    /* Style for the name display in avatar section */
     .text-success strong {
         color: #198754;
         font-size: 1.1rem;
+    }
+
+    .custom-file-input-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .file-name-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-left: 0.5rem;
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Объект переводов для JavaScript
+        const translations = {
+            changePhoto: "{% trans 'Change Photo' %}",
+            addPhoto: "{% trans 'Add Photo' %}",
+            fileSelected: "{% trans 'File selected' %}",
+            charactersLeft: "{% trans 'characters left' %}",
+            avatarWillBeRemoved: "{% trans 'Avatar will be removed after saving changes' %}",
+            errorReadingFile: "{% trans 'Error reading file. Please try another image.' %}",
+            fileSizeExceeded: "{% trans 'File size must not exceed 5MB.' %}",
+            unsupportedFormat: "{% trans 'Unsupported file format. Use JPG, PNG, GIF or WebP.' %}",
+            aboutMeLimit: "{% trans '\"About Me\" field must not exceed 500 characters' %}",
+            nameFieldLimit: "{% trans '\"Your Name\" field must not exceed 100 characters' %}"
+        };
+
         // DOM Elements
-        const avatarInput = document.getElementById('avatar-input');
+        const avatarInput = document.getElementById('avatar-input') || document.getElementById('avatar-input-new');
+        const chooseFileBtn = document.getElementById('choose-file-btn') || document.getElementById('choose-file-btn-new');
+        const fileNameDisplay = document.getElementById('file-name-display') || document.getElementById('file-name-display-new');
         const avatarPreview = document.getElementById('avatar-preview');
         const defaultAvatar = document.getElementById('default-avatar');
         const removeAvatarBtn = document.getElementById('remove-avatar-btn');
         const avatarClearInput = document.getElementById('avatar-clear');
-        const avatarButtons = document.getElementById('avatar-buttons');
         const errorMessage = document.querySelector('.error-message');
         const bioField = document.getElementById('{{ profile_form.bio.id_for_label }}');
         const bioCounter = document.getElementById('bio-counter');
@@ -433,7 +377,7 @@
                     firstNameField.parentNode.appendChild(counterElement);
                 }
 
-                counterElement.textContent = `${remaining} characters left`;
+                counterElement.textContent = `${remaining}`;
 
                 if (remaining < 10) {
                     counterElement.style.color = '#dc3545';
@@ -448,6 +392,15 @@
             updateFirstNameCounter(); // Initialize on load
         }
 
+        // Custom file selection button handler
+        if (chooseFileBtn) {
+            chooseFileBtn.addEventListener('click', function () {
+                if (avatarInput) {
+                    avatarInput.click();
+                }
+            });
+        }
+
         // Avatar input change handler
         if (avatarInput) {
             avatarInput.addEventListener('change', function (e) {
@@ -457,7 +410,16 @@
 
                 if (!file) {
                     resetAvatarPreview();
+                    if (fileNameDisplay) {
+                        fileNameDisplay.textContent = '';
+                    }
                     return;
+                }
+
+                // Update file name display
+                if (fileNameDisplay) {
+                    fileNameDisplay.textContent = `${file.name}`;
+                    fileNameDisplay.classList.remove('d-none');
                 }
 
                 // File validation
@@ -465,13 +427,13 @@
                 const maxSize = parseInt(avatarInput.getAttribute('data-max-size')) || 5242880; // 5MB
 
                 if (!validTypes.includes(file.type)) {
-                    showError('{% trans "Unsupported file format. Use JPG, PNG, GIF or WebP." %}');
+                    showError(translations.unsupportedFormat);
                     resetAvatarPreview();
                     return;
                 }
 
                 if (file.size > maxSize) {
-                    showError('{% trans "File size must not exceed 5MB." %}');
+                    showError(translations.fileSizeExceeded);
                     resetAvatarPreview();
                     return;
                 }
@@ -501,7 +463,7 @@
                 };
 
                 reader.onerror = function () {
-                    showError('{% trans "Error reading file. Please try another image." %}');
+                    showError(translations.errorReadingFile);
                     resetAvatarPreview();
                 };
 
@@ -519,12 +481,17 @@
                 resetAvatarPreview();
 
                 // Show message
-                showInfoMessage('{% trans "Avatar will be removed after saving changes" %}', 'info');
+                showInfoMessage(translations.avatarWillBeRemoved, 'info');
             });
         }
 
         // Helper functions
         function resetAvatarPreview() {
+            // Reset file name display
+            if (fileNameDisplay) {
+                fileNameDisplay.textContent = '';
+            }
+
             if (avatarClearInput && avatarClearInput.value === 'true') {
                 // Avatar marked for removal
                 if (avatarPreview) {
@@ -605,7 +572,7 @@
                 // Check "About Me" field character limit
                 if (bioField && bioField.value.length > 500) {
                     e.preventDefault();
-                    showInfoMessage('{% trans "\"About Me\" field must not exceed 500 characters" %}', 'danger');
+                    showInfoMessage(translations.aboutMeLimit, 'danger');
                     bioField.focus();
                     return false;
                 }
@@ -613,7 +580,7 @@
                 // Check First Name field character limit
                 if (firstNameField && firstNameField.value.length > 100) {
                     e.preventDefault();
-                    showInfoMessage('{% trans "\"Your Name\" field must not exceed 100 characters" %}', 'danger');
+                    showInfoMessage(translations.nameFieldLimit, 'danger');
                     firstNameField.focus();
                     return false;
                 }
@@ -626,13 +593,13 @@
 
                     if (!validTypes.includes(file.type)) {
                         e.preventDefault();
-                        showError('{% trans "Unsupported file format. Use JPG, PNG, GIF or WebP." %}');
+                        showError(translations.unsupportedFormat);
                         return false;
                     }
 
                     if (file.size > maxSize) {
                         e.preventDefault();
-                        showError('{% trans "File size must not exceed 5MB." %}');
+                        showError(translations.fileSizeExceeded);
                         return false;
                     }
                 }

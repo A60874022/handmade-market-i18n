@@ -12,9 +12,9 @@ from django.contrib.auth.views import (
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, FormView, View
 from django.core.paginator import Paginator
+
 from .forms import (
     AccountDeleteForm,
     EmailVerificationForm,
@@ -26,6 +26,7 @@ from .forms import (
 from .models import City, User
 from .services.email_service import email_service
 from products.models import Product
+
 logger = logging.getLogger(__name__)
 
 
@@ -260,7 +261,7 @@ class CustomPasswordResetView(PasswordResetView):
     """
 
     template_name = "users/password_reset.html"
-    email_template_name = "users/password_reset_email.txt"  
+    email_template_name = "users/password_reset_email.txt"
     success_url = reverse_lazy("users:password_reset_done")
 
     def form_valid(self, form):
@@ -400,7 +401,7 @@ def edit_profile(request):
         context = {
             "user_form": user_form,
             "profile_form": profile_form,
-            "cities": cities,  # Add cities to context
+            "cities": cities,
         }
         return render(request, "users/edit_profile.html", context)
 
@@ -432,14 +433,13 @@ def delete_account(request):
                 # Logout user
                 logout(request)
 
-                # Delete account (using saved reference)
+                # Delete account
                 user_to_delete.delete()
 
                 messages.success(
                     request,
-                    _(
-                        f"Account {user_email} has been successfully deleted. We're sorry to see you go!"
-                    ),
+                    _("Account %(email)s has been successfully deleted. We're sorry to see you go!")
+                    % {"email": user_email},
                 )
                 logger.info("Account deleted successfully: %s", user_email)
                 return redirect("home")
@@ -459,7 +459,6 @@ def delete_account(request):
         return redirect("users:edit_profile")
 
 
-
 def public_profile(request, user_id):
     """View public profile of any user"""
     profile_user = get_object_or_404(User, id=user_id)
@@ -467,7 +466,7 @@ def public_profile(request, user_id):
     # Check if user is viewing their own profile
     is_own_profile = request.user.is_authenticated and request.user.id == user_id
     
-    # Get user's profile (will be None if not created yet)
+    # Get user's profile
     profile = getattr(profile_user, 'profile', None)
     
     # Get active products of the user

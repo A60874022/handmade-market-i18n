@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Мои диалоги | HandmadeMarket{% endblock %}
+{% block title %}{% trans "My Dialogues" %} | HandmadeMarket{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -10,19 +10,19 @@
             <!-- Заголовок и кнопки управления -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="fw-bold mb-2">💬 Мои диалоги</h1>
-                    <p class="text-muted">Общайтесь с другими мастерами и покупателями</p>
+                    <h1 class="fw-bold mb-2">💬 {% trans "My Dialogues" %}</h1>
+                    <p class="text-muted">{% trans "Communicate with other craftsmen and buyers" %}</p>
                 </div>
                 <div class="d-flex gap-2">
                     {% if dialogues %}
                     <!-- Кнопка очистки всех диалогов -->
                     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
                         data-bs-target="#clearAllModal">
-                        🗑️ Очистить все
+                        🗑️ {% trans "Clear all" %}
                     </button>
                     {% endif %}
                     <a href="{% url 'products:catalog' %}" class="btn btn-outline-primary">
-                        🛍️ В каталог
+                        🛍️ {% trans "To catalog" %}
                     </a>
                 </div>
             </div>
@@ -41,11 +41,16 @@
                         <span class="fs-4">💬</span>
                     </div>
                     <div class="flex-grow-1">
-                        <h6 class="alert-heading fw-bold mb-1">У вас есть непрочитанные сообщения!</h6>
-                        <p class="mb-0">Всего непрочитанных сообщений: <strong>{{ total_unread }}</strong></p>
+                        <h6 class="alert-heading fw-bold mb-1">{% trans "You have unread messages!" %}</h6>
+                        <p class="mb-0">
+                            {% blocktrans trimmed with unread_count=total_unread %}
+                            Total unread messages: <strong>{{ unread_count }}</strong>
+                            {% endblocktrans %}
+                        </p>
                     </div>
                     <div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="{% trans 'Close' %}"></button>
                     </div>
                 </div>
             </div>
@@ -66,7 +71,7 @@
                                     <div class="position-relative">
                                         {% if dialogue.other_user.profile.avatar %}
                                         <img src="{{ dialogue.other_user.profile.avatar.url }}" class="rounded-circle"
-                                            alt="{{ dialogue.other_user.email }}"
+                                            alt="{{ dialogue.other_user.get_full_name|default:dialogue.other_user.email }}"
                                             style="width: 60px; height: 60px; object-fit: cover;">
                                         {% else %}
                                         <div class="bg-brown text-white rounded-circle d-flex align-items-center justify-content-center"
@@ -78,7 +83,7 @@
                                         <span
                                             class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                             {{ dialogue.unread_count }}
-                                            <span class="visually-hidden">непрочитанных сообщений</span>
+                                            <span class="visually-hidden">{% trans "unread messages" %}</span>
                                         </span>
                                         {% endif %}
                                     </div>
@@ -87,15 +92,14 @@
                                 <!-- Детали диалога -->
                                 <div class="col-md-6 col-9">
                                     <h5 class="card-title fw-bold mb-1">
-                                        {{ dialogue.other_user.email }}
-                                        {% if dialogue.other_user.get_full_name %}
-                                        <small class="text-muted">({{ dialogue.other_user.get_full_name }})</small>
-                                        {% endif %}
+                                        {{ dialogue.other_user.get_full_name|default:dialogue.other_user.email }}
                                     </h5>
 
                                     {% if dialogue.product %}
                                     <p class="text-muted mb-1">
-                                        <small>Товар: {{ dialogue.product.title }}</small>
+                                        <small>
+                                            {% trans "Product:" %} {{ dialogue.product.title }}
+                                        </small>
                                     </p>
                                     {% endif %}
 
@@ -105,14 +109,14 @@
                                         {% if dialogue.last_message %}
                                         <strong>
                                             {% if dialogue.last_message.sender == user %}
-                                            Вы:
+                                            {% trans "You:" %}
                                             {% else %}
-                                            Собеседник:
+                                            {% trans "Interlocutor:" %}
                                             {% endif %}
                                         </strong>
                                         {{ dialogue.last_message.text|truncatewords:10 }}
                                         {% else %}
-                                        <span class="text-muted">Диалог начат</span>
+                                        <span class="text-muted">{% trans "Dialogue started" %}</span>
                                         {% endif %}
                                     </p>
 
@@ -120,7 +124,12 @@
                                         📅 {{ dialogue.updated_at|date:"d.m.Y" }}
                                         • 🕒 {{ dialogue.updated_at|date:"H:i" }}
                                         {% if dialogue.unread_count > 0 %}
-                                        • <span class="text-danger">✉️ {{ dialogue.unread_count }} непрочитанных</span>
+                                        • <span class="text-danger">
+                                            ✉️
+                                            {% blocktrans trimmed with unread_count=dialogue.unread_count %}
+                                            {{ unread_count }} unread
+                                            {% endblocktrans %}
+                                        </span>
                                         {% endif %}
                                     </small>
                                 </div>
@@ -131,15 +140,18 @@
                                         <a href="{% url 'chat:dialogue_detail' dialogue.id %}"
                                             class="btn {% if dialogue.unread_count > 0 %}btn-warning{% else %}btn-primary{% endif %} btn-sm">
                                             {% if dialogue.unread_count > 0 %}
-                                            📨 Открыть ({{ dialogue.unread_count }})
+                                            📨
+                                            {% blocktrans trimmed with unread_count=dialogue.unread_count %}
+                                            Open ({{ unread_count }})
+                                            {% endblocktrans %}
                                             {% else %}
-                                            📨 Открыть чат
+                                            📨 {% trans "Open chat" %}
                                             {% endif %}
                                         </a>
                                         <!-- Кнопка удаления диалога -->
                                         <button type="button" class="btn btn-outline-danger btn-sm"
                                             data-bs-toggle="modal" data-bs-target="#deleteModal{{ dialogue.id }}">
-                                            🗑️ Удалить
+                                            🗑️ {% trans "Delete" %}
                                         </button>
                                     </div>
                                 </div>
@@ -155,55 +167,58 @@
                         <div class="modal-content">
                             <div class="modal-header border-0">
                                 <h5 class="modal-title fw-bold" id="deleteModalLabel{{ dialogue.id }}">
-                                    🗑️ Удаление диалога
+                                    🗑️ {% trans "Delete Dialogue" %}
                                 </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                    aria-label="{% trans 'Close' %}"></button>
                             </div>
                             <div class="modal-body text-center py-4">
                                 <div class="mb-4" style="font-size: 3rem;">⚠️</div>
-                                <h6 class="fw-bold mb-3">Вы уверены, что хотите удалить диалог?</h6>
+                                <h6 class="fw-bold mb-3">{% trans "Are you sure you want to delete the dialogue?" %}
+                                </h6>
 
                                 <!-- Информация о диалоге -->
                                 <div class="card border-0 bg-light mb-3">
                                     <div class="card-body py-3">
                                         <h6 class="fw-bold mb-1">
-                                            С собеседником: {{ dialogue.other_user.email }}
+                                            {% trans "With interlocutor:" %}
+                                            {{ dialogue.other_user.get_full_name|default:dialogue.other_user.email }}
                                         </h6>
                                         {% if dialogue.product %}
                                         <p class="text-muted small mb-2">
-                                            Товар: {{ dialogue.product.title }}
+                                            {% trans "Product:" %} {{ dialogue.product.title }}
                                         </p>
                                         {% endif %}
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span class="text-muted small">
-                                                Сообщений: {{ dialogue.messages_count }}
+                                                {% trans "Messages:" %} {{ dialogue.messages_count }}
                                             </span>
                                             {% if dialogue.unread_count > 0 %}
                                             <span class="text-danger small">
-                                                Непрочитанных: {{ dialogue.unread_count }}
+                                                {% trans "Unread:" %} {{ dialogue.unread_count }}
                                             </span>
                                             {% endif %}
                                             <span class="text-muted small">
-                                                Создан: {{ dialogue.created_at|date:"d.m.Y" }}
+                                                {% trans "Created:" %} {{ dialogue.created_at|date:"d.m.Y" }}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <p class="text-danger small mb-0">
-                                    ❗ Все сообщения из этого диалога будут удалены. Это действие нельзя отменить.
+                                    ❗ {% trans "All messages from this dialogue will be deleted. This action cannot be
+                                    undone." %}
                                 </p>
                             </div>
                             <div class="modal-footer border-0 justify-content-center">
                                 <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
-                                    ❌ Отмена
+                                    ❌ {% trans "Cancel" %}
                                 </button>
                                 <form method="post" action="{% url 'chat:delete_dialogue' dialogue.id %}"
                                     class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger px-4">
-                                        ✅ Удалить
+                                        ✅ {% trans "Delete" %}
                                     </button>
                                 </form>
                             </div>
@@ -216,16 +231,16 @@
             <!-- Пустой state -->
             <div class="text-center py-5">
                 <div class="mb-4" style="font-size: 5rem;">💬</div>
-                <h3 class="fw-bold mb-3">У вас пока нет диалогов</h3>
+                <h3 class="fw-bold mb-3">{% trans "You don't have any dialogues yet" %}</h3>
                 <p class="text-muted mb-4">
-                    Начните общение с другими мастерами через карточки товаров
+                    {% trans "Start communication with other craftsmen through product cards" %}
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <a href="{% url 'products:catalog' %}" class="btn btn-primary btn-lg px-4">
-                        🛍️ Перейти в каталог
+                        🛍️ {% trans "Go to catalog" %}
                     </a>
                     <a href="{% url 'products:my_products' %}" class="btn btn-outline-primary btn-lg px-4">
-                        🎨 Мои товары
+                        🎨 {% trans "My Products" %}
                     </a>
                 </div>
             </div>
@@ -241,33 +256,38 @@
         <div class="modal-content">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold" id="clearAllModalLabel">
-                    🗑️ Очистка всех диалогов
+                    🗑️ {% trans "Clear All Dialogues" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="{% trans 'Close' %}"></button>
             </div>
             <div class="modal-body text-center py-4">
                 <div class="mb-4" style="font-size: 3rem;">⚠️</div>
-                <h6 class="fw-bold mb-3">Вы уверены, что хотите удалить ВСЕ диалоги?</h6>
+                <h6 class="fw-bold mb-3">{% trans "Are you sure you want to delete ALL dialogues?" %}</h6>
 
                 <div class="alert alert-warning">
-                    <strong>Будет удалено:</strong><br>
-                    • Все {{ dialogues|length }} диалогов<br>
-                    • Все сообщения в этих диалогах<br>
-                    • Вся история переписки
+                    <strong>{% trans "Will be deleted:" %}</strong><br>
+                    •
+                    {% blocktrans trimmed with dialog_count=dialogues|length %}
+                    All {{ dialog_count }} dialogues
+                    {% endblocktrans %}
+                    <br>
+                    • {% trans "All messages in these dialogues" %}<br>
+                    • {% trans "All correspondence history" %}
                 </div>
 
                 <p class="text-danger small mb-0">
-                    ❗ Это действие нельзя отменить. Все данные будут безвозвратно удалены.
+                    ❗ {% trans "This action cannot be undone. All data will be permanently deleted." %}
                 </p>
             </div>
             <div class="modal-footer border-0 justify-content-center">
                 <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
-                    ❌ Отмена
+                    ❌ {% trans "Cancel" %}
                 </button>
                 <form method="post" action="{% url 'chat:clear_all_dialogues' %}" class="d-inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger px-4">
-                        🗑️ Удалить все
+                        🗑️ {% trans "Delete all" %}
                     </button>
                 </form>
             </div>
@@ -341,6 +361,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Объект переводов для JavaScript (если нужен)
+        const translations = {
+            close: "{% trans 'Close' %}",
+            cancel: "{% trans 'Cancel' %}",
+            delete: "{% trans 'Delete' %}",
+            errorUpdating: "{% trans 'Error updating dialogues:' %}"
+        };
+
         // Автоматическое закрытие модальных окон после удаления
         document.querySelectorAll('form[action*="delete"]').forEach(function (form) {
             form.addEventListener('submit', function () {
@@ -366,7 +394,9 @@
                         document.querySelector('.row').innerHTML = newContent;
                     }
                 })
-                .catch(error => console.error('Error updating dialogues:', error));
+                .catch(error => {
+                    console.error(translations.errorUpdating, error);
+                });
         }, 30000);
     });
 </script>

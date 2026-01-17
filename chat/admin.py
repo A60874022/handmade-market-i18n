@@ -1,5 +1,6 @@
 # chat/admin.py
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Dialogue, Message
 
@@ -8,14 +9,14 @@ from .models import Dialogue, Message
 class DialogueAdmin(admin.ModelAdmin):
     list_display = ["id", "user1", "user2", "product", "created_at", "updated_at"]
     list_filter = ["created_at", "updated_at"]
-    search_fields = ["user1__email", "user2__email", "product__name"]
+    search_fields = ["user1__email", "user2__email", "product__title"]
     raw_id_fields = ["user1", "user2", "product"]
     readonly_fields = ["created_at", "updated_at"]
 
     fieldsets = [
-        ("Участники диалога", {"fields": ["user1", "user2"]}),
-        ("Продукт", {"fields": ["product"], "classes": ["collapse"]}),
-        ("Даты", {"fields": ["created_at", "updated_at"], "classes": ["collapse"]}),
+        (_("Dialogue participants"), {"fields": ["user1", "user2"]}),
+        (_("Product"), {"fields": ["product"], "classes": ["collapse"]}),
+        (_("Dates"), {"fields": ["created_at", "updated_at"], "classes": ["collapse"]}),
     ]
 
 
@@ -29,12 +30,12 @@ class MessageAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at"]
 
     fieldsets = [
-        ("Основная информация", {"fields": ["dialogue", "sender", "is_read"]}),
-        ("Сообщение", {"fields": ["text"]}),
-        ("Дата", {"fields": ["created_at"], "classes": ["collapse"]}),
+        (_("Basic information"), {"fields": ["dialogue", "sender", "is_read"]}),
+        (_("Message"), {"fields": ["text"]}),
+        (_("Date"), {"fields": ["created_at"], "classes": ["collapse"]}),
     ]
 
     def text_preview(self, obj):
         return obj.text[:50] + "..." if len(obj.text) > 50 else obj.text
 
-    text_preview.short_description = "Текст (превью)"
+    text_preview.short_description = _("Text (preview)")

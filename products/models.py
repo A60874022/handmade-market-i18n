@@ -1,24 +1,21 @@
 import os
+import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import uuid
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
-
 
 class Category(models.Model):
     LANGUAGES = [
-        ('en', 'English'),
-        ('fr', 'French'),
-        ('de', 'German'),
-        # добавьте другие языки по мере необходимости
+        ('en', _('English')),
+        ('fr', _('French')),
+        ('de', _('German')),
+        # add other languages as needed
     ]
     
     name = models.CharField(max_length=100, verbose_name=_("Name"))
@@ -35,15 +32,15 @@ class Category(models.Model):
         verbose_name=_("Translation Group"),
         db_index=True
     )
-    # Сохраняем оригинальное поле для совместимости
+    # Keep original field for compatibility
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
 
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
-        # Обеспечиваем уникальность в рамках группы переводов
+        # Ensure uniqueness within translation groups
         unique_together = [['translation_group', 'language_code']]
-        # Также уникальность slug в рамках языка
+        # Also slug uniqueness within language
         constraints = [
             models.UniqueConstraint(
                 fields=['language_code', 'slug'],
@@ -59,7 +56,7 @@ class Category(models.Model):
         if self.name:
             self.name = self.name.capitalize()
         
-        # Автоматически генерируем slug из name, если не указан
+        # Automatically generate slug from name if not specified
         if not self.slug:
             from django.utils.text import slugify
             self.slug = slugify(self.name)
@@ -67,10 +64,10 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
     def clean(self):
-        """Валидация для предотвращения дублирования"""
+        """Validation to prevent duplicates"""
         super().clean()
         
-        # Проверяем, что slug уникален для данного языка
+        # Check that slug is unique for the given language
         if Category.objects.filter(
             language_code=self.language_code,
             slug=self.slug
@@ -81,15 +78,15 @@ class Category(models.Model):
 
     @property
     def base_slug(self):
-        """Возвращает базовый slug без языкового суффикса"""
-        # Удаляем языковой суффикс если он есть
+        """Return base slug without language suffix"""
+        # Remove language suffix if present
         if self.slug.endswith(f'-{self.language_code}'):
             return self.slug[:-len(f'-{self.language_code}')]
         return self.slug
 
     @classmethod
     def get_translation_group_categories(cls, translation_group):
-        """Получить все переводы категории"""
+        """Get all category translations"""
         return cls.objects.filter(
             translation_group=translation_group,
             is_active=True
@@ -97,7 +94,7 @@ class Category(models.Model):
 
     @classmethod
     def get_category_in_language(cls, translation_group, language_code):
-        """Получить категорию в определенном языке"""
+        """Get category in specific language"""
         return cls.objects.filter(
             translation_group=translation_group,
             language_code=language_code,
@@ -105,11 +102,12 @@ class Category(models.Model):
         ).first()
 
     def get_translations(self):
-        """Получить все переводы этой категории"""
+        """Get all translations of this category"""
         return self.__class__.objects.filter(
             translation_group=self.translation_group,
             is_active=True
         ).exclude(pk=self.pk)
+
 
 class Product(models.Model):
     MAX_PRICE = 5000000
@@ -156,11 +154,11 @@ class Product(models.Model):
         decimal_places=2,
         verbose_name=_("Price"),
         validators=[
-            MinValueValidator(1, message=_("Price must be at least 1 ruble")),
+            MinValueValidator(1, message=_("Price must be at least 1 euro")),
             MaxValueValidator(
                 MAX_PRICE,
                 message=_("Price cannot exceed %(max_price)s euros")
-                % {"max_price": f"{MAX_PRICE:,}"},
+                % {"max_price": MAX_PRICE},
             ),
         ],
     )
@@ -247,7 +245,7 @@ class Favorite(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="favorited_by"
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
     class Meta:
         verbose_name = _("Favorite")
@@ -255,4 +253,7 @@ class Favorite(models.Model):
         unique_together = ["user", "product"]
 
     def __str__(self):
-        return f"{self.user.email} - {self.product.title}"
+        return _("%(email)s - %(title)s") % {
+            "email": self.user.email,
+            "title": self.product.title
+        }

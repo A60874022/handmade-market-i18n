@@ -25,8 +25,6 @@ ALLOWED_HOSTS = [
 ]
 
 
-
-
 # Application definition
 INSTALLED_APPS = [
     "daphne",
@@ -138,20 +136,28 @@ DATABASES = {
     }
 }
 # Channels/Redis
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
-    },
-}
+
 CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
                 "hosts": [("redis", 6379)],
             },
+        }
+    }
+
+if DEBUG:
+    # Локальная разработка
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+    
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
         }
     }
 # Sessions в Redis

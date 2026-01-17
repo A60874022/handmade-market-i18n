@@ -1,5 +1,5 @@
-# orders/admin.py
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Cart, CartItem, Order, OrderItem
 
@@ -27,12 +27,12 @@ class CartAdmin(admin.ModelAdmin):
     def total_quantity(self, obj):
         return obj.total_quantity
 
-    total_quantity.short_description = "Общее количество"
+    total_quantity.short_description = _("Total quantity")
 
     def total_price(self, obj):
         return f"{obj.total_price} €"
 
-    total_price.short_description = "Общая стоимость"
+    total_price.short_description = _("Total cost")
 
 
 @admin.register(CartItem)
@@ -48,7 +48,7 @@ class CartItemAdmin(admin.ModelAdmin):
     def total_price(self, obj):
         return f"{obj.total_price} €"
 
-    total_price.short_description = "Общая стоимость"
+    total_price.short_description = _("Total cost")
 
 
 class OrderItemInline(admin.TabularInline):
@@ -81,14 +81,14 @@ class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = "created_at"
 
     fieldsets = [
-        ("Основная информация", {"fields": ["customer", "status", "total_amount"]}),
-        ("Даты", {"fields": ["created_at", "updated_at"], "classes": ["collapse"]}),
+        (_("Basic information"), {"fields": ["customer", "status", "total_amount"]}),
+        (_("Dates"), {"fields": ["created_at", "updated_at"], "classes": ["collapse"]}),
     ]
 
     def total_amount_display(self, obj):
         return f"{obj.total_amount} €"
 
-    total_amount_display.short_description = "Общая сумма"
+    total_amount_display.short_description = _("Total amount")
 
 
 @admin.register(OrderItem)
@@ -104,4 +104,4 @@ class OrderItemAdmin(admin.ModelAdmin):
     def total_price(self, obj):
         return f"{obj.total_price} €"
 
-    total_price.short_description = "Общая стоимость"
+    total_price.short_description = _("Total cost")

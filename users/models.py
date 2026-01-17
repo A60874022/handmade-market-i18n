@@ -1,11 +1,9 @@
 import os
 import random
-import secrets
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils import timezone
@@ -147,7 +145,7 @@ class City(models.Model):
     )
     region = models.CharField(max_length=150, blank=True, verbose_name=_("Region"))
     country = models.CharField(
-        max_length=100, default=_("Russia"), verbose_name=_("Country")
+        max_length=100, default="Russia", verbose_name=_("Country")
     )
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
@@ -160,6 +158,7 @@ class City(models.Model):
     def __str__(self):
         return f"{self.name}" + (f" ({self.region})" if self.region else "")
 
+
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -168,7 +167,7 @@ class Profile(models.Model):
         verbose_name=_("User"),
     )
 
-    # Добавляем поле для имени продавца
+    # Add field for seller name
     first_name = models.CharField(
         max_length=100,
         blank=True,
