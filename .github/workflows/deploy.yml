@@ -67,6 +67,10 @@ jobs:
           
           # Security
           CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          
+          # SSL Certificates
+          CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
+          DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
           EOF
           
           echo "✅ .env file created"
@@ -86,6 +90,135 @@ jobs:
               ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
             fi
             docker-compose --version
+
+      - name: Create deploy.sh script on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            echo "📝 Creating deploy.sh script..."
+            
+            # Создаем директорию если её нет
+            mkdir -p /root/ad_service
+            
+            # Создаем deploy.sh скрипт
+            cat > /root/ad_service/deploy.sh << 'EOF'
+            #!/bin/bash
+            set -e  # Остановить скрипт при любой ошибке
+            
+            echo "🚀 Начинаем процесс деплоя..."
+            echo "========================================"
+            
+            # Переходим в директорию проекта
+            cd /root/ad_service/infra
+            
+            # 1. Останавливаем существующие контейнеры (если есть)
+            echo "1. Останавливаем старые контейнеры..."
+            docker-compose down --remove-orphans 2>/dev/null || true
+            
+            # 2. Подтягиваем последние образы
+            echo "2. Подтягиваем последние Docker образы..."
+            docker-compose pull
+            
+            # 3. Запускаем базу данных, Redis и Django (без nginx)
+            echo "3. Запускаем базу данных, Redis и Django..."
+            docker-compose up -d db redis web
+            
+            # 4. Ждем запуска Django
+            echo "4. Ждем запуска Django (30 секунд)..."
+            sleep 30
+            
+            # 5. Проверяем, запустился ли Django
+            if docker-compose ps web 2>/dev/null | grep -q "Up"; then
+                echo "✅ Django успешно запущен"
+            else
+                echo "❌ Django не запустился. Проверяем логи..."
+                docker-compose logs web --tail=20
+                exit 1
+            fi
+            
+            # 6. Проверяем, есть ли уже SSL сертификаты
+            CERT_PATH="./certbot/conf/live/$DOMAIN_NAME/fullchain.pem"
+            if [ -f "$CERT_PATH" ]; then
+                echo "6. SSL сертификаты уже существуют, используем SSL конфиг"
+                cp ./nginx/conf.d/django-ssl.conf ./nginx/conf.d/default.conf 2>/dev/null || echo "⚠️ SSL конфиг не найден, используем HTTP"
+            else
+                echo "6. SSL сертификатов нет, используем HTTP конфиг для их получения"
+                cp ./nginx/conf.d/django.conf ./nginx/conf.d/default.conf 2>/dev/null || echo "⚠️ HTTP конфиг не найден"
+            fi
+            
+            # 7. Запускаем nginx
+            echo "7. Запускаем nginx..."
+            docker-compose up -d nginx
+            
+            # 8. Если нет сертификатов - пробуем получить их
+            if [ ! -f "$CERT_PATH" ]; then
+                echo "8. Пробуем получить SSL сертификаты..."
+                
+                # Создаем необходимые директории
+                mkdir -p ./certbot/www ./certbot/conf
+                
+                # Проверяем, доступен ли домен
+                echo "Проверяем доступность домена $DOMAIN_NAME..."
+                if nslookup $DOMAIN_NAME 2>/dev/null | grep -q "address"; then
+                    echo "✅ Домен доступен, получаем сертификаты..."
+                    
+                    # Получаем сертификаты через certbot на хосте
+                    certbot certonly --standalone \
+                      -d $DOMAIN_NAME \
+                      -d www.$DOMAIN_NAME \
+                      --non-interactive \
+                      --agree-tos \
+                      --email $CERTBOT_EMAIL \
+                      --preferred-challenges http \
+                      --http-01-port 80 || echo "⚠️ Не удалось получить сертификаты"
+                    
+                    # Если сертификаты получены - копируем их
+                    if [ -f "/etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem" ]; then
+                        echo "✅ Сертификаты получены, копируем..."
+                        mkdir -p ./certbot/conf/live/$DOMAIN_NAME
+                        cp /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem ./certbot/conf/live/$DOMAIN_NAME/
+                        cp /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem ./certbot/conf/live/$DOMAIN_NAME/
+                        
+                        # Переключаем на SSL конфиг
+                        if [ -f "./nginx/conf.d/django-ssl.conf" ]; then
+                            cp ./nginx/conf.d/django-ssl.conf ./nginx/conf.d/default.conf
+                            docker-compose restart nginx
+                            echo "🎉 SSL настроен успешно!"
+                        fi
+                    else
+                        echo "⚠️ Сертификаты не получены. Сайт будет работать по HTTP."
+                        echo "Для получения SSL убедитесь что:"
+                        echo "1. Домен $DOMAIN_NAME указывает на IP сервера"
+                        echo "2. Порт 80 открыт в фаерволе"
+                        echo "3. Email в .env файле корректен"
+                    fi
+                else
+                    echo "❌ Домен $DOMAIN_NAME не доступен. SSL не настроен."
+                fi
+            fi
+            
+            # 9. Проверяем статус всех сервисов
+            echo "========================================"
+            echo "📊 Статус сервисов:"
+            docker-compose ps 2>/dev/null || echo "Не удалось получить статус"
+            
+            # 10. Показываем логи nginx для проверки
+            echo "========================================"
+            echo "📝 Последние логи nginx:"
+            docker-compose logs nginx --tail=20 2>/dev/null || echo "Не удалось получить логи nginx"
+            
+            echo "========================================"
+            echo "🎉 Процесс деплоя завершен!"
+            echo "🌐 Проверьте сайт по адресу: https://$DOMAIN_NAME"
+            echo "🔧 Для проверки конфигурации nginx: docker-compose exec nginx nginx -t"
+            EOF
+            
+            # Делаем скрипт исполняемым
+            chmod +x /root/ad_service/deploy.sh
+            echo "✅ deploy.sh создан и настроен"
 
       - name: Clean server and setup directories
         uses: appleboy/ssh-action@master
@@ -113,11 +246,13 @@ jobs:
             docker system prune -f 2>/dev/null || true
             
             echo "Recreating project directory..."
-            rm -rf /root/ad_service
-            mkdir -p /root/ad_service
-            mkdir -p /root/ad_service/nginx/conf.d
+            rm -rf /root/ad_service/infra 2>/dev/null || true
+            mkdir -p /root/ad_service/infra
+            mkdir -p /root/ad_service/infra/nginx/conf.d
             mkdir -p /root/ad_service/logs
             mkdir -p /root/ad_service/logs/nginx
+            mkdir -p /root/ad_service/certbot/conf
+            mkdir -p /root/ad_service/certbot/www
             
             echo "✅ Server prepared"
 
@@ -128,7 +263,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: "infra/"
-          target: "/root/ad_service/"
+          target: "/root/ad_service/infra/"
           overwrite: true
           strip_components: 1
 
@@ -139,7 +274,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: ".env"
-          target: "/root/ad_service/"
+          target: "/root/ad_service/infra/"
           overwrite: true
 
       - name: Setup nginx config directory
@@ -150,21 +285,83 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo "📁 Setting up nginx configs..."
-            cd /root/ad_service
+            cd /root/ad_service/infra
             
-            # Перемещаем конфиг Django в правильную директорию
-            if [ -f "nginx-django.conf" ]; then
-              mv nginx-django.conf nginx/conf.d/
-              echo "✅ Moved nginx-django.conf to nginx/conf.d/"
+            # Проверяем наличие конфигов
+            if [ -f "nginx/conf.d/django.conf" ]; then
+                echo "✅ Основной конфиг nginx найден"
             else
-              echo "⚠️ nginx-django.conf not found"
+                echo "⚠️ Основной конфиг nginx не найден"
+                # Создаем минимальный конфиг
+                cat > nginx/conf.d/django.conf << 'EOF'
+                upstream django {
+                    server web:8000;
+                }
+                
+                server {
+                    listen 80;
+                    server_name $DOMAIN_NAME www.$DOMAIN_NAME;
+                    
+                    location / {
+                        proxy_pass http://django;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    
+                    location /static/ {
+                        alias /app/staticfiles/;
+                    }
+                    
+                    location /media/ {
+                        alias /app/media/;
+                    }
+                }
+                EOF
             fi
             
-            echo "Содержимое директории:"
-            ls -la
-            echo ""
-            echo "Содержимое nginx/conf.d/:"
-            ls -la nginx/conf.d/
+            # Создаем SSL конфиг если его нет
+            if [ ! -f "nginx/conf.d/django-ssl.conf" ]; then
+                cat > nginx/conf.d/django-ssl.conf << 'EOF'
+                upstream django {
+                    server web:8000;
+                }
+                
+                server {
+                    listen 443 ssl http2;
+                    server_name $DOMAIN_NAME www.$DOMAIN_NAME;
+
+                    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+                    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+
+                    ssl_protocols TLSv1.2 TLSv1.3;
+                    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+                    
+                    location / {
+                        proxy_pass http://django;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    
+                    location /static/ {
+                        alias /app/staticfiles/;
+                    }
+                    
+                    location /media/ {
+                        alias /app/media/;
+                    }
+                }
+                
+                server {
+                    listen 80;
+                    server_name $DOMAIN_NAME www.$DOMAIN_NAME;
+                    return 301 https://$server_name$request_uri;
+                }
+                EOF
+            fi
 
       - name: Ensure ports are free
         uses: appleboy/ssh-action@master
@@ -186,7 +383,7 @@ jobs:
               fi
             done
 
-      - name: Install Certbot and obtain SSL certificate
+      - name: Install Certbot
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -197,21 +394,11 @@ jobs:
             echo "🔐 Installing Certbot..."
             
             apt-get update
-            apt-get install -y certbot
+            apt-get install -y certbot python3-certbot-nginx
             
-            echo "Obtaining SSL certificate for mart.akatosphere.com..."
-            certbot certonly --standalone \
-              -d mart.akatosphere.com \
-              -d www.mart.akatosphere.com \
-              --non-interactive \
-              --agree-tos \
-              --email anton60874022@mail.ru \
-              --preferred-challenges http \
-              --http-01-port 80
-            
-            echo "✅ SSL certificate obtained!"
+            echo "✅ Certbot installed"
 
-      - name: Deploy all services
+      - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -219,33 +406,21 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            echo "🚀 Deploying all services..."
+            echo "🚀 Running deploy script..."
             cd /root/ad_service
             
-            echo "1. Checking files..."
-            ls -la
-            ls -la nginx/
-            ls -la nginx/conf.d/
+            # Загружаем переменные из .env
+            if [ -f "infra/.env" ]; then
+                export $(grep -v '^#' infra/.env | xargs)
+                echo "✅ .env variables loaded"
+            else
+                echo "⚠️ .env file not found"
+            fi
             
-            echo "2. Logging in to Docker Hub..."
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            # Запускаем deploy.sh
+            ./deploy.sh
             
-            echo "3. Pulling latest application image..."
-            docker pull anton60874022/ad_service:latest
-            
-            echo "4. Starting all services..."
-            docker-compose up -d
-            
-            echo "5. Waiting for services to start..."
-            sleep 30
-            
-            echo "6. Checking nginx configuration..."
-            docker-compose exec nginx nginx -t
-            
-            echo "7. Checking all services..."
-            docker-compose ps
-            
-            echo "✅ Deployment completed!"
+            echo "✅ Deploy script completed"
 
       - name: Verify deployment
         uses: appleboy/ssh-action@master
@@ -255,21 +430,32 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo "🔍 Verifying deployment..."
-            cd /root/ad_service
+            cd /root/ad_service/infra
             
             echo "1. Container status:"
-            docker-compose ps
+            docker-compose ps 2>/dev/null || echo "Docker compose not available"
             
-            echo "2. Nginx logs (last 20 lines):"
-            docker-compose logs nginx --tail=20
+            echo "2. Testing web service..."
+            if docker-compose ps web 2>/dev/null | grep -q "Up"; then
+                echo "✅ Web service is running"
+            else
+                echo "❌ Web service is not running"
+                docker-compose logs web --tail=20 2>/dev/null || true
+            fi
             
-            echo "3. Web logs (last 20 lines):"
-            docker-compose logs web --tail=20
+            echo "3. Testing nginx..."
+            if docker-compose ps nginx 2>/dev/null | grep -q "Up"; then
+                echo "✅ Nginx is running"
+                docker-compose exec nginx nginx -t 2>/dev/null && echo "✅ Nginx config is valid"
+            else
+                echo "❌ Nginx is not running"
+            fi
             
-            echo "4. Testing HTTP..."
-            curl -s -o /dev/null -w "HTTP: %{http_code}\n" http://localhost || echo "HTTP failed"
-            
-            echo "5. Testing HTTPS (locally)..."
-            curl -s -k -o /dev/null -w "HTTPS: %{http_code}\n" https://localhost || echo "HTTPS failed"
+            echo "4. Checking SSL certificates..."
+            if [ -f "certbot/conf/live/$DOMAIN_NAME/fullchain.pem" ]; then
+                echo "✅ SSL certificates found"
+            else
+                echo "⚠️ SSL certificates not found (running on HTTP)"
+            fi
             
             echo "✅ Verification completed!"
