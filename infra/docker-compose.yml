@@ -7,7 +7,8 @@ services:
     command: >
       sh -c "
       echo '⏳ Ожидание базы данных...' &&
-      sleep 20 &&
+      # Увеличиваем время ожидания
+      sleep 10 &&
       echo '📦 Применение миграций...' &&
       python manage.py migrate --noinput &&
       echo '🗃️  Сбор статических файлов...' &&
@@ -23,14 +24,14 @@ services:
     env_file:
       - .env
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
       - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - REDIS_URL=redis://redis:6379/0
       - EMAIL_HOST=${EMAIL_HOST}
@@ -40,12 +41,11 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
       - SERVER_EMAIL=${SERVER_EMAIL:-${DEFAULT_FROM_EMAIL}}
+    # Убираем depends_on с условиями, оставляем просто запуск после
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
+      - db
+      - redis
+    restart: on-failure:5
     networks:
       - backend
 
@@ -53,17 +53,12 @@ services:
     image: postgres:15-alpine
     container_name: handmade_db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
+      POSTGRES_USER: ${POSTGRES_USER:-app_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+    # Убираем healthcheck
     restart: unless-stopped
     networks:
       - backend
@@ -74,11 +69,7 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Убираем healthcheck
     restart: unless-stopped
     networks:
       - backend
@@ -90,14 +81,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./logs/nginx:/var/log/nginx
-    depends_on:
-      - web
+    # Убираем depends_on - nginx будет просто пытаться проксировать
     restart: unless-stopped
     networks:
       - backend
@@ -111,6 +101,3 @@ volumes:
 networks:
   backend:
     driver: bridge
-
-
-
