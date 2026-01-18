@@ -35,6 +35,7 @@ services:
     networks:
       - backend
 
+
   web:
     image: anton60874022/ad_service:latest
     container_name: handmade_web
