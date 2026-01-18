@@ -1,106 +1,116 @@
 version: '3.8'
 
 services:
-  # Django приложение
   web:
     image: anton60874022/ad_service:latest
     container_name: handmade_web
-    restart: unless-stopped
+    command: >
+      sh -c "
+      echo '⏳ Ожидание базы данных...' &&
+      sleep 20 &&
+      echo '📦 Применение миграций...' &&
+      python manage.py migrate --noinput &&
+      echo '🗃️  Сбор статических файлов...' &&
+      python manage.py collectstatic --noinput --clear &&
+      echo '🚀 Запуск Django...' &&
+      daphne -b 0.0.0.0 -p 8000 ad_service.asgi:application"
     volumes:
-      - static_volume:/app/static
+      - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - ./logs:/app/logs
+    expose:
+      - "8000"
+    env_file:
+      - .env
     environment:
-      - DEBUG=False
-      - DATABASE_URL=postgresql://postgres:password@db:5432/dbname
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
       - REDIS_URL=redis://redis:6379/0
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - SERVER_EMAIL=${SERVER_EMAIL:-${DEFAULT_FROM_EMAIL}}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
     networks:
       - backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # PostgreSQL
   db:
     image: postgres:15-alpine
     container_name: handmade_db
-    restart: unless-stopped
     environment:
-      POSTGRES_DB: dbname
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - backend
 
-  # Redis
   redis:
     image: redis:7-alpine
     container_name: handmade_redis
-    restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
-    networks:
-      - backend
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - backend
 
-  # Nginx
   nginx:
     image: nginx:alpine
     container_name: handmade_nginx
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      # Основной конфиг nginx
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      # Конфиг для Django
-      - ./nginx/conf.d/django.conf:/etc/nginx/conf.d/django.conf
-      # Статические файлы Django
-      - static_volume:/app/static
-      # Медиа файлы Django
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_volume:/app/staticfiles
       - media_volume:/app/media
-      # SSL сертификаты (опционально)
-      - ./nginx/ssl:/etc/nginx/ssl
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./logs/nginx:/var/log/nginx
     depends_on:
-      web:
-        condition: service_healthy
+      - web
+    restart: unless-stopped
     networks:
       - backend
-    command: >
-      sh -c "
-      # Удаляем стандартный конфиг из conf.d если он есть
-      rm -f /etc/nginx/conf.d/default.conf &&
-      # Проверяем конфигурацию
-      nginx -t &&
-      # Запускаем nginx
-      nginx -g 'daemon off;'
-      "
-
-networks:
-  backend:
-    driver: bridge
 
 volumes:
   postgres_data:
   redis_data:
   static_volume:
   media_volume:
+
+networks:
+  backend:
+    driver: bridge
+
+
+
