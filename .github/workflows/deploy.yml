@@ -2,7 +2,7 @@ name: Deploy Ad Service with SSL
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master123 ]
 
 jobs:
   build_and_push:
@@ -12,106 +12,127 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        run: |
-          docker build -t anton60874022/ad_service:latest .
-          docker push anton60874022/ad_service:latest
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: anton60874022/ad_service:latest
 
   deploy:
-    name: Deploy to Server
+    name: Deploy to Server with SSL
     runs-on: ubuntu-latest
     needs: build_and_push
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env file
+      # === СОЗДАНИЕ .env ФАЙЛА ===
+      - name: Create .env file from secrets
         run: |
-          echo "🔧 Creating .env file..."
-          echo "# Django" > .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
-          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
-          echo "" >> .env
-          echo "# Database" >> .env
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "" >> .env
-          echo "# Redis" >> .env
-          echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
-          echo "" >> .env
-          echo "# Email" >> .env
-          echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
-          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
-          echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> .env
-          echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
-          echo "DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}" >> .env
-          echo "" >> .env
-          echo "# Security" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
-          echo "" >> .env
-          echo "# SSL" >> .env
-          echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
-          echo "DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}" >> .env
+          echo "🔧 Creating .env file from GitHub Secrets..."
+          cat > .env << EOF
+          # Django
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          DEBUG=${{ secrets.DEBUG }}
+          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+          
+          # Database
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          
+          # Redis
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          
+          # Email
+          EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+          EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}
+          EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+          EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+          DEFAULT_FROM_EMAIL=${{ secrets.EMAIL_HOST_USER }}
+          
+          # Security
+          CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          EOF
+          
           echo "✅ .env file created"
 
-      # ========== ОСНОВНЫЕ ШАГИ ДЕПЛОЯ ==========
-      - name: Clean old containers
+      - name: Install Docker Compose on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🧹 Cleaning old containers..."
-            docker stop handmade_web handmade_nginx handmade_db handmade_redis 2>/dev/null || true
-            docker rm handmade_web handmade_nginx handmade_db handmade_redis 2>/dev/null || true
-            echo "✅ Old containers cleaned"
+            echo "📦 Checking Docker Compose..."
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Installing Docker Compose..."
+              curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
+            fi
+            docker-compose --version
 
-      - name: Create directories
+      - name: Clean server and setup directories
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "📁 Creating directories..."
+            echo "🧹 Cleaning server..."
+            
+            # Останавливаем контейнеры если есть
+            if [ -d "/root/ad_service" ]; then
+              cd /root/ad_service
+              docker-compose down 2>/dev/null || true
+            fi
+            
+            # Удаляем контейнеры проекта
+            echo "Removing project containers..."
+            docker ps -a --filter "name=handmade" --format "{{.Names}}" | xargs -r docker rm -f 2>/dev/null || true
+            
+            # Удаляем образы проекта
+            docker images --filter "reference=anton60874022/ad_service" --format "{{.ID}}" | xargs -r docker rmi -f 2>/dev/null || true
+            
+            echo "Cleaning unused Docker resources..."
+            docker system prune -f 2>/dev/null || true
+            
+            echo "Recreating project directory..."
+            rm -rf /root/ad_service
             mkdir -p /root/ad_service
             mkdir -p /root/ad_service/nginx/conf.d
             mkdir -p /root/ad_service/logs
-            mkdir -p /root/ad_service/certbot/conf
-            mkdir -p /root/ad_service/certbot/www
-            echo "✅ Directories created"
+            mkdir -p /root/ad_service/logs/nginx
+            
+            echo "✅ Server prepared"
 
-      - name: Copy docker-compose.yml
+      - name: Copy infrastructure files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "infra/docker-compose.yml"
-          target: "/root/ad_service/"
-          overwrite: true
-
-      - name: Copy nginx configs
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          source: "infra/nginx/"
+          source: "infra/"
           target: "/root/ad_service/"
           overwrite: true
           strip_components: 1
 
-      - name: Copy .env file
+      - name: Copy .env to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -121,198 +142,134 @@ jobs:
           target: "/root/ad_service/"
           overwrite: true
 
-      - name: Create basic nginx config if missing
+      - name: Setup nginx config directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔧 Creating basic nginx config..."
+            echo "📁 Setting up nginx configs..."
             cd /root/ad_service
             
-            if [ ! -f "nginx/conf.d/django.conf" ]; then
-              echo 'upstream django {' > nginx/conf.d/django.conf
-              echo '    server web:8000;' >> nginx/conf.d/django.conf
-              echo '}' >> nginx/conf.d/django.conf
-              echo '' >> nginx/conf.d/django.conf
-              echo 'server {' >> nginx/conf.d/django.conf
-              echo '    listen 80;' >> nginx/conf.d/django.conf
-              echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django.conf
-              echo '' >> nginx/conf.d/django.conf
-              echo '    location / {' >> nginx/conf.d/django.conf
-              echo '        proxy_pass http://django;' >> nginx/conf.d/django.conf
-              echo '        proxy_set_header Host $host;' >> nginx/conf.d/django.conf
-              echo '        proxy_set_header X-Real-IP $remote_addr;' >> nginx/conf.d/django.conf
-              echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> nginx/conf.d/django.conf
-              echo '        proxy_set_header X-Forwarded-Proto $scheme;' >> nginx/conf.d/django.conf
-              echo '    }' >> nginx/conf.d/django.conf
-              echo '' >> nginx/conf.d/django.conf
-              echo '    location /static/ {' >> nginx/conf.d/django.conf
-              echo '        alias /app/staticfiles/;' >> nginx/conf.d/django.conf
-              echo '    }' >> nginx/conf.d/django.conf
-              echo '' >> nginx/conf.d/django.conf
-              echo '    location /media/ {' >> nginx/conf.d/django.conf
-              echo '        alias /app/media/;' >> nginx/conf.d/django.conf
-              echo '    }' >> nginx/conf.d/django.conf
-              echo '}' >> nginx/conf.d/django.conf
-              echo "✅ Basic nginx config created"
+            # Перемещаем конфиг Django в правильную директорию
+            if [ -f "nginx-django.conf" ]; then
+              mv nginx-django.conf nginx/conf.d/
+              echo "✅ Moved nginx-django.conf to nginx/conf.d/"
             else
-              echo "✅ Nginx config already exists"
+              echo "⚠️ nginx-django.conf not found"
             fi
+            
+            echo "Содержимое директории:"
+            ls -la
+            echo ""
+            echo "Содержимое nginx/conf.d/:"
+            ls -la nginx/conf.d/
 
-      - name: Stop system nginx
+      - name: Ensure ports are free
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🛑 Stopping system nginx..."
+            echo "🔧 Ensuring ports 80 and 443 are free..."
             systemctl stop nginx 2>/dev/null || true
-            echo "✅ System nginx stopped"
+            systemctl stop apache2 2>/dev/null || true
+            
+            # Освобождаем порты
+            for port in 80 443; do
+              pid=$(lsof -ti :$port 2>/dev/null || true)
+              if [ ! -z "$pid" ]; then
+                echo "Killing process $pid on port $port"
+                kill -9 $pid 2>/dev/null || true
+              fi
+            done
 
-      - name: Pull and start services
+      - name: Install Certbot and obtain SSL certificate
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🚀 Starting services..."
-            cd /root/ad_service
-            
-            echo "Logging in to Docker Hub..."
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            
-            echo "Pulling images..."
-            docker pull anton60874022/ad_service:latest
-            docker pull postgres:15-alpine
-            docker pull redis:7-alpine
-            docker pull nginx:alpine
-            
-            echo "Starting services..."
-            docker-compose up -d
-            
-            echo "Waiting for services to start..."
-            sleep 30
-            
-            echo "✅ Services started"
-            docker-compose ps
-
-      - name: Install Certbot
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
+            set -e
             echo "🔐 Installing Certbot..."
+            
             apt-get update
-            apt-get install -y certbot python3-certbot-nginx
-            echo "✅ Certbot installed"
-
-      - name: Get SSL certificate
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            echo "📜 Getting SSL certificate..."
-            cd /root/ad_service
+            apt-get install -y certbot
             
-            docker-compose stop nginx 2>/dev/null || true
-            
+            echo "Obtaining SSL certificate for mart.akatosphere.com..."
             certbot certonly --standalone \
               -d mart.akatosphere.com \
               -d www.mart.akatosphere.com \
               --non-interactive \
               --agree-tos \
-              --email ${{ secrets.CERTBOT_EMAIL }} \
+              --email anton60874022@mail.ru \
               --preferred-challenges http \
               --http-01-port 80
             
             echo "✅ SSL certificate obtained!"
-            
-            mkdir -p /root/ad_service/certbot/conf/live/mart.akatosphere.com
-            cp /etc/letsencrypt/live/mart.akatosphere.com/fullchain.pem /root/ad_service/certbot/conf/live/mart.akatosphere.com/
-            cp /etc/letsencrypt/live/mart.akatosphere.com/privkey.pem /root/ad_service/certbot/conf/live/mart.akatosphere.com/
 
-      - name: Update nginx config for SSL
+      - name: Deploy all services
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔧 Updating nginx config for SSL..."
+            set -e
+            echo "🚀 Deploying all services..."
             cd /root/ad_service
             
-            echo 'upstream django {' > nginx/conf.d/django-ssl.conf
-            echo '    server web:8000;' >> nginx/conf.d/django-ssl.conf
-            echo '}' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo 'server {' >> nginx/conf.d/django-ssl.conf
-            echo '    listen 443 ssl http2;' >> nginx/conf.d/django-ssl.conf
-            echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo '    ssl_certificate /etc/letsencrypt/live/mart.akatosphere.com/fullchain.pem;' >> nginx/conf.d/django-ssl.conf
-            echo '    ssl_certificate_key /etc/letsencrypt/live/mart.akatosphere.com/privkey.pem;' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo '    ssl_protocols TLSv1.2 TLSv1.3;' >> nginx/conf.d/django-ssl.conf
-            echo '    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo '    location / {' >> nginx/conf.d/django-ssl.conf
-            echo '        proxy_pass http://django;' >> nginx/conf.d/django-ssl.conf
-            echo '        proxy_set_header Host $host;' >> nginx/conf.d/django-ssl.conf
-            echo '        proxy_set_header X-Real-IP $remote_addr;' >> nginx/conf.d/django-ssl.conf
-            echo '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' >> nginx/conf.d/django-ssl.conf
-            echo '        proxy_set_header X-Forwarded-Proto $scheme;' >> nginx/conf.d/django-ssl.conf
-            echo '    }' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo '    location /static/ {' >> nginx/conf.d/django-ssl.conf
-            echo '        alias /app/staticfiles/;' >> nginx/conf.d/django-ssl.conf
-            echo '    }' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo '    location /media/ {' >> nginx/conf.d/django-ssl.conf
-            echo '        alias /app/media/;' >> nginx/conf.d/django-ssl.conf
-            echo '    }' >> nginx/conf.d/django-ssl.conf
-            echo '}' >> nginx/conf.d/django-ssl.conf
-            echo '' >> nginx/conf.d/django-ssl.conf
-            echo 'server {' >> nginx/conf.d/django-ssl.conf
-            echo '    listen 80;' >> nginx/conf.d/django-ssl.conf
-            echo '    server_name mart.akatosphere.com www.mart.akatosphere.com;' >> nginx/conf.d/django-ssl.conf
-            echo '    return 301 https://$server_name$request_uri;' >> nginx/conf.d/django-ssl.conf
-            echo '}' >> nginx/conf.d/django-ssl.conf
+            echo "1. Checking files..."
+            ls -la
+            ls -la nginx/
+            ls -la nginx/conf.d/
             
-            mv nginx/conf.d/django.conf nginx/conf.d/django.conf.backup
-            mv nginx/conf.d/django-ssl.conf nginx/conf.d/django.conf
+            echo "2. Logging in to Docker Hub..."
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             
-            docker-compose restart nginx
+            echo "3. Pulling latest application image..."
+            docker pull anton60874022/ad_service:latest
             
-            echo "✅ SSL configured"
+            echo "4. Starting all services..."
+            docker-compose up -d
+            
+            echo "5. Waiting for services to start..."
+            sleep 30
+            
+            echo "6. Checking nginx configuration..."
+            docker-compose exec nginx nginx -t
+            
+            echo "7. Checking all services..."
+            docker-compose ps
+            
+            echo "✅ Deployment completed!"
 
-      - name: Final verification
+      - name: Verify deployment
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "🔍 Final verification..."
+            echo "🔍 Verifying deployment..."
             cd /root/ad_service
             
             echo "1. Container status:"
             docker-compose ps
             
-            echo ""
-            echo "2. Testing nginx config..."
-            docker-compose exec nginx nginx -t || echo "Nginx config test failed"
+            echo "2. Nginx logs (last 20 lines):"
+            docker-compose logs nginx --tail=20
             
-            echo ""
-            echo "3. Logs (last 10 lines):"
-            docker-compose logs --tail=10
+            echo "3. Web logs (last 20 lines):"
+            docker-compose logs web --tail=20
             
-            echo ""
-            echo "🎉 Deployment completed!"
+            echo "4. Testing HTTP..."
+            curl -s -o /dev/null -w "HTTP: %{http_code}\n" http://localhost || echo "HTTP failed"
+            
+            echo "5. Testing HTTPS (locally)..."
+            curl -s -k -o /dev/null -w "HTTPS: %{http_code}\n" https://localhost || echo "HTTPS failed"
+            
+            echo "✅ Verification completed!"
