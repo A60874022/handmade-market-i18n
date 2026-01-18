@@ -51,16 +51,19 @@ services:
     container_name: handmade_nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./django-site.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - static_volume:/app/static
       - media_volume:/app/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
     networks:
       - backend
     depends_on:
       - web
+
 
 volumes:
   postgres_data:
